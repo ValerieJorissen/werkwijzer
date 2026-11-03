@@ -679,7 +679,9 @@ const BLOBKLEUR=["#F5C8E5","#E6E98F","#BDDFEF","#FFD0B3","#CDE7D9"];
 let icN=0;
 function pic(ic){const n=icN++;return `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${BLOB[n%3]}" fill="${BLOBKLEUR[n%5]}"/>${IC[ic]||""}</svg>`;}
 const o=(v,l,ic)=>({v,l,ic});
-const STEPS_B=[
+const STUDENT_SKIP=new Set(["Soort werk","Werktijden","Onderweg","Werkstijl","Leidinggeven","Werkgever","Sfeer","Impact","Branche"]);
+const stepsB=()=>STEPS_B_ALL.filter(s=>!(A.jaren==="student"&&STUDENT_SKIP.has(s.kicker)));
+const STEPS_B_ALL=[
  {kicker:"Vakgebied",titel:"Waar zie jij jezelf werken?",hint:"Tik op maximaal drie plaatjes.",groups:[{key:"vak",img:true,multi:true,max:3,opts:[o("zorg","Zorg","zorg"),o("ict","ICT & data","laptop"),o("techniek","Techniek","gear"),o("overheid","Beleid","building"),o("klant","Klantcontact","headset"),o("commercieel","Sales & marketing","megaphone"),o("admin","Administratie","folder"),o("logistiek","Logistiek","truck"),o("onderwijs","Onderwijs","board"),o("creatief","Creatief","palette"),o("horeca","Horeca","chef"),o("financieel","Financieel","coins"),o("juridisch","Juridisch","scale"),o("hr","HR","people"),o("veiligheid","Beveiliging","shield")]}],ok:()=>A.vak.length>0},
  {kicker:"Soort taken",titel:"Waar word je blij van?",hint:"Kies er maximaal twee.",groups:[{key:"taken",img:true,multi:true,max:2,any:true,opts:[o("mensen","Met mensen","chat"),o("data","Met cijfers","chart"),o("handen","Met je handen","hammer"),o("creatief","Iets bedenken","bulb"),o("organiseren","Organiseren","check"),o("any","Van alles wat","infinity")]}],ok:()=>A.taken.length>0},
  {kicker:"Opleiding",titel:"Wat is je hoogste diploma?",groups:[{key:"niv",img:true,opts:[o("MO","Middelbare school","book"),o("MBO","MBO","cap1"),o("AD","Associate degree","cap1"),o("HBO-B","Hbo-bachelor","cap2"),o("HBO-M","Hbo-master","cap2"),o("WO-B","Wo-bachelor","cap3"),o("WO-M","Wo-master","cap3")]}],ok:()=>!!A.niv},
@@ -820,11 +822,11 @@ function renderSwipeDone(){
 }
 
 let MODE=location.hash==="#swipen"?"swipe":"beeld";
-let STEPS=MODE==="klassiek"?STEPS_K:STEPS_B;
+let STEPS=MODE==="klassiek"?STEPS_K:stepsB();
 function modeTeksten(){const s=MODE==="swipe";$("#quiz-titel").textContent=s?"Swipe je match":"Vind je match";
   $("#quiz-tekst").textContent=s?"Swipe door echte vacatures. Rechts is ja, links is nee. Hoe snel je kiest, telt ook mee.":"Tik op de plaatjes die bij je passen. Je antwoorden blijven op dit apparaat bewaard. Opnieuw beginnen kan altijd.";
   const rb=$("#quiz .side [data-reset]");if(rb)rb.textContent=s?"Opnieuw beginnen":"Quiz opnieuw doen";}
-function setMode(m){MODE=m;MODEL=null;STEPS=m==="klassiek"?STEPS_K:STEPS_B;
+function setMode(m){MODE=m;MODEL=null;STEPS=m==="klassiek"?STEPS_K:stepsB();
   klaar=m==="swipe"?(SW.deck.length>0&&SW.i>=SW.deck.length):!!A.beeldKlaar;stap=klaar?STEPS.length-1:0;modeTeksten();
   document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===m)));renderQuiz();renderResults();renderVac();}
 
@@ -950,7 +952,7 @@ function oplHTML(){
     <div class="group"><span class="glabel">Niveau</span><div class="opts" id="opl-niv">${NIVEAUS.map(n=>`<button type="button" class="opt" data-key="oplniveau" data-v="${n}" aria-pressed="${A.opl.niveau===n}">${NIVLABEL[n]}</button>`).join("")}</div></div>`;
 }
 function beeldA(metCheck){const ps=parseOpl(A.studie||"");
-  const a=Object.assign({},A,{opl:{tekst:A.studie||"",niveau:(NIVMAP[A.niv]||[])[0]||ps.niveau,graad:(NIVMAP[A.niv]||[])[1]||ps.graad,hand:true,richting:ps.richting},grootte:A.grootte||"any",contract:A.contract.length?A.contract:["any"],sal:A.sal===null?"0":A.sal});
+  const a=Object.assign({},A,{opl:{tekst:A.studie||"",niveau:(NIVMAP[A.niv]||[])[0]||ps.niveau,graad:(NIVMAP[A.niv]||[])[1]||ps.graad,hand:true,richting:ps.richting},grootte:A.grootte||"any",sector:A.sector.length?A.sector:["any"],branche:A.branche.length?A.branche:["any"],contract:A.contract.length?A.contract:["any"],sal:A.sal===null?"0":A.sal});
   if(metCheck){a.skillsUnknown=!(A.gevraagd&&A.gevraagd.length);}else{a.skillsUnknown=true;a.gevraagd=null;a.skills=[];}
   return a;}
 function checkHTML(){
@@ -1020,6 +1022,7 @@ qcard.addEventListener("click",e=>{
   if(e.target.closest("#q-opnieuw")){opnieuw();}
 });
 function pick(key,v,btn){
+  if(key==="jaren"&&MODE==="beeld"){A.jaren=v;STEPS=stepsB();save();document.querySelectorAll('.opt[data-key="jaren"]').forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.v===v)));renderAsked();$("#q-verder").disabled=false;$("#q-verder").textContent=verderTekst(STEPS[stap]);return;}
   if(key==="oplniveau"){A.opl.niveau=v;A.opl.hand=true;updOpl();save();return;}
   if(key==="skills"){
     A.skills=A.skills.includes(v)?A.skills.filter(x=>x!==v):[...A.skills,v];save();
@@ -1037,7 +1040,7 @@ function pick(key,v,btn){
 }
 function verder(){
   if(stap<STEPS.length-1){stap++;renderQuiz();return;}
-  if(MODE==="beeld"){const b=beeldA(true);A.opl=b.opl;A.grootte=b.grootte;A.contract=b.contract;A.sal=b.sal;A.skillsUnknown=b.skillsUnknown;A.beeldKlaar=true;}
+  if(MODE==="beeld"){const b=beeldA(true);A.opl=b.opl;A.grootte=b.grootte;A.sector=b.sector;A.branche=b.branche;A.contract=b.contract;A.sal=b.sal;A.skillsUnknown=b.skillsUnknown;A.beeldKlaar=true;}
   else{A.skillsUnknown=false;A.gevraagd=null;}
   klaar=true;save();renderQuiz();renderResults();renderVac();
   requestAnimationFrame(()=>$("#resultaten").scrollIntoView({behavior:"smooth"}));
