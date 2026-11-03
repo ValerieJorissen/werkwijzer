@@ -772,7 +772,7 @@ const STEPS_B=[
  {kicker:"Impact",titel:"Moet je werk de wereld beter maken?",groups:[{key:"impact",img:true,opts:[o("belangrijk","Heel belangrijk","seedling"),o("leuk","Mooi meegenomen","heart"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.impact},
  {kicker:"Taal",titel:"In welke taal werk je het liefst?",groups:[{key:"engels",img:true,opts:[o("graag","Engels, graag","globe"),o("prima","Allebei prima","chat"),o("nee","Nederlands","nl")]}],ok:()=>!!A.engels},
  {kicker:"Branche",titel:"Waar wil je aan bijdragen?",hint:"Kies er zoveel je wilt.",groups:[{key:"branche",img:true,multi:true,any:true,opts:[o("publiek","Publieke diensten","building"),o("zorg","Zorg","zorg"),o("retail","Winkels","bag"),o("bouw","Bouw","crane"),o("tech","Tech","chip"),o("onderwijs","Onderwijs","board"),o("transport","Transport","truck"),o("food","Eten & horeca","fork"),o("finance","Bank & geld","coins"),o("energie","Energie","bolt"),o("media","Media","play"),o("advies","Advies","briefcase"),o("cultuur","Kunst & cultuur","frame"),o("any","Alles is goed","infinity")]}],ok:()=>A.branche.length>0},
- {kicker:"Check",titel:"Wat kun je al?",hint:"Dit vragen je beste matches. Tik aan wat je echt kunt. Wat je niet aantikt, telt als: kan ik nog niet.",custom:"check",ok:()=>true}
+ {kicker:"Check",titel:"Wat kun je al?",hint:"Tik alles aan wat je al kunt of hebt.",custom:"check",ok:()=>true}
 ];
 
 /* ---------- Swipe-quiz ---------- */
@@ -1010,10 +1010,9 @@ function beeldA(metCheck){const ps=parseOpl(A.studie||"");
 function checkHTML(){
   const a=beeldA(false);
   const top=VAC.map(j=>({j,p:score(j,a).pct})).filter(x=>(x.j.eisen||[]).some(e=>e.k)).sort((x,y)=>y.p-x.p).slice(0,8);
-  const alle=new Set();
-  const h=top.map(({j,p})=>{const ks=[...new Set((j.eisen||[]).filter(e=>e.k).sort((x,y)=>y.h-x.h).map(e=>e.k))];ks.forEach(k=>alle.add(k));
-    return `<div class="group"><span class="glabel">${esc(j.titel)} · ${esc(j.org)}</span><div class="opts">${ks.map(k=>{const e=j.eisen.find(x=>x.k===k);
-      return `<button type="button" class="opt" data-key="skills" data-v="${esc(k)}" aria-pressed="${A.skills.includes(k)}" title="${esc(e.t)}">${esc(k)}${e.h?' <small>eis</small>':""}</button>`}).join("")}</div></div>`;}).join("");
+  const tel={};top.forEach(({j})=>(j.eisen||[]).filter(e=>e.k).forEach(e=>{tel[e.k]=(tel[e.k]||0)+(e.h?2:1);}));
+  const alle=Object.keys(tel).sort((x,y)=>tel[y]-tel[x]||x.localeCompare(y,"nl")).slice(0,24);
+  const h=alle.length?`<div class="group"><div class="opts">${alle.map(k=>`<button type="button" class="opt" data-key="skills" data-v="${esc(k)}" aria-pressed="${A.skills.includes(k)}">${esc(k)}</button>`).join("")}</div></div>`:"";
   A.gevraagd=[...alle];save();
   return h||`<p>Voor je beste matches hoeven we niets extra te checken.</p>`;
 }
