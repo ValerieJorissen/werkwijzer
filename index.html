@@ -860,6 +860,24 @@ function studieMis(j,a){
     if(!e.h||!/opleid|studie|master|bachelor|diploma|hotelschool|achtergrond in/i.test(e.t)||/elke richting|zwemdiploma|rijbewijs/i.test(e.t))continue;
     const nodig=parseOpl(e.t).richting;if(nodig.length&&!nodig.some(r=>past.has(r)))return VAKKEN[nodig[0]];}
   return null;}
+// Automatisch checken van opleidings- en ervaringseisen
+function eisAuto(e,a){
+  const s=" "+e.t.toLowerCase()+" ";
+  const opl=a.opl||{},un=opl.niveau,g=opl.graad;
+  const isOpl=/\b(mbo|hbo|wo|universit\w*|master\w*|bachelor\w*|msc|academie|opleiding|diploma|studie)\b/.test(s)&&!/elke richting|zwemdiploma|lasdiploma|beveiligingsdiploma|rijbewijs|vog|ingeschreven|laatste jaar/.test(s);
+  if(isOpl){
+    const lv=[];if(/\bmbo/.test(s))lv.push("MBO");if(/\bhbo|bachelor|academie/.test(s))lv.push("HBO");if(/\bwo\b|\bwo-|universit/.test(s))lv.push("WO");
+    const master=/\bmaster|\bmsc\b/.test(s)&&!/bachelor of master|bachelor or master|bachelor of hoger/.test(s);
+    if(!lv.length&&master)lv.push("HBO");
+    let ok=null;
+    if(lv.length){if(!un)return null;const min=Math.min(...lv.map(x=>NIVEAUS.indexOf(x)));ok=NIVEAUS.indexOf(un)>=min;if(master&&ok)ok=g?g==="master":null;}
+    const nodig=parseOpl(e.t).richting;
+    if(nodig.length){const mijn=opl.richting||[];if(!mijn.length)return ok===false?false:null;const past=new Set(mijn.flatMap(r=>STUDIE_OK[r]||[r]));mijn.forEach(r=>past.add(r));
+      if(!nodig.some(r=>past.has(r)))return false;}
+    return ok;}
+  const m=s.match(/(\d+)\s*(?:–|-|tot)?\s*\d*\+?\s*jaar/);
+  if(m&&/ervaring|werkzaam|als /.test(s)&&a.jaren!=null){const jr=a.jaren==="student"?0:+a.jaren;return jr>=+m[1];}
+  return null;}
 function score(j,a){
   const student=a.jaren==="student";if(student)a=Object.assign({},a,{jaren:"0"});
   const graad=(a.opl&&a.opl.graad)||null;
@@ -943,6 +961,8 @@ function score(j,a){
   if(wilMaster&&kc!=="werkstudent"){if(graad==="master")add(4,"Je hebt de gevraagde master","ok");else if(graad){cap=Math.min(cap,45);r.push({txt:"Vraagt een masterdiploma",st:"no",hard:1});}}
   if(a.jaren!=null&&+a.jaren>2&&/trainee/i.test(j.titel)){cap=Math.min(cap,20);miss.push("starter");r.push({txt:"Traineeship is voor starters met 0 – 2 jaar werkervaring",st:"no",hard:1});}
   if(specMis){cap=Math.min(cap,50);r.push({txt:`Hier zoeken ze iemand uit ${SPECNAAM[j.spec]}, dat is een andere richting dan jouw studie`,st:"no",hard:1});}
+  if(!sMis){const oplMis=(j.eisen||[]).find(e=>e.h&&!e.k&&/\b(mbo|hbo|wo|universit\w*|master|opleiding|diploma)\b/i.test(e.t)&&eisAuto(e,a)===false);
+    if(oplMis){cap=Math.min(cap,40);r.push({txt:`Je voldoet niet aan de opleidingseis: ${oplMis.t.toLowerCase()}`,st:"no",hard:1});}}
   if(sMis){cap=Math.min(cap,25);miss.push("passende studie");r.push({txt:`Hier hoort een studie in ${sMis.toLowerCase()} bij, en dat past niet bij wat jij hebt gestudeerd`,st:"no",hard:1});}
   if(X.deal.length){cap=Math.min(cap,30);X.deal.forEach(d=>{miss.push("deal-breaker: "+d);r.push({txt:`Deal-breaker: ${d}`,st:"no",hard:1});});}
   const ord={ok:1,part:2,no:3};r.sort((x,y)=>(x.hard?0:ord[x.st])-(y.hard?0:ord[y.st]));
@@ -1080,7 +1100,9 @@ function card(v,m,best){
   const sk=E.length?"":(v.skills||[]).map(s=>`<span class="tag sk${m&&mine.has(s.toLowerCase())?" hit":""}">${esc(s)}</span>`).join("");
   const eis=`<div class="eisen"><span class="glabel">Wat ze vragen${v.ervaring?` · minimaal ${v.ervaring} jaar ervaring`:""}</span>${E.length?`<ul>${E.map(e=>{let st="neu",ic="•";
       const ek=e.k||(/\bnederlands\b/i.test(e.t)&&(A.talen||[]).length?"Nederlands":null);
-      if(m){if(ek&&A.skillsUnknown&&!A.skills.length){st="chk";ic="?";}else if(ek){if(mine.has(ek.toLowerCase())){st="ok";ic="✓";}else{st=e.h?"no":"pl";ic=e.h?"✕":"–";}}else{st="chk";ic="?";}}
+      const au=m&&!ek?eisAuto(e,A):null;
+      if(m&&au!==null){if(au){st="ok";ic="✓";}else{st=e.h?"no":"pl";ic=e.h?"✕":"–";}}
+      else if(m){if(ek&&A.skillsUnknown&&!A.skills.length){st="chk";ic="?";}else if(ek){if(mine.has(ek.toLowerCase())){st="ok";ic="✓";}else{st=e.h?"no":"pl";ic=e.h?"✕":"–";}}else{st="chk";ic="?";}}
       return `<li class="${st}"><i aria-hidden="true">${ic}</i><span>${esc(e.t)}</span><em>${e.h?"Eis":"Pluspunt"}</em></li>`}).join("")}</ul>${m?`<p class="elegend"><b>✓</b> heb je &nbsp; <b class="r">✕</b> mis je &nbsp; <b class="q">?</b> check zelf</p>`:""}`:`<p class="elegend">We konden de eisen niet uitlezen. Bekijk ze bij de werkgever.</p>`}</div>`;
   let sc="";
   if(m){let cls=m.pct>=75?"hi":m.pct>=50?"mid":"lo",lbl=m.pct>=75?"Sterke match":m.pct>=50?"Redelijke match":"Minder passend";
