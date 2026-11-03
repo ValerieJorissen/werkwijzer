@@ -7,7 +7,7 @@
 <body>
 <title>Valcature</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Vind werk dat bij je past. Beantwoord negen vragen en zie vacatures in de Randstad op volgorde van match.">
+<meta name="description" content="Vind werk dat bij je past. Beantwoord tien vragen en zie vacatures in de Randstad op volgorde van match.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
@@ -15,7 +15,7 @@
 /* Layout: speelse studio-look; crème hero met bewegende kleurenslinger, groene quizband, roze uitlegband; tabbladen bovenaan wisselen tussen quiz en alle vacatures. Bewust één (licht) thema. */
 :root{
   --cream:#F6F1E7; --paper:#FFFDF8; --ink:#17221D; --muted:#5D6A63; --line:#E3DBCB;
-  --green:#0C5B44; --green-d:#08402F; --orange:#FF6A2B; --pink:#F5C8E5; --lime:#D2D63E; --blue:#2A8EE2; --sky:#BDDFEF;
+  --green:#0C5B44; --green-d:#08402F; --orange:#FF6A2B; --red:#D2321E; --pink:#F5C8E5; --lime:#D2D63E; --blue:#2A8EE2; --sky:#BDDFEF;
   --f-display:"Archivo","Arial Narrow",Impact,sans-serif;
   --f-body:"Instrument Sans",ui-sans-serif,system-ui,sans-serif;
   --f-serif:"Instrument Serif",Georgia,"Times New Roman",serif;
@@ -27,7 +27,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .in{max-width:1180px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
 .disp{font-family:var(--f-display);font-weight:900;font-variation-settings:"wdth" 70;text-transform:uppercase;line-height:.9;letter-spacing:-.005em;margin:0;text-wrap:balance}
 .eyebrow{font-family:var(--f-serif);font-style:italic;font-size:19px;letter-spacing:.03em;text-transform:uppercase}
-button,input,select{font:inherit}
+button,input,select,textarea{font:inherit}
 :focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 
 /* Header + tabs */
@@ -156,6 +156,7 @@ button,input,select{font:inherit}
 .why summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--green);width:max-content;max-width:100%}
 .why ul{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:4px;font-size:14px;color:var(--muted)}
 .why li::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:9px;background:#C9BFAC;vertical-align:1px}
+.why li.no::before{background:var(--red)}
 .why li.ok::before{background:var(--green)}.why li.part::before{background:var(--orange)}
 .vac.best{border-width:3px;box-shadow:8px 8px 0 var(--c)}
 .sticker{position:absolute;top:-22px;right:26px;width:84px;height:84px;display:grid;place-items:center;z-index:2;pointer-events:none}
@@ -163,6 +164,42 @@ button,input,select{font:inherit}
 .sticker span{position:relative;font-family:var(--f-display);font-weight:900;font-variation-settings:"wdth" 75;font-size:12px;line-height:1;text-align:center;text-transform:uppercase;transform:rotate(-12deg)}
 @media (max-width:560px){.vac{grid-template-columns:1fr;padding:20px}.score{position:absolute;top:18px;right:16px}.ring{width:62px;height:62px}.ring b{font-size:20px}.score .lbl{display:none}.vac.hasscore h3,.vac.hasscore .vk{padding-right:68px}.sticker{right:auto;left:18px;top:-26px;width:70px;height:70px}}
 
+.eisen{grid-column:1/-1;display:grid;gap:8px;background:var(--cream);border-radius:18px;padding:14px 16px}
+.eisen .glabel{margin:0}
+.eisen ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.eisen li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:9px;align-items:start;font-size:14px;line-height:1.35}
+.eisen li i{font-style:normal;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;background:var(--line);color:var(--ink)}
+.eisen li.ok i{background:var(--green);color:var(--cream)}
+.eisen li.no i{background:var(--red);color:#fff}
+.eisen li.no span{color:var(--red);font-weight:700}
+.eisen li.chk i{background:var(--sky)}
+.eisen li.pl span{color:var(--muted)}
+.eisen em{font-style:normal;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.eisen li.no em{color:var(--red)}
+.elegend{margin:0;font-size:12.5px;color:var(--muted)}
+.elegend b{color:var(--green)}.elegend b.r{color:var(--red)}.elegend b.q{color:var(--blue)}
+.missbar{margin-top:10px;display:inline-block;background:#FCE2DC;color:#8E1E0E;border:1.5px solid var(--red);border-radius:12px;padding:5px 12px;font-size:14px;font-weight:700}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.go.alt{background:var(--paper);color:var(--ink);cursor:pointer;font-family:inherit}
+.go.alt:hover{background:var(--lime)}
+/* Motivatiebrief */
+dialog.brief{border:2px solid var(--ink);border-radius:32px;padding:0;width:min(660px,calc(100vw - 24px));max-height:calc(100dvh - 24px);background:var(--paper);color:var(--ink);box-shadow:10px 10px 0 var(--green)}
+dialog.brief::backdrop{background:rgba(8,40,30,.6)}
+.bwrap{padding:26px;display:grid;gap:16px;overflow:auto;max-height:calc(100dvh - 28px)}
+@media (max-width:520px){.bwrap{padding:18px}dialog.brief{border-radius:24px}}
+.bhead{display:flex;justify-content:space-between;align-items:start;gap:12px}
+.bhead .eyebrow{color:var(--orange);font-size:16px}
+.bhead h3{font-family:var(--f-display);font-weight:800;font-variation-settings:"wdth" 82;text-transform:uppercase;font-size:26px;line-height:1;margin:4px 0 0}
+.bhead p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.bx{border:2px solid var(--ink);background:var(--cream);color:var(--ink);border-radius:50%;width:38px;height:38px;cursor:pointer;font-weight:800;flex:none;font-size:16px}
+.brow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.brow{grid-template-columns:1fr}}
+textarea.text{min-height:110px;resize:vertical;font-size:15px;line-height:1.5}
+.text.sm{padding:11px 14px;font-size:16px}
+.check{display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--green)}
+textarea.letter{min-height:min(420px,52dvh);font-size:15px;line-height:1.6;background:var(--paper)}
+.btip{margin:0;font-size:13.5px;color:var(--muted);background:var(--cream);border-radius:12px;padding:10px 14px}
 /* How it works */
 .how{background:var(--pink);border-top:2px solid var(--ink)}
 .how .in{padding-block:72px}
@@ -227,7 +264,7 @@ footer p{margin:0;font-size:14px;opacity:.8;max-width:56ch}
     <div class="in">
       <div class="copy">
         <h1 class="disp"><span>Werk dat</span><span>écht bij je</span><span>past<svg class="flower fl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0l2.4 7.2L21 3l-4.2 6.6L24 12l-7.2 2.4L21 21l-6.6-4.2L12 24l-2.4-7.2L3 21l4.2-6.6L0 12l7.2-2.4L3 3l6.6 4.2z"/></svg></span></h1>
-        <p class="lead">Negen vragen over wat je kunt en wat je wilt. Wij zetten vacatures in de Randstad op volgorde van match. Solliciteren doe je direct bij de werkgever.</p>
+        <p class="lead">Tien vragen over wat je kunt en wat je wilt. Wij zetten vacatures in de Randstad op volgorde van match. Solliciteren doe je direct bij de werkgever.</p>
         <div class="cta">
           <button class="btn or" id="start">Start de quiz →</button>
           <button class="btn ghost" data-goto="vacatures">Bekijk alle vacatures</button>
@@ -275,8 +312,8 @@ footer p{margin:0;font-size:14px;opacity:.8;max-width:56ch}
       <span class="eyebrow">Zo werkt het</span>
       <h2 class="disp">Van vraag tot sollicitatie</h2>
       <div class="steps">
-        <div><div class="blob"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12h48v30H30L16 54V42H8z"/><path d="M18 24h28M18 32h18"/></svg></div><h3>Beantwoord 9 vragen</h3><p>Over je opleiding, vaardigheden, uren, plek en het soort werkgever dat je zoekt.</p></div>
-        <div><div class="blob"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4"><circle cx="24" cy="32" r="15"/><circle cx="40" cy="32" r="15"/></svg></div><h3>Wij matchen</h3><p>Elke vacature krijgt een score, met uitleg over wat wel en niet past.</p></div>
+        <div><div class="blob"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12h48v30H30L16 54V42H8z"/><path d="M18 24h28M18 32h18"/></svg></div><h3>Beantwoord 10 vragen</h3><p>Over je opleiding, vaardigheden, ervaring, uren, plek en het soort werkgever dat je zoekt.</p></div>
+        <div><div class="blob"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4"><circle cx="24" cy="32" r="15"/><circle cx="40" cy="32" r="15"/></svg></div><h3>Wij matchen</h3><p>Elke vacature krijgt een score. Per eis zie je of je die hebt of mist.</p></div>
         <div><div class="blob"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M28 14H12v38h38V36"/><path d="M30 34 54 10M38 10h16v16"/></svg></div><h3>Solliciteer direct</h3><p>Je gaat naar de originele vacature bij de werkgever. Geen tussenpartij.</p></div>
       </div>
     </div>
@@ -306,6 +343,8 @@ footer p{margin:0;font-size:14px;opacity:.8;max-width:56ch}
   </div>
 </main>
 
+<dialog class="brief" id="brief" aria-label="Motivatiebrief maken"><div class="bwrap" id="bwrap"></div></dialog>
+
 <footer>
   <div class="in">
     <span class="logo">VAL<span class="dot"></span>CATURE</span>
@@ -315,53 +354,53 @@ footer p{margin:0;font-size:14px;opacity:.8;max-width:56ch}
 
 <!-- VACATUREDATA: wordt elke werkdag bijgewerkt. Alleen kerngegevens + link naar de werkgever. null = niet vermeld. -->
 <script type="application/json" id="vacaturedata">
-{"bijgewerkt":"2026-11-03","vacatures":[{"id":"ams-coord-groen","titel":"Coördinator Groen","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"overheid","uren":[36,40],"vorm":"hybride","niveau":"MBO","sal":[3206,4499],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["Leidinggeven","Planning"],"sluit":"2026-11-16","url":"https://werkenbij.amsterdam.nl/vacatures/coordinator-groen-d235d3aa-3001-4f30-a91b-5521f973840f"},
-{"id":"ams-verkeersontwerper","titel":"(Junior) Verkeersontwerper","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"techniek","uren":[32,36],"vorm":"hybride","niveau":"HBO","sal":[3568,5096],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["Verkeerskunde"],"sluit":"2026-11-22","url":"https://werkenbij.amsterdam.nl/vacatures/-junior-verkeersontwerper-55a38e89-7180-4676-b865-f62c7a072740"},
-{"id":"ams-monteur-elektro","titel":"1e monteur elektrotechniek","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"techniek","uren":[32,36],"vorm":"locatie","niveau":"MBO","sal":[2840,4015],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["Elektrotechniek"],"sluit":"2026-12-31","url":"https://werkenbij.amsterdam.nl/vacatures/1e-monteur-elektrotechniek-d7deefec-0f7c-4d36-9b6b-51d37de9827c"},
-{"id":"ams-monteur-wtb","titel":"1e monteur werktuigbouw","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"techniek","uren":[32,36],"vorm":"locatie","niveau":null,"sal":[2840,4015],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["Werktuigbouw"],"sluit":null,"url":"https://werkenbij.amsterdam.nl/vacatures/1e-monteur-werktuigbouw-6ee486de-8df3-40d9-b344-3c98c86544a4"},
-{"id":"ams-jongerenadviseur","titel":"Jongerenadviseur dak- en thuisloze jongeren","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[32,36],"vorm":"hybride","niveau":"HBO","sal":[3568,5096],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["Jeugdzorg","Begeleiden"],"sluit":"2026-11-08","url":"https://werkenbij.amsterdam.nl/vacatures/jongerenadviseur-dak-en-thuisloze-jongeren-16-27-jaar-0b30975a-a502-4d41-a371-66027901530b"},
-{"id":"ams-veilig-thuis","titel":"Medewerker Veilig Thuis","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[32,36],"vorm":"hybride","niveau":"HBO","sal":[3824,5624],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["Begeleiden"],"sluit":"2026-11-15","url":"https://werkenbij.amsterdam.nl/vacatures/medewerker-veilig-thuis-44648be5-2a88-4846-8475-1e6ca613b8a6"},
-{"id":"aumc-reuma","titel":"Gespecialiseerd verpleegkundige polikliniek Reumatologie","org":"Amsterdam UMC","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[24,32],"vorm":"locatie","niveau":null,"sal":[3171,4492],"omgeving":"team","sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["Patiëntenzorg","BIG-registratie"],"sluit":null,"url":"https://werkenbij.amsterdamumc.org/nl/vacatures/zorg/gespecialiseerd-verpleegkundige-polikliniek-reumatologie"},
-{"id":"aumc-ccu","titel":"Cardiac Care (CCU) verpleegkundige","org":"Amsterdam UMC","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[24,36],"vorm":"locatie","niveau":null,"sal":[4185,5499],"omgeving":"team","sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["Patiëntenzorg","Acute zorg","BIG-registratie"],"sluit":null,"url":"https://werkenbij.amsterdamumc.org/nl/vacatures/zorg/cardiac-care-ccu-verpleegkundige-1"},
-{"id":"aumc-ccu-opl","titel":"Cardiac Care (CCU) verpleegkundige in opleiding","org":"Amsterdam UMC","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[32,36],"vorm":"locatie","niveau":null,"sal":[3171,4492],"omgeving":"team","sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["Patiëntenzorg","BIG-registratie"],"sluit":null,"url":"https://werkenbij.amsterdamumc.org/nl/vacatures/zorg/cardiac-care-ccu-verpleegkundige-in-opleiding-1"},
-{"id":"breman-monteur-w","titel":"Leidinggevend monteur W / Uitvoerder W","org":"Breman","plaats":"Heemskerk","regio":"Noord-Holland","vak":"techniek","uren":[32,40],"vorm":"locatie","niveau":null,"sal":null,"omgeving":"team","sector":"commercieel","grootte":"groot","branche":"bouw","skills":["Installatietechniek","VCA","Leidinggeven","Rijbewijs B"],"sluit":null,"url":"https://www.breman.nl/werken-bij/vacature/leidinggevend-monteur-w-uitvoerder-w-regio-haarlem/"},
-{"id":"coolblue-ks","titel":"Klantenservice medewerker","org":"Coolblue","plaats":"Rotterdam","regio":"Zuid-Holland","vak":"klant","uren":[20,40],"vorm":"hybride","niveau":"MBO","sal":null,"salTekst":"€ 15 per uur","omgeving":"team","sector":"commercieel","grootte":"groot","branche":"retail","skills":["Klantcontact","Telefoon","Chat & e-mail"],"sluit":null,"url":"https://www.coolblue.nl/vacatures/klantenservice-medewerker"},
-{"id":"coolblue-am","titel":"Junior Accountmanager Binnendienst","org":"Coolblue","plaats":"Rotterdam","regio":"Zuid-Holland","vak":"commercieel","uren":[40,40],"vorm":"hybride","niveau":"MBO","sal":null,"omgeving":"team","sector":"commercieel","grootte":"groot","branche":"retail","skills":["Sales","Klantcontact"],"sluit":null,"url":"https://www.coolblue.nl/vacatures/accountmanager-coolblue-zakelijk"},
-{"id":"coolblue-cjs","titel":"Customer Journey Specialist","org":"Coolblue","plaats":"Rotterdam","regio":"Zuid-Holland","vak":"ict","uren":[40,40],"vorm":"hybride","niveau":"HBO","sal":null,"omgeving":"team","sector":"commercieel","grootte":"groot","branche":"retail","skills":["Data-analyse","Scrum","UX"],"sluit":null,"url":"https://www.coolblue.nl/vacatures/customer-journey-specialist"},
-{"id":"utr-or-secretaris","titel":"Ambtelijk secretaris OR","org":"Gemeente Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"overheid","uren":[32,36],"vorm":null,"niveau":null,"sal":[3568,5096],"omgeving":null,"sector":"overheid","grootte":"groot","branche":"publiek","skills":["Notuleren","Wet- en regelgeving"],"sluit":"2026-11-14","url":"https://www.werkenbijutrecht.nl/vacature/ambtelijk-secretaris-or-1344929/"},
-{"id":"utr-assetbeheer","titel":"Coördinator assetbeheer inzamelvoorzieningen","org":"Gemeente Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"techniek","uren":[32,36],"vorm":null,"niveau":null,"sal":[3824,5624],"omgeving":null,"sector":"overheid","grootte":"groot","branche":"publiek","skills":["Planning","Projectmanagement"],"sluit":"2026-11-14","url":"https://www.werkenbijutrecht.nl/vacature/co%c3%b6rdinator-assetbeheer-inzamelvoorzieningen-1338517/"},
-{"id":"utr-informatiebeheer","titel":"Adviseur Informatiebeheer","org":"Gemeente Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"ict","uren":[32,36],"vorm":null,"niveau":null,"sal":[3824,5624],"omgeving":null,"sector":"overheid","grootte":"groot","branche":"publiek","skills":["Informatiebeheer"],"sluit":"2026-11-19","url":"https://www.werkenbijutrecht.nl/vacature/adviseur-informatiebeheer-1344755/"},
-{"id":"utr-verkeerskundige","titel":"Senior Verkeerskundige","org":"Gemeente Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"techniek","uren":[32,36],"vorm":null,"niveau":null,"sal":[5369,7253],"omgeving":null,"sector":"overheid","grootte":"groot","branche":"publiek","skills":["Verkeerskunde","Beleidsadvies"],"sluit":"2026-11-21","url":"https://www.werkenbijutrecht.nl/vacature/senior-verkeerskundige-1323981/"},
-{"id":"umcu-apotheek","titel":"Apothekersassistent inkoop geneesmiddelenlogistiek","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"zorg","uren":[32,36],"vorm":"locatie","niveau":null,"sal":[3126,4182],"omgeving":null,"sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["Medicatie","Voorraadbeheer"],"sluit":"2026-11-17","url":"https://www.werkenbijumcutrecht.nl/vacatures/apothekersassistent-inkoop-geneesmiddelenlogistiek-2026-7546"},
-{"id":"umcu-secretarieel","titel":"Medisch secretarieel medewerker cardiologie","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"admin","uren":[32,36],"vorm":null,"niveau":null,"sal":[2744,3636],"omgeving":null,"sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["Secretariaat","Medische terminologie","Planning"],"sluit":"2026-11-30","url":"https://www.werkenbijumcutrecht.nl/vacatures/administratief-secretarieel/medisch-secretarieel-medewerker-cardiologie-aangeboren-hartafwijkingen-2026-7377"},
-{"id":"umcu-pacu","titel":"PACU/Recoveryverpleegkundige volwassenen","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"zorg","uren":[18,36],"vorm":"locatie","niveau":null,"sal":[3626,5134],"omgeving":"team","sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["Patiëntenzorg","Acute zorg","BIG-registratie"],"sluit":null,"url":"https://www.werkenbijumcutrecht.nl/vacatures/recovery-verpleegkundige/pacu-recoveryverpleegkundige-volwassenen-2026-6805"},
-{"id":"umcu-leerling-mbo","titel":"Leerling verpleegkundige mbo","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"zorg","uren":[32,36],"vorm":"locatie","niveau":"MBO","sal":null,"omgeving":"team","sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["Patiëntenzorg"],"sluit":"2027-03-01","url":"https://www.werkenbijumcutrecht.nl/vacatures/opleidingsplekken/leerling-verpleegkundige-mbo-2026-7540"},
-{"id":"umcu-leerling-hbo","titel":"Leerling verpleegkundige hbo","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"zorg","uren":[32,36],"vorm":"locatie","niveau":"HBO","sal":null,"omgeving":"team","sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["Patiëntenzorg"],"sluit":"2027-01-16","url":"https://www.werkenbijumcutrecht.nl/vacatures/opleidingsplekken/leerling-verpleegkundige-hbo-2026-7538"},
-{"id":"ey-digital-risk","titel":"(Senior) Consultant Digital Risk & Resilience","org":"EY","plaats":"Amsterdam","regio":"Noord-Holland","vak":"ict","uren":[32,40],"vorm":null,"niveau":null,"sal":null,"omgeving":null,"sluit":null,"skills":[],"sector":"commercieel","grootte":"groot","branche":"advies","url":"https://careers.ey.com/ey/job/Amsterdam-%28Senior%29-Consultant-Digital-Risk-&-Resilience-1083-HP/1452855133/"},
-{"id":"ey-inhouse-advocaat","titel":"Inhouse advocaat","org":"EY","plaats":"Rotterdam","regio":"Zuid-Holland","vak":"juridisch","uren":[40,40],"vorm":null,"niveau":null,"sal":null,"omgeving":null,"sluit":null,"skills":[],"sector":"commercieel","grootte":"groot","branche":"advies","url":"https://careers.ey.com/ey/job/Rotterdam-Inhouse-advocaat-3011-XZ/1452978933/"},
-{"id":"ey-bt-fs","titel":"(Senior) Consultant Business Transformation – Financial Services","org":"EY","plaats":"Amsterdam","regio":"Noord-Holland","vak":"financieel","uren":[40,40],"vorm":null,"niveau":null,"sal":null,"omgeving":null,"sluit":null,"skills":[],"sector":"commercieel","grootte":"groot","branche":"advies","url":"https://eyglobal.yello.co/jobs/eUNW7zVtCndE4anr-kZDKQ?job_board_id=c1riT--B2O-KySgYWsZO1Q"},
-{"id":"ey-real-estate","titel":"Consultant Real Estate | EY-Parthenon","org":"EY","plaats":"Amsterdam","regio":"Noord-Holland","vak":"financieel","uren":[40,40],"vorm":null,"niveau":null,"sal":null,"omgeving":null,"sluit":null,"skills":[],"sector":"commercieel","grootte":"groot","branche":"advies","url":"https://eyglobal.yello.co/jobs/a52VsdHYumo83e1FCSwA1g?job_board_id=c1riT--B2O-KySgYWsZO1Q"},
-{"id":"booking-risk","titel":"Security & Infrastructure Risk and Compliance Officer","org":"Booking.com","plaats":"Amsterdam","regio":"Noord-Holland","vak":"ict","uren":null,"vorm":null,"niveau":null,"sal":null,"omgeving":null,"sluit":null,"skills":[],"sector":"commercieel","grootte":"groot","branche":"tech","url":"https://jobs.booking.com/booking/jobs/30539?lang=en-us"},
-{"id":"booking-security","titel":"Senior Account Security Analyst I","org":"Booking.com","plaats":"Amsterdam","regio":"Noord-Holland","vak":"ict","uren":null,"vorm":null,"niveau":null,"sal":null,"omgeving":null,"sluit":null,"skills":[],"sector":"commercieel","grootte":"groot","branche":"tech","url":"https://jobs.booking.com/booking/jobs/30552?lang=en-us"},
-{"id":"picnic-bezorger","titel":"Bezorger","org":"Picnic","plaats":"Amsterdam","regio":"Noord-Holland","vak":"logistiek","uren":[16,40],"vorm":"locatie","niveau":null,"sal":null,"omgeving":"zelfstandig","sluit":null,"skills":["Rijbewijs B"],"sector":"commercieel","grootte":"groot","branche":"retail","url":"https://jobs.picnic.app/nl/vacatures/bezorger-amsterdam","salTekst":"€ 16,19 per uur (21+)"},
-{"id":"picnic-buyer","titel":"Buyer","org":"Picnic","plaats":"Amsterdam","regio":"Noord-Holland","vak":"commercieel","uren":null,"vorm":null,"niveau":"WO","sal":null,"omgeving":"team","sluit":null,"skills":["Onderhandelen","Stakeholdermanagement","Engels"],"sector":"commercieel","grootte":"groot","branche":"retail","url":"https://jobs.picnic.app/en/vacancies/JCJSKU6V/consumer/buyer/amsterdam/north-holland/netherlands"},
-{"id":"picnic-ai-platform","titel":"AI Platform Engineer","org":"Picnic","plaats":"Amsterdam","regio":"Noord-Holland","vak":"ict","uren":null,"vorm":null,"niveau":"HBO","sal":null,"omgeving":"team","sluit":null,"skills":["Python","Kubernetes","CI/CD"],"sector":"commercieel","grootte":"groot","branche":"retail","url":"https://jobs.picnic.app/en/vacancies/J4RU8AM7/engineering/ai-platform-engineer/amsterdam/north-holland/netherlands"},
-{"id":"picnic-category-agf","titel":"Category Manager AGF","org":"Picnic","plaats":"Amsterdam","regio":"Noord-Holland","vak":"commercieel","uren":null,"vorm":"locatie","niveau":"WO","sal":null,"omgeving":"team","sluit":null,"skills":["Excel","SQL","Onderhandelen","Engels"],"sector":"commercieel","grootte":"groot","branche":"retail","url":"https://jobs.picnic.app/nl/vacatures/JPLPHCLX/consumer/category-manager-agf/amsterdam/north-holland/netherlands"},
-{"id":"picnic-analytics","titel":"Commercial & Analytics Projects – Mid-Level","org":"Picnic","plaats":"Amsterdam","regio":"Noord-Holland","vak":"ict","uren":null,"vorm":null,"niveau":"WO","sal":null,"omgeving":"team","sluit":null,"skills":["SQL","Python","Engels"],"sector":"commercieel","grootte":"groot","branche":"retail","url":"https://jobs.picnic.app/en/vacancies/JBL6X0KG/analytics/commercial-and-analytics-projects-mid-level/amsterdam/north-holland/netherlands"},
-{"id":"rabo-client-support","titel":"Client Support Officer – Credit Control","org":"Rabobank","plaats":"Utrecht","regio":"Utrecht","vak":"financieel","uren":[36,36],"vorm":"hybride","niveau":"HBO","sal":[3516,5021],"omgeving":"team","sluit":"2026-11-15","skills":["Klantcontact","Engels"],"sector":"commercieel","grootte":"groot","branche":"finance","url":"https://rabobank.jobs/nl/vacature/client-support-officer-credit-control/JR_00146475/"},
-{"id":"rabo-ai-engineer","titel":"AI Engineer – Cloud","org":"Rabobank","plaats":"Utrecht","regio":"Utrecht","vak":"ict","uren":[36,36],"vorm":"hybride","niveau":null,"sal":[4105,5862],"omgeving":null,"sluit":null,"skills":["Python","AWS","Terraform","Azure DevOps"],"sector":"commercieel","grootte":"groot","branche":"finance","url":"https://rabobank.jobs/nl/vacature/ai-engineer-cloud/JR_00146124/"},
-{"id":"rabo-content","titel":"Platform Content Strateeg","org":"Rabobank","plaats":"Utrecht","regio":"Utrecht","vak":"creatief","uren":[36,36],"vorm":"hybride","niveau":null,"sal":[5030,7183],"omgeving":"team","sluit":"2026-11-11","skills":["SEO","Stakeholdermanagement","Scrum"],"sector":"commercieel","grootte":"groot","branche":"finance","url":"https://rabobank.jobs/nl/vacature/platform-content-strateeg/JR_00146420/"},
-{"id":"rabo-traineeship","titel":"Rabobank Traineeship – Retail Banking","org":"Rabobank","plaats":"Utrecht","regio":"Utrecht","vak":"commercieel","uren":[36,36],"vorm":"hybride","niveau":"HBO","sal":[3516,5021],"omgeving":null,"sluit":"2026-11-11","skills":["Engels"],"sector":"commercieel","grootte":"groot","branche":"finance","url":"https://rabobank.jobs/nl/vacature/rabobank-traineeship-retail-banking/JR_00147297/"},
-{"id":"abn-trainee-cash","titel":"Trainee Sales Consultant Cash Management","org":"ABN AMRO","plaats":"Amsterdam","regio":"Noord-Holland","vak":"commercieel","uren":null,"vorm":null,"niveau":null,"sal":[3528,5041],"omgeving":null,"sluit":null,"skills":[],"sector":"commercieel","grootte":"groot","branche":"finance","url":"https://werkenbijabnamro.nl/en/vacancy/8401/trainee-sales-consultant-cash-management-noord-holland-1"},
-{"id":"tonys-creative-traffic","titel":"Creative Traffic Manager","org":"Tony's Chocolonely","plaats":"Amsterdam","regio":"Noord-Holland","vak":"creatief","uren":null,"vorm":"hybride","niveau":null,"sal":[4475,5633],"omgeving":"team","sluit":null,"skills":["Projectmanagement","Stakeholdermanagement"],"sector":"commercieel","grootte":null,"branche":"food","url":"https://jobs.tonyschocolonely.com/o/creative-traffic-manager"},
-{"id":"tonys-financial-control","titel":"Manager Financial Control Open Chain","org":"Tony's Chocolonely","plaats":"Amsterdam","regio":"Noord-Holland","vak":"financieel","uren":[36,40],"vorm":"hybride","niveau":"HBO","sal":[7330,8102],"omgeving":"team","sluit":null,"skills":["Controlling","Leidinggeven","Engels"],"sector":"commercieel","grootte":null,"branche":"food","url":"https://jobs.tonyschocolonely.com/o/manager-financial-control-open-chain"},
-{"id":"tonys-people-partner","titel":"People Partner Bean to Bar","org":"Tony's Chocolonely","plaats":"Amsterdam","regio":"Noord-Holland","vak":"hr","uren":null,"vorm":"hybride","niveau":null,"sal":[5864,7407],"omgeving":"team","sluit":null,"skills":["Arbeidsrecht","Excel","Engels"],"sector":"commercieel","grootte":null,"branche":"food","url":"https://jobs.tonyschocolonely.com/o/people-partner-bean-to-bar"},
-{"id":"tgtg-kam","titel":"Key Account Manager","org":"Too Good To Go","plaats":"Amsterdam","regio":"Noord-Holland","vak":"commercieel","uren":[40,40],"vorm":"hybride","niveau":null,"sal":null,"omgeving":null,"sluit":null,"skills":["Sales","Data-analyse","Stakeholdermanagement"],"sector":"commercieel","grootte":"groot","branche":"food","url":"https://job-boards.greenhouse.io/toogoodtogo/jobs/7737635003"},
-{"id":"tgtg-insights","titel":"Commercial Insights Analyst","org":"Too Good To Go","plaats":"Amsterdam","regio":"Noord-Holland","vak":"ict","uren":null,"vorm":"hybride","niveau":null,"sal":null,"omgeving":"team","sluit":null,"skills":["SQL","Salesforce","Data-analyse","Engels"],"sector":"commercieel","grootte":"groot","branche":"food","url":"https://job-boards.greenhouse.io/toogoodtogo/jobs/7621615003"},
-{"id":"tgtg-sales-analytical","titel":"Sales Analytical Consultant (Nederlandstalig)","org":"Too Good To Go","plaats":"Amsterdam","regio":"Noord-Holland","vak":"commercieel","uren":null,"vorm":"hybride","niveau":null,"sal":null,"omgeving":"team","sluit":null,"skills":["Data-analyse","SQL","Engels"],"sector":"commercieel","grootte":"groot","branche":"food","url":"https://job-boards.greenhouse.io/toogoodtogo/jobs/7525105003"},
-{"id":"dept-creative-strategist","titel":"Senior Creative Strategist","org":"DEPT","plaats":"Amsterdam","regio":"Noord-Holland","vak":"creatief","uren":null,"vorm":"hybride","niveau":null,"sal":null,"omgeving":"team","sluit":null,"skills":["Social media","Engels"],"sector":"commercieel","grootte":"groot","branche":"media","url":"https://job-boards.greenhouse.io/dept/jobs/7699467"},
-{"id":"dept-new-business","titel":"New Business Manager","org":"DEPT","plaats":"Amsterdam","regio":"Noord-Holland","vak":"commercieel","uren":null,"vorm":"hybride","niveau":null,"sal":null,"omgeving":"team","sluit":null,"skills":["Sales","CRM","Engels"],"sector":"commercieel","grootte":"groot","branche":"media","url":"https://job-boards.greenhouse.io/dept/jobs/7763026"},
-{"id":"dept-digital-strategist","titel":"Senior Digital Strategist","org":"DEPT","plaats":"Amsterdam","regio":"Noord-Holland","vak":"commercieel","uren":null,"vorm":"hybride","niveau":null,"sal":null,"omgeving":"team","sluit":null,"skills":["Stakeholdermanagement","Engels"],"sector":"commercieel","grootte":"groot","branche":"media","url":"https://job-boards.greenhouse.io/dept/jobs/7382854"}]}
+{"bijgewerkt":"2026-11-03","vacatures":[{"id":"ams-coord-groen","titel":"Coördinator Groen","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"overheid","uren":[36,40],"vorm":"hybride","niveau":"MBO","sal":[3206,4499],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["Leidinggeven","Rijbewijs B"],"sluit":"2026-11-16","url":"https://werkenbij.amsterdam.nl/vacatures/coordinator-groen-d235d3aa-3001-4f30-a91b-5521f973840f","ervaring":4,"eisen":[{"t":"Ervaring met aansturen en coachen van een team","h":1,"k":"Leidinggeven"},{"t":"Kennis van de stad en haar gebieden","h":1},{"t":"Rijbewijs B","h":1,"k":"Rijbewijs B"},{"t":"Recente VOG","h":1}]},
+{"id":"ams-verkeersontwerper","titel":"(Junior) Verkeersontwerper","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"techniek","uren":[32,36],"vorm":"hybride","niveau":"HBO","sal":[3568,5096],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["CAD-software","Microstation","Verkeerskunde"],"sluit":"2026-11-22","url":"https://werkenbij.amsterdam.nl/vacatures/-junior-verkeersontwerper-55a38e89-7180-4676-b865-f62c7a072740","ervaring":null,"eisen":[{"t":"Hbo in technische of ruimtelijke richting","h":1},{"t":"Ervaring met CAD-software","h":1,"k":"CAD-software"},{"t":"Ervaring met Microstation","h":0,"k":"Microstation"},{"t":"Verkeersveiligheid kunnen beoordelen","h":1,"k":"Verkeerskunde"}]},
+{"id":"ams-monteur-elektro","titel":"1e monteur elektrotechniek","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"techniek","uren":[32,36],"vorm":"locatie","niveau":"MBO","sal":[2840,4015],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["Elektrotechniek","VCA","Hydrauliek","Rijbewijs BE","Zwemdiploma A+B"],"sluit":"2026-12-31","url":"https://werkenbij.amsterdam.nl/vacatures/1e-monteur-elektrotechniek-d7deefec-0f7c-4d36-9b6b-51d37de9827c","ervaring":null,"eisen":[{"t":"Mbo-4 elektrotechniek","h":1,"k":"Elektrotechniek"},{"t":"Ruime ervaring met installaties van bruggen en sluizen","h":1},{"t":"VCA-certificaat","h":1,"k":"VCA"},{"t":"Kennis van hydrauliek en NEN 3140","h":1,"k":"Hydrauliek"},{"t":"Rijbewijs BE","h":1,"k":"Rijbewijs BE"},{"t":"Zwemdiploma A en B","h":1,"k":"Zwemdiploma A+B"}]},
+{"id":"ams-monteur-wtb","titel":"1e monteur werktuigbouw","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"techniek","uren":[32,36],"vorm":"locatie","niveau":"MBO","sal":[2840,4015],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["Werktuigbouw","VCA","Lasdiploma","Hydrauliek","Rijbewijs BE"],"sluit":"2026-11-27","url":"https://werkenbij.amsterdam.nl/vacatures/1e-monteur-werktuigbouw-6ee486de-8df3-40d9-b344-3c98c86544a4","ervaring":null,"eisen":[{"t":"Mbo-4 werktuigbouwkunde","h":1,"k":"Werktuigbouw"},{"t":"VCA-certificaat","h":1,"k":"VCA"},{"t":"Diploma elektrisch lassen","h":1,"k":"Lasdiploma"},{"t":"Ervaring met bruggen en sluizen","h":1},{"t":"Hydrauliek en technische tekeningen lezen","h":1,"k":"Hydrauliek"},{"t":"Rijbewijs BE en zwemdiploma A en B","h":1,"k":"Rijbewijs BE"}]},
+{"id":"ams-jongerenadviseur","titel":"Jongerenadviseur dak- en thuisloze jongeren","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[32,36],"vorm":"hybride","niveau":"HBO","sal":[3568,5096],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["Jeugdzorg"],"sluit":"2026-11-08","url":"https://werkenbij.amsterdam.nl/vacatures/jongerenadviseur-dak-en-thuisloze-jongeren-16-27-jaar-0b30975a-a502-4d41-a371-66027901530b","ervaring":2,"eisen":[{"t":"Ervaring met begeleiden van jongeren met meerdere problemen","h":1,"k":"Jeugdzorg"},{"t":"Samenwerken met zorg-, schuld- en onderwijspartners","h":1},{"t":"Recente VOG","h":1}]},
+{"id":"ams-veilig-thuis","titel":"Medewerker Veilig Thuis","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[32,36],"vorm":"hybride","niveau":"HBO","sal":[3824,5624],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["SKJ-registratie","Jeugdzorg","Rijbewijs B"],"sluit":"2026-11-15","url":"https://werkenbij.amsterdam.nl/vacatures/medewerker-veilig-thuis-44648be5-2a88-4846-8475-1e6ca613b8a6","ervaring":null,"eisen":[{"t":"Hbo Social Work, MWD of Pedagogiek","h":1},{"t":"SKJ-registratie","h":1,"k":"SKJ-registratie"},{"t":"Werkervaring met huiselijk geweld of kindermishandeling","h":1,"k":"Jeugdzorg"},{"t":"Rijbewijs","h":1,"k":"Rijbewijs B"}]},
+{"id":"aumc-reuma","titel":"Gespecialiseerd verpleegkundige polikliniek Reumatologie","org":"Amsterdam UMC","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[24,32],"vorm":"locatie","niveau":"HBO","sal":[3171,4492],"omgeving":"team","sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["BIG-registratie","Engels","Patiëntenzorg"],"sluit":"2026-11-24","url":"https://werkenbij.amsterdamumc.org/nl/vacatures/zorg/gespecialiseerd-verpleegkundige-polikliniek-reumatologie","ervaring":null,"eisen":[{"t":"Hbo-verpleegkunde met BIG-registratie","h":1,"k":"BIG-registratie"},{"t":"Goed Nederlands en Engels","h":1,"k":"Engels"},{"t":"Ervaring in de reumatologie","h":0},{"t":"Werkervaring als verpleegkundige","h":0,"k":"Patiëntenzorg"}]},
+{"id":"aumc-ccu","titel":"Cardiac Care (CCU) verpleegkundige","org":"Amsterdam UMC","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[24,36],"vorm":"locatie","niveau":"MBO","sal":[4185,5499],"omgeving":"team","sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["BIG-registratie","CCU-aantekening","Acute zorg","IC/PACU-opleiding"],"sluit":null,"url":"https://werkenbij.amsterdamumc.org/nl/vacatures/zorg/cardiac-care-ccu-verpleegkundige-1","ervaring":null,"eisen":[{"t":"BIG-registratie als verpleegkundige","h":1,"k":"BIG-registratie"},{"t":"CCU-aantekening","h":1,"k":"CCU-aantekening"},{"t":"Ervaring met acute, complexe zorg","h":1,"k":"Acute zorg"},{"t":"Afgeronde IC-vervolgopleiding","h":0,"k":"IC/PACU-opleiding"}]},
+{"id":"aumc-ccu-opl","titel":"Cardiac Care (CCU) verpleegkundige in opleiding","org":"Amsterdam UMC","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[32,36],"vorm":"locatie","niveau":"MBO","sal":[3171,4492],"omgeving":"team","sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["BIG-registratie","Patiëntenzorg"],"sluit":null,"url":"https://werkenbij.amsterdamumc.org/nl/vacatures/zorg/cardiac-care-ccu-verpleegkundige-in-opleiding-1","ervaring":null,"eisen":[{"t":"Diploma verpleegkunde (mbo-V of hbo-V)","h":1},{"t":"BIG-registratie","h":1,"k":"BIG-registratie"},{"t":"VOG bij indiensttreding","h":1},{"t":"Een jaar klinische werkervaring","h":0,"k":"Patiëntenzorg"}]},
+{"id":"breman-monteur-w","titel":"Leidinggevend monteur W / Uitvoerder W","org":"Breman","plaats":"Heemskerk","regio":"Noord-Holland","vak":"techniek","uren":[32,40],"vorm":"locatie","niveau":null,"sal":null,"omgeving":"team","sector":"commercieel","grootte":"groot","branche":"bouw","skills":["Installatietechniek","Leidinggeven","VCA","Rijbewijs BE"],"sluit":null,"url":"https://www.breman.nl/werken-bij/vacature/leidinggevend-monteur-w-uitvoerder-w-regio-haarlem/","ervaring":null,"eisen":[{"t":"Ruime installatie-ervaring met E- of W-diploma","h":1,"k":"Installatietechniek"},{"t":"Ervaring als leidinggevende","h":0,"k":"Leidinggeven"},{"t":"VCA-basis","h":1,"k":"VCA"},{"t":"Rijbewijs BE","h":1,"k":"Rijbewijs BE"}]},
+{"id":"coolblue-ks","titel":"Klantenservice medewerker","org":"Coolblue","plaats":"Rotterdam","regio":"Zuid-Holland","vak":"klant","uren":[20,40],"vorm":"hybride","niveau":"MBO","sal":null,"salTekst":"€ 15 per uur","omgeving":"team","sector":"commercieel","grootte":"groot","branche":"retail","skills":["Klantcontact","Telefoon","Chat & e-mail"],"sluit":null,"url":"https://www.coolblue.nl/vacatures/klantenservice-medewerker","ervaring":null,"eisen":[{"t":"Vloeiend Nederlands","h":1},{"t":"Snel werken met verschillende systemen","h":1},{"t":"Minimaal 18 jaar","h":1},{"t":"Beschikbaar op avonden en om de week in het weekend","h":1}]},
+{"id":"coolblue-am","titel":"Junior Accountmanager Binnendienst","org":"Coolblue","plaats":"Rotterdam","regio":"Zuid-Holland","vak":"commercieel","uren":[40,40],"vorm":"hybride","niveau":"MBO","sal":null,"omgeving":"team","sector":"commercieel","grootte":"groot","branche":"retail","skills":["Sales"],"sluit":null,"url":"https://www.coolblue.nl/vacatures/accountmanager-coolblue-zakelijk","ervaring":null,"eisen":[{"t":"Minimaal mbo-4","h":1},{"t":"Commerciële instelling","h":1,"k":"Sales"},{"t":"Ervaring met B2B-verkoop","h":0}]},
+{"id":"coolblue-cjs","titel":"Customer Journey Specialist","org":"Coolblue","plaats":"Rotterdam","regio":"Zuid-Holland","vak":"ict","uren":[40,40],"vorm":"hybride","niveau":"HBO","sal":null,"omgeving":"team","sector":"commercieel","grootte":"groot","branche":"retail","skills":["UX","Engels"],"sluit":null,"url":"https://www.coolblue.nl/vacatures/customer-journey-specialist","ervaring":2,"eisen":[{"t":"Hbo of wo afgerond","h":1},{"t":"Ervaring met onderzoek, UX-design of CRO","h":1,"k":"UX"},{"t":"Vloeiend Nederlands en Engels","h":1,"k":"Engels"}]},
+{"id":"utr-or-secretaris","titel":"Ambtelijk secretaris OR","org":"Gemeente Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"overheid","uren":[32,36],"vorm":"hybride","niveau":"HBO","sal":[3568,5096],"omgeving":"zelfstandig","sector":"overheid","grootte":"groot","branche":"publiek","skills":["Notuleren","Wet- en regelgeving"],"sluit":"2026-11-14","url":"https://www.werkenbijutrecht.nl/vacature/ambtelijk-secretaris-or-1344929/","ervaring":null,"eisen":[{"t":"Ervaring met ondersteunen van medezeggenschap","h":1},{"t":"Complexe informatie helder uitleggen","h":1},{"t":"Ervaring in een grote organisatie","h":0}]},
+{"id":"utr-assetbeheer","titel":"Coördinator assetbeheer inzamelvoorzieningen","org":"Gemeente Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"techniek","uren":[32,36],"vorm":"hybride","niveau":"HBO","sal":[3824,5624],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["Data-analyse"],"sluit":"2026-11-14","url":"https://www.werkenbijutrecht.nl/vacature/co%c3%b6rdinator-assetbeheer-inzamelvoorzieningen-1338517/","ervaring":null,"eisen":[{"t":"Ruime ervaring met procesaansturing in logistiek of techniek","h":1},{"t":"Cijfers analyseren en omzetten in verbeteringen","h":1,"k":"Data-analyse"},{"t":"Coachen en samenwerken","h":1}]},
+{"id":"utr-informatiebeheer","titel":"Adviseur Informatiebeheer","org":"Gemeente Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"ict","uren":[32,36],"vorm":"hybride","niveau":"HBO","sal":[3824,5624],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["Archiefwet","Informatiebeheer"],"sluit":"2026-11-19","url":"https://www.werkenbijutrecht.nl/vacature/adviseur-informatiebeheer-1344755/","ervaring":null,"eisen":[{"t":"Praktijkervaring met archief- en openbaarheidswetgeving","h":1,"k":"Archiefwet"},{"t":"Gevoel voor data, IT en processen","h":1,"k":"Informatiebeheer"},{"t":"Kennis van zaakgericht werken en Common Ground","h":0}]},
+{"id":"utr-verkeerskundige","titel":"Senior Verkeerskundige","org":"Gemeente Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"techniek","uren":[32,36],"vorm":"hybride","niveau":"HBO","sal":[5369,7253],"omgeving":"team","sector":"overheid","grootte":"groot","branche":"publiek","skills":["Verkeerskunde"],"sluit":"2026-11-21","url":"https://www.werkenbijutrecht.nl/vacature/senior-verkeerskundige-1323981/","ervaring":null,"eisen":[{"t":"Ruime ervaring als verkeerskundige of adviseur","h":1,"k":"Verkeerskunde"},{"t":"Ervaring met advies bij gebiedsontwikkeling","h":1},{"t":"Opleiding in mobiliteit of planologie","h":0},{"t":"Ervaring bij een overheid","h":0}]},
+{"id":"umcu-apotheek","titel":"Apothekersassistent inkoop geneesmiddelenlogistiek","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"zorg","uren":[32,36],"vorm":"locatie","niveau":"MBO","sal":[3126,4182],"omgeving":null,"sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["Apothekersassistent-diploma","Voorraadbeheer"],"sluit":"2026-11-17","url":"https://www.werkenbijumcutrecht.nl/vacatures/apothekersassistent-inkoop-geneesmiddelenlogistiek-2026-7546","ervaring":null,"eisen":[{"t":"Mbo-diploma apothekersassistent","h":1,"k":"Apothekersassistent-diploma"},{"t":"Ervaring in apotheek of farmacie","h":0},{"t":"Kennis van inkoop en logistiek","h":0,"k":"Voorraadbeheer"},{"t":"Goed Nederlands","h":1}]},
+{"id":"umcu-secretarieel","titel":"Medisch secretarieel medewerker cardiologie","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"admin","uren":[32,36],"vorm":null,"niveau":"MBO","sal":[2744,3636],"omgeving":null,"sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["Medische terminologie"],"sluit":"2026-11-30","url":"https://www.werkenbijumcutrecht.nl/vacatures/administratief-secretarieel/medisch-secretarieel-medewerker-cardiologie-aangeboren-hartafwijkingen-2026-7377","ervaring":null,"eisen":[{"t":"Minimaal havo of mbo","h":1},{"t":"Ziekenhuiservaring of medische kennis","h":1,"k":"Medische terminologie"},{"t":"Organisatorisch sterk en nauwkeurig","h":1}]},
+{"id":"umcu-pacu","titel":"PACU/Recoveryverpleegkundige volwassenen","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"zorg","uren":[18,36],"vorm":"locatie","niveau":null,"sal":[3626,5134],"omgeving":"team","sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["IC/PACU-opleiding"],"sluit":null,"url":"https://www.werkenbijumcutrecht.nl/vacatures/recovery-verpleegkundige/pacu-recoveryverpleegkundige-volwassenen-2026-6805","ervaring":null,"eisen":[{"t":"Afgeronde PACU- of IC-opleiding","h":1,"k":"IC/PACU-opleiding"},{"t":"Bereid tot onregelmatige diensten","h":1}]},
+{"id":"umcu-leerling-mbo","titel":"Leerling verpleegkundige mbo","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"zorg","uren":[32,36],"vorm":"locatie","niveau":"MBO","sal":null,"omgeving":"team","sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["Patiëntenzorg"],"sluit":"2027-03-01","url":"https://www.werkenbijumcutrecht.nl/vacatures/opleidingsplekken/leerling-verpleegkundige-mbo-2026-7540","ervaring":null,"eisen":[{"t":"Havo- of mbo-4-diploma (elke richting)","h":1}]},
+{"id":"umcu-leerling-hbo","titel":"Leerling verpleegkundige hbo","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"zorg","uren":[32,36],"vorm":"locatie","niveau":"HBO","sal":null,"omgeving":"team","sector":"nonprofit","grootte":"groot","branche":"zorg","skills":["Patiëntenzorg"],"sluit":"2027-01-16","url":"https://www.werkenbijumcutrecht.nl/vacatures/opleidingsplekken/leerling-verpleegkundige-hbo-2026-7538","ervaring":null,"eisen":[{"t":"Hbo- of wo-diploma (elke richting)","h":1}]},
+{"id":"ey-digital-risk","titel":"(Senior) Consultant Digital Risk & Resilience","org":"EY","plaats":"Amsterdam","regio":"Noord-Holland","vak":"ict","uren":[32,40],"vorm":null,"niveau":null,"sal":null,"omgeving":null,"sluit":null,"skills":[],"sector":"commercieel","grootte":"groot","branche":"advies","url":"https://careers.ey.com/ey/job/Amsterdam-%28Senior%29-Consultant-Digital-Risk-&-Resilience-1083-HP/1452855133/","ervaring":null,"eisen":[]},
+{"id":"ey-inhouse-advocaat","titel":"Inhouse advocaat","org":"EY","plaats":"Rotterdam","regio":"Zuid-Holland","vak":"juridisch","uren":[40,40],"vorm":null,"niveau":null,"sal":null,"omgeving":null,"sluit":null,"skills":[],"sector":"commercieel","grootte":"groot","branche":"advies","url":"https://careers.ey.com/ey/job/Rotterdam-Inhouse-advocaat-3011-XZ/1452978933/","ervaring":null,"eisen":[]},
+{"id":"ey-bt-fs","titel":"(Senior) Consultant Business Transformation – Financial Services","org":"EY","plaats":"Amsterdam","regio":"Noord-Holland","vak":"financieel","uren":[40,40],"vorm":null,"niveau":null,"sal":null,"omgeving":null,"sluit":null,"skills":[],"sector":"commercieel","grootte":"groot","branche":"advies","url":"https://eyglobal.yello.co/jobs/eUNW7zVtCndE4anr-kZDKQ?job_board_id=c1riT--B2O-KySgYWsZO1Q","ervaring":null,"eisen":[]},
+{"id":"ey-real-estate","titel":"Consultant Real Estate | EY-Parthenon","org":"EY","plaats":"Amsterdam","regio":"Noord-Holland","vak":"financieel","uren":[40,40],"vorm":null,"niveau":null,"sal":null,"omgeving":null,"sluit":null,"skills":[],"sector":"commercieel","grootte":"groot","branche":"advies","url":"https://eyglobal.yello.co/jobs/a52VsdHYumo83e1FCSwA1g?job_board_id=c1riT--B2O-KySgYWsZO1Q","ervaring":null,"eisen":[]},
+{"id":"booking-risk","titel":"Security & Infrastructure Risk and Compliance Officer","org":"Booking.com","plaats":"Amsterdam","regio":"Noord-Holland","vak":"ict","uren":null,"vorm":null,"niveau":null,"sal":null,"omgeving":null,"sluit":null,"skills":[],"sector":"commercieel","grootte":"groot","branche":"tech","url":"https://jobs.booking.com/booking/jobs/30539?lang=en-us","ervaring":null,"eisen":[]},
+{"id":"booking-security","titel":"Senior Account Security Analyst I","org":"Booking.com","plaats":"Amsterdam","regio":"Noord-Holland","vak":"ict","uren":null,"vorm":null,"niveau":null,"sal":null,"omgeving":null,"sluit":null,"skills":[],"sector":"commercieel","grootte":"groot","branche":"tech","url":"https://jobs.booking.com/booking/jobs/30552?lang=en-us","ervaring":null,"eisen":[]},
+{"id":"picnic-bezorger","titel":"Bezorger","org":"Picnic","plaats":"Amsterdam","regio":"Noord-Holland","vak":"logistiek","uren":[16,40],"vorm":"locatie","niveau":null,"sal":null,"omgeving":"zelfstandig","sluit":null,"skills":["Rijbewijs B"],"sector":"commercieel","grootte":"groot","branche":"retail","url":"https://jobs.picnic.app/nl/vacatures/bezorger-amsterdam","salTekst":"€ 16,19 per uur (21+)","ervaring":null,"eisen":[{"t":"Rijbewijs B","h":1,"k":"Rijbewijs B"},{"t":"Minimaal 18 jaar","h":1},{"t":"Kratten van 20 kg kunnen tillen","h":1},{"t":"Nederlands of Engels","h":1}]},
+{"id":"picnic-buyer","titel":"Buyer","org":"Picnic","plaats":"Amsterdam","regio":"Noord-Holland","vak":"commercieel","uren":null,"vorm":null,"niveau":"WO","sal":null,"omgeving":"team","sluit":null,"skills":["Onderhandelen","Engels"],"sector":"commercieel","grootte":"groot","branche":"retail","url":"https://jobs.picnic.app/en/vacancies/JCJSKU6V/consumer/buyer/amsterdam/north-holland/netherlands","ervaring":1,"eisen":[{"t":"Masterdiploma (MSc)","h":1},{"t":"1–3 jaar ervaring in inkoop of category management","h":1},{"t":"Onderhandelen met leveranciers","h":1,"k":"Onderhandelen"},{"t":"Vloeiend Engels","h":1,"k":"Engels"}]},
+{"id":"picnic-ai-platform","titel":"AI Platform Engineer","org":"Picnic","plaats":"Amsterdam","regio":"Noord-Holland","vak":"ict","uren":null,"vorm":null,"niveau":"HBO","sal":null,"omgeving":"team","sluit":null,"skills":["Python","Kubernetes","CI/CD"],"sector":"commercieel","grootte":"groot","branche":"retail","url":"https://jobs.picnic.app/en/vacancies/J4RU8AM7/engineering/ai-platform-engineer/amsterdam/north-holland/netherlands","ervaring":null,"eisen":[{"t":"Bachelor of hoger in informatica of AI","h":1},{"t":"Python","h":1,"k":"Python"},{"t":"Kubernetes en containers","h":1,"k":"Kubernetes"},{"t":"CI/CD","h":1,"k":"CI/CD"}]},
+{"id":"picnic-category-agf","titel":"Category Manager AGF","org":"Picnic","plaats":"Amsterdam","regio":"Noord-Holland","vak":"commercieel","uren":null,"vorm":"locatie","niveau":"WO","sal":null,"omgeving":"team","sluit":null,"skills":["Excel","SQL","Engels"],"sector":"commercieel","grootte":"groot","branche":"retail","url":"https://jobs.picnic.app/nl/vacatures/JPLPHCLX/consumer/category-manager-agf/amsterdam/north-holland/netherlands","ervaring":null,"eisen":[{"t":"Master in bedrijfskunde, economie of supply chain","h":1},{"t":"Geavanceerd Excel","h":1,"k":"Excel"},{"t":"SQL of andere data-tools","h":0,"k":"SQL"},{"t":"Vloeiend Nederlands en Engels","h":1,"k":"Engels"}]},
+{"id":"picnic-analytics","titel":"Commercial & Analytics Projects – Mid-Level","org":"Picnic","plaats":"Amsterdam","regio":"Noord-Holland","vak":"ict","uren":null,"vorm":null,"niveau":"WO","sal":null,"omgeving":"team","sluit":null,"skills":["SQL","Python","Engels"],"sector":"commercieel","grootte":"groot","branche":"retail","url":"https://jobs.picnic.app/en/vacancies/JBL6X0KG/analytics/commercial-and-analytics-projects-mid-level/amsterdam/north-holland/netherlands","ervaring":null,"eisen":[{"t":"Master in econometrie, techniek, finance of wiskunde","h":1},{"t":"SQL (of zin om het te leren)","h":0,"k":"SQL"},{"t":"Python (of zin om het te leren)","h":0,"k":"Python"},{"t":"Nederlands en Engels","h":1,"k":"Engels"}]},
+{"id":"rabo-client-support","titel":"Client Support Officer – Credit Control","org":"Rabobank","plaats":"Utrecht","regio":"Utrecht","vak":"financieel","uren":[36,36],"vorm":"hybride","niveau":"HBO","sal":[3516,5021],"omgeving":"team","sluit":"2026-11-15","skills":["Klantcontact","Engels"],"sector":"commercieel","grootte":"groot","branche":"finance","url":"https://rabobank.jobs/nl/vacature/client-support-officer-credit-control/JR_00146475/","ervaring":1,"eisen":[{"t":"Hbo- of wo-denkniveau","h":1},{"t":"Minimaal 1 jaar ervaring met klantcontact","h":1,"k":"Klantcontact"},{"t":"Ervaring in bank of financiële dienstverlening","h":1},{"t":"Affiniteit met juridische zaken","h":1},{"t":"Vloeiend Nederlands en Engels","h":1,"k":"Engels"}]},
+{"id":"rabo-ai-engineer","titel":"AI Engineer – Cloud","org":"Rabobank","plaats":"Utrecht","regio":"Utrecht","vak":"ict","uren":[36,36],"vorm":"hybride","niveau":null,"sal":[4105,5862],"omgeving":null,"sluit":null,"skills":["AWS","Terraform","Python","Azure DevOps"],"sector":"commercieel","grootte":"groot","branche":"finance","url":"https://rabobank.jobs/nl/vacature/ai-engineer-cloud/JR_00146124/","ervaring":null,"eisen":[{"t":"AWS","h":1,"k":"AWS"},{"t":"Terraform","h":1,"k":"Terraform"},{"t":"Python","h":1,"k":"Python"},{"t":"Azure DevOps","h":1,"k":"Azure DevOps"}]},
+{"id":"rabo-content","titel":"Platform Content Strateeg","org":"Rabobank","plaats":"Utrecht","regio":"Utrecht","vak":"creatief","uren":[36,36],"vorm":"hybride","niveau":null,"sal":[5030,7183],"omgeving":"team","sluit":"2026-11-11","skills":["SEO","Stakeholdermanagement","Scrum"],"sector":"commercieel","grootte":"groot","branche":"finance","url":"https://rabobank.jobs/nl/vacature/platform-content-strateeg/JR_00146420/","ervaring":3,"eisen":[{"t":"3–5 jaar ervaring in contentstrategie of contentdesign","h":1},{"t":"SEO","h":1,"k":"SEO"},{"t":"Informatiearchitectuur en taxonomie","h":1},{"t":"Stakeholdermanagement","h":1,"k":"Stakeholdermanagement"},{"t":"Agile/Scrum","h":1,"k":"Scrum"}]},
+{"id":"rabo-traineeship","titel":"Rabobank Traineeship – Retail Banking","org":"Rabobank","plaats":"Utrecht","regio":"Utrecht","vak":"commercieel","uren":[36,36],"vorm":"hybride","niveau":"HBO","sal":[3516,5021],"omgeving":null,"sluit":"2026-11-11","skills":["Engels"],"sector":"commercieel","grootte":"groot","branche":"finance","url":"https://rabobank.jobs/nl/vacature/rabobank-traineeship-retail-banking/JR_00147297/","ervaring":null,"eisen":[{"t":"Hbo- of wo-diploma vóór 1 april 2027","h":1},{"t":"Goed Nederlands","h":1},{"t":"Trainingen in het Engels kunnen volgen","h":1,"k":"Engels"}]},
+{"id":"abn-trainee-cash","titel":"Trainee Sales Consultant Cash Management","org":"ABN AMRO","plaats":"Amsterdam","regio":"Noord-Holland","vak":"commercieel","uren":null,"vorm":null,"niveau":null,"sal":[3528,5041],"omgeving":null,"sluit":null,"skills":[],"sector":"commercieel","grootte":"groot","branche":"finance","url":"https://werkenbijabnamro.nl/en/vacancy/8401/trainee-sales-consultant-cash-management-noord-holland-1","ervaring":null,"eisen":[]},
+{"id":"tonys-creative-traffic","titel":"Creative Traffic Manager","org":"Tony's Chocolonely","plaats":"Amsterdam","regio":"Noord-Holland","vak":"creatief","uren":null,"vorm":"hybride","niveau":null,"sal":[4475,5633],"omgeving":"team","sluit":null,"skills":["Projectmanagement","Planning","Stakeholdermanagement"],"sector":"commercieel","grootte":null,"branche":"food","url":"https://jobs.tonyschocolonely.com/o/creative-traffic-manager","ervaring":10,"eisen":[{"t":"10+ jaar in creative operations of projectmanagement","h":1,"k":"Projectmanagement"},{"t":"Creatieve workflows en planning beheren","h":1,"k":"Planning"},{"t":"Stakeholdermanagement","h":1,"k":"Stakeholdermanagement"},{"t":"Ervaring met creatieve en projecttools","h":1}]},
+{"id":"tonys-financial-control","titel":"Manager Financial Control Open Chain","org":"Tony's Chocolonely","plaats":"Amsterdam","regio":"Noord-Holland","vak":"financieel","uren":[36,40],"vorm":"hybride","niveau":"HBO","sal":[7330,8102],"omgeving":"team","sluit":null,"skills":["Controlling","ERP","Leidinggeven","Engels"],"sector":"commercieel","grootte":null,"branche":"food","url":"https://jobs.tonyschocolonely.com/o/manager-financial-control-open-chain","ervaring":null,"eisen":[{"t":"Bachelor of master in finance of accounting","h":1},{"t":"Ervaring in financial control, audit of FP&A","h":1,"k":"Controlling"},{"t":"ERP-systemen zoals Business Central","h":1,"k":"ERP"},{"t":"Leidinggeven en coachen","h":1,"k":"Leidinggeven"},{"t":"Vloeiend Engels en Nederlands","h":1,"k":"Engels"}]},
+{"id":"tonys-people-partner","titel":"People Partner Bean to Bar","org":"Tony's Chocolonely","plaats":"Amsterdam","regio":"Noord-Holland","vak":"hr","uren":null,"vorm":"hybride","niveau":null,"sal":[5864,7407],"omgeving":"team","sluit":null,"skills":["Arbeidsrecht","Excel","Engels"],"sector":"commercieel","grootte":null,"branche":"food","url":"https://jobs.tonyschocolonely.com/o/people-partner-bean-to-bar","ervaring":6,"eisen":[{"t":"6+ jaar als HR-adviseur of business partner","h":1},{"t":"Kennis van Nederlands arbeidsrecht","h":1,"k":"Arbeidsrecht"},{"t":"Ervaring met complexe arbeidszaken","h":1},{"t":"HR-systemen, Excel en rapportages","h":1,"k":"Excel"},{"t":"Vloeiend Engels en Nederlands","h":1,"k":"Engels"}]},
+{"id":"tgtg-kam","titel":"Key Account Manager","org":"Too Good To Go","plaats":"Amsterdam","regio":"Noord-Holland","vak":"commercieel","uren":[40,40],"vorm":"hybride","niveau":null,"sal":null,"omgeving":null,"sluit":null,"skills":["Sales","Data-analyse","Stakeholdermanagement"],"sector":"commercieel","grootte":"groot","branche":"food","url":"https://job-boards.greenhouse.io/toogoodtogo/jobs/7737635003","ervaring":null,"eisen":[{"t":"Bewezen ervaring in key account management","h":1,"k":"Sales"},{"t":"Ervaring in retail","h":1},{"t":"Sales- en financiële data analyseren","h":1,"k":"Data-analyse"},{"t":"Stakeholdermanagement tot directieniveau","h":1,"k":"Stakeholdermanagement"}]},
+{"id":"tgtg-insights","titel":"Commercial Insights Analyst","org":"Too Good To Go","plaats":"Amsterdam","regio":"Noord-Holland","vak":"ict","uren":null,"vorm":"hybride","niveau":null,"sal":null,"omgeving":"team","sluit":null,"skills":["SQL","Salesforce","BI-tools","Engels"],"sector":"commercieel","grootte":"groot","branche":"food","url":"https://job-boards.greenhouse.io/toogoodtogo/jobs/7621615003","ervaring":null,"eisen":[{"t":"SQL","h":1,"k":"SQL"},{"t":"Salesforce","h":1,"k":"Salesforce"},{"t":"BI-tools zoals Looker","h":1,"k":"BI-tools"},{"t":"Vloeiend Nederlands en Engels","h":1,"k":"Engels"}]},
+{"id":"tgtg-sales-analytical","titel":"Sales Analytical Consultant (Nederlandstalig)","org":"Too Good To Go","plaats":"Amsterdam","regio":"Noord-Holland","vak":"commercieel","uren":null,"vorm":"hybride","niveau":null,"sal":null,"omgeving":"team","sluit":null,"skills":["Data-analyse","Engels","SQL"],"sector":"commercieel","grootte":"groot","branche":"food","url":"https://job-boards.greenhouse.io/toogoodtogo/jobs/7525105003","ervaring":null,"eisen":[{"t":"Sterk analytisch en vaardig met data","h":1,"k":"Data-analyse"},{"t":"Datavisualisatie","h":1},{"t":"Vloeiend Nederlands en Engels","h":1,"k":"Engels"},{"t":"SQL, Salesforce of Looker","h":0,"k":"SQL"}]},
+{"id":"dept-creative-strategist","titel":"Senior Creative Strategist","org":"DEPT","plaats":"Amsterdam","regio":"Noord-Holland","vak":"creatief","uren":null,"vorm":"hybride","niveau":null,"sal":null,"omgeving":"team","sluit":null,"skills":["Social media","Engels"],"sector":"commercieel","grootte":"groot","branche":"media","url":"https://job-boards.greenhouse.io/dept/jobs/7699467","ervaring":null,"eisen":[{"t":"Strategie ontwikkelen en klanten briefen","h":1},{"t":"Onderzoek en doelgroepinzicht","h":1},{"t":"Kennis van cultuur en social media","h":1,"k":"Social media"},{"t":"Vloeiend Nederlands en Engels","h":1,"k":"Engels"}]},
+{"id":"dept-new-business","titel":"New Business Manager","org":"DEPT","plaats":"Amsterdam","regio":"Noord-Holland","vak":"commercieel","uren":null,"vorm":"hybride","niveau":null,"sal":null,"omgeving":"team","sluit":null,"skills":["Sales","CRM","Engels"],"sector":"commercieel","grootte":"groot","branche":"media","url":"https://job-boards.greenhouse.io/dept/jobs/7763026","ervaring":null,"eisen":[{"t":"Ervaring in business development of adviserende verkoop","h":1,"k":"Sales"},{"t":"Projectmatige diensten verkopen","h":1},{"t":"Pipelinebeheer in een CRM zoals Salesforce","h":1,"k":"CRM"},{"t":"Vloeiend Nederlands en Engels","h":1,"k":"Engels"}]},
+{"id":"dept-digital-strategist","titel":"Senior Digital Strategist","org":"DEPT","plaats":"Amsterdam","regio":"Noord-Holland","vak":"commercieel","uren":null,"vorm":"hybride","niveau":null,"sal":null,"omgeving":"team","sluit":null,"skills":["Engels"],"sector":"commercieel","grootte":"groot","branche":"media","url":"https://job-boards.greenhouse.io/dept/jobs/7382854","ervaring":null,"eisen":[{"t":"Ervaring met digitale strategie","h":1},{"t":"Ervaring bij een bureau of consultancy","h":1},{"t":"Workshops begeleiden","h":1},{"t":"Engels en Nederlands (of Deens)","h":1,"k":"Engels"}]}]}
 </script>
 
 <script>
@@ -382,10 +421,10 @@ const WERKVORM={locatie:"Op locatie",hybride:"Hybride",remote:"Thuiswerk"};
 const NIVEAUS=["MO","MBO","HBO","WO"];
 const NIVLABEL={MO:"Middelbare school",MBO:"MBO",HBO:"HBO",WO:"WO"};
 const SKILLS={
- zorg:["Patiëntenzorg","BIG-registratie","Acute zorg","Medicatie","Begeleiden","Jeugdzorg","Rapporteren"],
- ict:["SQL","Python","Excel","Power BI","Data-analyse","JavaScript","AWS","Kubernetes","UX","Scrum","Informatiebeheer"],
- techniek:["Elektrotechniek","Werktuigbouw","Installatietechniek","VCA","Verkeerskunde","AutoCAD","Leidinggeven"],
- overheid:["Beleidsadvies","Wet- en regelgeving","Projectmanagement","Stakeholdermanagement","Notuleren"],
+ zorg:["Patiëntenzorg","BIG-registratie","SKJ-registratie","CCU-aantekening","IC/PACU-opleiding","Acute zorg","Medicatie","Apothekersassistent-diploma","Begeleiden","Jeugdzorg","Rapporteren"],
+ ict:["SQL","Python","Excel","BI-tools","Data-analyse","JavaScript","AWS","Kubernetes","CI/CD","Terraform","Azure DevOps","UX","Scrum","Informatiebeheer"],
+ techniek:["Elektrotechniek","Werktuigbouw","Installatietechniek","Hydrauliek","VCA","Lasdiploma","CAD-software","Microstation","Verkeerskunde","Leidinggeven"],
+ overheid:["Beleidsadvies","Wet- en regelgeving","Archiefwet","Informatiebeheer","Projectmanagement","Stakeholdermanagement","Notuleren"],
  klant:["Klantcontact","Telefoon","Chat & e-mail","Duits","Klachtafhandeling"],
  commercieel:["Sales","Klantcontact","CRM","Salesforce","Marketing","Onderhandelen","Stakeholdermanagement","Social media"],
  admin:["Secretariaat","Planning","Notuleren","Medische terminologie","Office"],
@@ -393,10 +432,10 @@ const SKILLS={
  onderwijs:["Lesgeven","Didactiek","Mentoraat","Lesbevoegdheid"],
  creatief:["Figma","Adobe","UX","SEO","Copywriting","Social media","Fotografie"],
  horeca:["Gastvrijheid","Koken","Kassa","Barista"],
- financieel:["Boekhouden","Excel","Rapportages","Controlling","Data-analyse"],
+ financieel:["Boekhouden","Excel","Rapportages","Controlling","ERP","Data-analyse"],
  juridisch:["Wet- en regelgeving","Contracten","Juridisch advies","Procederen"],
  hr:["Arbeidsrecht","Recruitment","Excel","Coaching"]};
-const ALGEMEEN=["Engels","Rijbewijs B","Leidinggeven","Planning","Projectmanagement"];
+const ALGEMEEN=["Engels","Rijbewijs B","Rijbewijs BE","Zwemdiploma A+B","Leidinggeven","Planning","Projectmanagement","Stakeholdermanagement"];
 const PROV={Amsterdam:"Noord-Holland",Haarlem:"Noord-Holland",Heemskerk:"Noord-Holland",Zaandam:"Noord-Holland",Hilversum:"Noord-Holland",Rotterdam:"Zuid-Holland","Den Haag":"Zuid-Holland",Leiden:"Zuid-Holland",Delft:"Zuid-Holland",Dordrecht:"Zuid-Holland",Utrecht:"Utrecht",Amersfoort:"Utrecht",Almere:"Flevoland",Lelystad:"Flevoland"};
 const STEDEN=["Amsterdam","Rotterdam","Den Haag","Utrecht","Haarlem","Leiden","Almere","Amersfoort"];
 
@@ -427,7 +466,7 @@ function parseOpl(t){
 }
 
 // Antwoorden (per bezoeker bewaard in deze browser)
-const LEEG=()=>({vak:[],opl:{tekst:"",niveau:null,hand:false,richting:[]},skills:[],uren:null,steden:[],vorm:null,sector:[],grootte:null,branche:[],sal:null,omgeving:null});
+const LEEG=()=>({vak:[],opl:{tekst:"",niveau:null,hand:false,richting:[]},skills:[],jaren:null,uren:null,steden:[],vorm:null,sector:[],grootte:null,branche:[],sal:null,omgeving:null});
 let A=LEEG(), stap=0, klaar=false;
 try{const s=JSON.parse(localStorage.getItem("valcature-v1")||"null");if(s&&s.A){A=Object.assign(LEEG(),s.A);klaar=!!s.klaar;}}catch(e){}
 const save=()=>{try{localStorage.setItem("valcature-v1",JSON.stringify({A,klaar}))}catch(e){}};
@@ -435,7 +474,8 @@ const save=()=>{try{localStorage.setItem("valcature-v1",JSON.stringify({A,klaar}
 const STEPS=[
  {kicker:"Vakgebied",titel:"In welk vakgebied wil je werken?",hint:"Kies er maximaal drie.",groups:[{key:"vak",multi:true,max:3,opts:Object.entries(VAKKEN).map(([v,l])=>({v,l}))}],ok:()=>A.vak.length>0},
  {kicker:"Opleiding",titel:"Wat heb je gestudeerd?",hint:"Typ het in je eigen woorden. Wij lezen mee.",custom:"opl",ok:()=>!!A.opl.niveau},
- {kicker:"Vaardigheden",titel:"Wat kun je al?",hint:"Kies wat je beheerst. Geen idee? Sla deze vraag gerust over.",custom:"skills",ok:()=>true},
+ {kicker:"Vaardigheden",titel:"Wat kun je al?",hint:"Kies alles wat je beheerst, ook diploma's en rijbewijs. Vacatures met een harde eis die je mist, zakken flink in je score.",custom:"skills",ok:()=>true},
+ {kicker:"Werkervaring",titel:"Hoeveel jaar werkervaring heb je?",hint:"Betaald werk in je vak. Bijbanen tellen half.",groups:[{key:"jaren",big:true,opts:[{v:"0",l:"Starter",s:"Net klaar of nog geen ervaring"},{v:"2",l:"1 – 2 jaar"},{v:"4",l:"3 – 5 jaar"},{v:"7",l:"6 – 9 jaar"},{v:"10",l:"10 jaar of meer"}]}],ok:()=>A.jaren!==null},
  {kicker:"Uren",titel:"Parttime of fulltime?",groups:[{key:"uren",big:true,opts:[{v:"part",l:"Parttime",s:"Tot 32 uur per week"},{v:"full",l:"Fulltime",s:"36 tot 40 uur"},{v:"any",l:"Maakt niet uit",s:"Allebei goed"}]}],ok:()=>!!A.uren},
  {kicker:"Locatie",titel:"Waar wil je werken?",groups:[{key:"steden",label:"Stad",multi:true,any:true,opts:STEDEN.map(s=>({v:s,l:s})).concat([{v:"any",l:"Maakt niet uit"}])},{key:"vorm",label:"Thuiswerken",opts:[{v:"locatie",l:"Op locatie"},{v:"hybride",l:"Hybride"},{v:"remote",l:"Vooral thuis"},{v:"any",l:"Maakt niet uit"}]}],ok:()=>A.steden.length>0&&!!A.vorm},
  {kicker:"Werkgever",titel:"Bij wat voor werkgever?",groups:[{key:"sector",label:"Soort werkgever",multi:true,any:true,big:true,opts:[{v:"overheid",l:"Overheid",s:"Ambtenaar bij gemeente, provincie of Rijk"},{v:"commercieel",l:"Commercieel bedrijf",s:"Bedrijven en webwinkels"},{v:"nonprofit",l:"Zorg & non-profit",s:"Ziekenhuizen, stichtingen, scholen"},{v:"any",l:"Maakt niet uit"}]},{key:"grootte",label:"Grootte",opts:[{v:"klein",l:"Klein (tot 50)"},{v:"middel",l:"Middelgroot (50–250)"},{v:"groot",l:"Groot (250+)"},{v:"any",l:"Maakt niet uit"}]}],ok:()=>A.sector.length>0&&!!A.grootte},
@@ -456,12 +496,25 @@ function score(j,a){
     else if(d===-1) add(3,`Gevraagd niveau ${j.niveau} is één stap hoger dan jouw opleiding`,"part");
     else add(0,`Gevraagd niveau ${j.niveau}`,"no");}
   if((a.opl.richting||[]).includes(j.vak)) add(4,"Je studierichting sluit aan op dit werk","ok");
-  const mine=new Set(a.skills.map(s=>s.toLowerCase())), js=j.skills||[];
-  if(!a.skills.length) add(7,"Je hebt geen vaardigheden gekozen","part");
+  const mine=new Set(a.skills.map(s=>s.toLowerCase())), js=j.skills||[], kE=(j.eisen||[]).filter(e=>e.k);
+  let cap=100;const miss=[];
+  if(kE.length){
+    let tot=0,got=0,hitN=0;
+    kE.forEach(e=>{const w=e.h?2:1,has=mine.has(e.k.toLowerCase());tot+=w;if(has){got+=w;hitN++;}else if(e.h)miss.push(e.k);});
+    add(Math.round(14*got/tot),`Je voldoet aan ${hitN} van de ${kE.length} eisen die we kunnen checken`,hitN===kE.length?"ok":hitN?"part":"no");
+    (j.eisen||[]).filter(e=>e.k&&e.h&&!mine.has(e.k.toLowerCase())).forEach(e=>r.push({txt:`Harde eis die je mist: ${e.t}`,st:"no",hard:1}));
+    if(miss.length) cap=miss.length>1?40:55;
+  }
+  else if(!a.skills.length) add(7,"Je hebt geen vaardigheden gekozen","part");
   else if(!js.length) add(7,"Vacature noemt geen specifieke vaardigheden","part");
   else{const hit=js.filter(s=>mine.has(s.toLowerCase()));
     const p=Math.round(14*hit.length/js.length);
     add(p,hit.length?`Je hebt ${hit.length} van ${js.length} gevraagde vaardigheden: ${hit.join(", ")}`:`Gevraagd: ${js.join(", ")}`,hit.length===js.length?"ok":hit.length?"part":"no");}
+  const ruim=!j.ervaring&&(/\bsenior\b|\bmanager\b/i.test(j.titel)||(j.eisen||[]).some(e=>/ruime|bewezen|aantoonbare/i.test(e.t)));
+  const reqJ=j.ervaring||(ruim?3:0);
+  if(reqJ&&a.jaren!=null){
+    if(+a.jaren>=reqJ) r.push({txt:j.ervaring?`Je hebt genoeg werkervaring (gevraagd: ${j.ervaring}+ jaar)`:"Je hebt de ervaring die deze rol vraagt",st:"ok"});
+    else{cap=Math.min(cap,reqJ-a.jaren>=3?45:60);miss.push(j.ervaring?`${j.ervaring}+ jaar ervaring`:"ruime werkervaring");r.push({txt:j.ervaring?`Vraagt minimaal ${j.ervaring} jaar werkervaring`:"Vraagt ruime werkervaring (ervaren rol)",st:"no",hard:1});}}
   if(!j.uren) add(5,"Uren staan niet in de vacature","part");
   else if(a.uren==="any") add(10,`${j.uren[0]}–${j.uren[1]} uur, uren maken je niet uit`,"ok");
   else if(a.uren==="part") j.uren[0]<=32?add(10,`Parttime kan: vanaf ${j.uren[0]} uur`,"ok"):add(0,`Alleen ${j.uren[0]}–${j.uren[1]} uur`,"no");
@@ -493,8 +546,8 @@ function score(j,a){
   if(a.omgeving&&a.omgeving!=="any"&&j.omgeving){
     if(a.omgeving===j.omgeving) r.push({txt:j.omgeving==="team"?"Je werkt veel samen in een team":"Je werkt grotendeels zelfstandig",st:"ok"});
     else{t-=3;r.push({txt:j.omgeving==="team"?"Deze rol vraagt veel samenwerking":"Deze rol vraagt veel zelfstandigheid",st:"part"});}}
-  const ord={ok:0,part:1,no:2};r.sort((x,y)=>ord[x.st]-ord[y.st]);
-  return {pct:Math.max(0,Math.min(100,Math.round(t))),r};
+  const ord={ok:1,part:2,no:3};r.sort((x,y)=>(x.hard?0:ord[x.st])-(y.hard?0:ord[y.st]));
+  return {pct:Math.max(0,Math.min(cap,100,Math.round(t))),r,miss,capped:cap<100&&Math.round(t)>cap};
 }
 
 /* ---------- Quiz ---------- */
@@ -553,7 +606,7 @@ function updOpl(){
   $("#q-verder").disabled=!STEPS[stap].ok();
 }
 function renderAsked(){
-  const labels=["Vakgebied","Opleiding","Vaardigheden","Uren","Locatie","Werkgever","Branche","Salaris","Werkstijl"];
+  const labels=["Vakgebied","Opleiding","Vaardigheden","Ervaring","Uren","Locatie","Werkgever","Branche","Salaris","Werkstijl"];
   $("#asked").innerHTML=labels.map((l,i)=>`<span class="${klaar||i<stap?"on":""}">${l}</span>`).join("");
 }
 qcard.addEventListener("click",e=>{
@@ -596,19 +649,25 @@ function card(v,m,best){
   const u=!v.uren?null:v.uren[0]===v.uren[1]?`${v.uren[0]} uur`:`${v.uren[0]}–${v.uren[1]} uur`;
   const sal=v.sal?`<span class="tag sal">${euro(v.sal[0])} – ${euro(v.sal[1])}</span>`:v.salTekst?`<span class="tag sal">${esc(v.salTekst)}</span>`:`<span class="tag unk">Salaris niet vermeld</span>`;
   const tags=[u?`<span class="tag">${u}</span>`:`<span class="tag unk">Uren niet vermeld</span>`,v.vorm?`<span class="tag">${WERKVORM[v.vorm]}</span>`:"",v.niveau?`<span class="tag">${v.niveau}</span>`:"",sal,v.sector?`<span class="tag">${SECTOR[v.sector]}</span>`:""].join("");
-  const sk=(v.skills||[]).map(s=>`<span class="tag sk${m&&mine.has(s.toLowerCase())?" hit":""}">${esc(s)}</span>`).join("");
+  const E=v.eisen||[];
+  const sk=E.length?"":(v.skills||[]).map(s=>`<span class="tag sk${m&&mine.has(s.toLowerCase())?" hit":""}">${esc(s)}</span>`).join("");
+  const eis=`<div class="eisen"><span class="glabel">Wat ze vragen${v.ervaring?` · minimaal ${v.ervaring} jaar ervaring`:""}</span>${E.length?`<ul>${E.map(e=>{let st="neu",ic="•";
+      if(m){if(e.k){if(mine.has(e.k.toLowerCase())){st="ok";ic="✓";}else{st=e.h?"no":"pl";ic=e.h?"✕":"–";}}else{st="chk";ic="?";}}
+      return `<li class="${st}"><i aria-hidden="true">${ic}</i><span>${esc(e.t)}</span><em>${e.h?"Eis":"Pluspunt"}</em></li>`}).join("")}</ul>${m?`<p class="elegend"><b>✓</b> heb je &nbsp; <b class="r">✕</b> mis je &nbsp; <b class="q">?</b> check zelf</p>`:""}`:`<p class="elegend">We konden de eisen niet uitlezen. Bekijk ze bij de werkgever.</p>`}</div>`;
   let sc="";
-  if(m){const cls=m.pct>=75?"hi":m.pct>=50?"mid":"lo",lbl=m.pct>=75?"Sterke match":m.pct>=50?"Redelijke match":"Minder passend";
+  if(m){let cls=m.pct>=75?"hi":m.pct>=50?"mid":"lo",lbl=m.pct>=75?"Sterke match":m.pct>=50?"Redelijke match":"Minder passend";
+    if(m.miss.length){cls="lo";lbl="Mist een eis";}
     sc=`<div class="score ${cls}"><div class="ring" data-p="${m.pct}"><svg viewBox="0 0 44 44"><circle class="trk" cx="22" cy="22" r="19"/><circle class="val" cx="22" cy="22" r="19" style="stroke-dasharray:119.4;stroke-dashoffset:119.4"/></svg><b>${m.pct}<small>%</small></b></div><span class="lbl">${lbl}</span></div>`;}
   let host="";try{host=new URL(v.url).hostname.replace(/^www\./,"")}catch(e){}
   return `<article class="vac${best?" best":""}${m?" hasscore":""}" style="--c:${c}">
     ${best?`<div class="sticker"><span>Beste<br>match</span></div>`:""}
-    <div><span class="vk"><i></i>${esc(VAKKEN[v.vak]||v.vak)}</span><h3>${esc(v.titel)}</h3><div class="org">${esc(v.org)} · ${esc(v.plaats)}</div>
+    <div><span class="vk"><i></i>${esc(VAKKEN[v.vak]||v.vak)}</span><h3>${esc(v.titel)}</h3><div class="org">${esc(v.org)} · ${esc(v.plaats)}</div>${m&&m.miss.length?`<div class="missbar">Je mist: ${esc(m.miss.join(", "))}</div>`:""}
       <div class="tags">${tags}</div>${sk?`<div class="tags">${sk}</div>`:""}</div>
     ${sc}
+    ${eis}
     ${m?`<details class="why"><summary>Waarom ${m.pct}%?</summary><ul>${m.r.map(x=>`<li class="${x.st}">${esc(x.txt)}</li>`).join("")}</ul></details>`:""}
     <div class="vfoot"><div class="vmeta">${v.sluit?`<span>Sluit ${datum(v.sluit)}</span>`:""}${v.branche?`<span>${BRANCHE[v.branche]||""}</span>`:""}<span>${esc(host)}</span></div>
-      <a class="go" href="${esc(v.url)}" target="_blank" rel="noopener">Bekijk bij werkgever ↗</a></div>
+      <div class="acts"><button type="button" class="go alt" data-brief="${esc(v.id)}">Schrijf motivatiebrief</button><a class="go" href="${esc(v.url)}" target="_blank" rel="noopener">Bekijk bij werkgever ↗</a></div></div>
   </article>`;
 }
 function rings(root){requestAnimationFrame(()=>requestAnimationFrame(()=>root.querySelectorAll(".ring").forEach(r=>{r.querySelector(".val").style.strokeDashoffset=(119.4*(1-r.dataset.p/100)).toFixed(1);})));}
@@ -682,6 +741,108 @@ $("#stats").innerHTML=`<span><b>${VAC.length}</b> vacatures</span><span><b>${org
 $("#tab-n").textContent=VAC.length;
 $("#upd").textContent=`Bijgewerkt ${datum(DATA.bijgewerkt)}`;
 $("#foot").textContent=`Vacatures rechtstreeks van werkgevers in de Randstad, elke werkdag bijgewerkt. Controleer altijd de actuele gegevens bij de werkgever. Laatst bijgewerkt op ${datum(DATA.bijgewerkt)}.`;
+/* ---------- Motivatiebrief ---------- */
+const dlg=$("#brief"), bw=$("#bwrap");
+let P={naam:"",woonplaats:"",opl:"",oplStatus:"af",skills:[],functie:"",werkgever:"",werk:"",geenWerk:false,project:"",redenen:[],eigen:"",toon:"formeel"};
+try{Object.assign(P,JSON.parse(localStorage.getItem("valcature-brief")||"{}"))}catch(e){}
+const saveP=()=>{try{localStorage.setItem("valcature-brief",JSON.stringify(P))}catch(e){}};
+let BJ=null,bstap=0;
+const BSTAPPEN=[
+ {t:"Over jou",h:"Je naam komt onder de brief.",ok:()=>P.naam.trim().length>1,html:()=>`<div class="brow"><div><label class="glabel" for="b-naam">Je naam</label><input id="b-naam" class="text sm" data-p="naam" autocomplete="name" value="${esc(P.naam)}" placeholder="Voornaam Achternaam"></div>
+   <div><label class="glabel" for="b-woon">Woonplaats (mag leeg)</label><input id="b-woon" class="text sm" data-p="woonplaats" value="${esc(P.woonplaats)}" placeholder="bijv. Amsterdam"></div></div>`},
+ {t:"Je opleiding",h:"Welke opleiding heb je gedaan, of doe je nu?",ok:()=>true,html:()=>`<div><label class="glabel" for="b-opl">Opleiding</label><input id="b-opl" class="text sm" data-p="opl" value="${esc(P.opl)}" placeholder="bijv. hbo Social Work aan de HvA"></div>
+   <div class="opts">${[["af","Afgerond"],["bezig","Ik studeer nog"]].map(([v,l])=>`<button type="button" class="opt" data-ps="oplStatus" data-v="${v}" aria-pressed="${P.oplStatus===v}">${l}</button>`).join("")}</div>`},
+ {t:"Je sterkste vaardigheden",h:"Kies er maximaal vier. Wat de vacature vraagt, staat bovenaan.",ok:()=>true,html:()=>{
+   const eis=(BJ.eisen||[]).filter(e=>e.k).map(e=>e.k);const all=[...new Set([...eis,...A.skills,...P.skills])];
+   return `${all.length?`<div class="opts">${all.map(s=>`<button type="button" class="opt" data-pk="skills" data-v="${esc(s)}" aria-pressed="${P.skills.includes(s)}">${esc(s)}${eis.includes(s)?"<small> · gevraagd</small>":""}</button>`).join("")}</div>`:""}
+   <div><label class="glabel" for="b-sk">Iets anders toevoegen</label><div class="addrow"><input id="b-sk" class="text" placeholder="bijv. Plannen, Canva, Spaans"><button type="button" class="btn" id="b-skadd">Toevoegen</button></div></div>`}},
+ {t:"Je werkervaring",h:"Je huidige of laatste baan. Een bijbaan of stage telt ook.",ok:()=>true,html:()=>`<label class="check"><input type="checkbox" data-p="geenWerk" ${P.geenWerk?"checked":""}> Ik heb nog geen werkervaring</label>
+   <div class="brow"${P.geenWerk?" hidden":""}><div><label class="glabel" for="b-fun">Functie</label><input id="b-fun" class="text sm" data-p="functie" value="${esc(P.functie)}" placeholder="bijv. Klantenservicemedewerker"></div>
+   <div><label class="glabel" for="b-wg">Werkgever</label><input id="b-wg" class="text sm" data-p="werkgever" value="${esc(P.werkgever)}" placeholder="bijv. Bol"></div></div>
+   <div${P.geenWerk?" hidden":""}><label class="glabel" for="b-werk">Wat deed je daar, en wat leerde je?</label><textarea id="b-werk" class="text" data-p="werk" placeholder="bijv. Ik hielp elke dag zo'n 40 klanten en leerde rustig blijven bij lastige gesprekken.">${esc(P.werk)}</textarea></div>`},
+ {t:"Je vetste project ooit",h:"Van school, werk, vrijwilligerswerk of iets wat je zelf opzette. Wat deed jij, en wat was het resultaat?",ok:()=>true,html:()=>`<label class="glabel" for="b-proj">Het project</label><textarea id="b-proj" class="text" data-p="project" placeholder="bijv. Met drie studiegenoten bouwde ik een app die studenten helpt een kamer te vinden. Ik deed het ontwerp. In twee maanden hadden we 600 gebruikers.">${esc(P.project)}</textarea>`},
+ {t:"Waarom deze baan?",h:"Kies wat je aanspreekt en vertel het in je eigen woorden.",ok:()=>true,html:()=>`<div class="opts">${Object.entries(REDEN_LBL).map(([v,l])=>`<button type="button" class="opt" data-pk="redenen" data-v="${v}" aria-pressed="${P.redenen.includes(v)}">${l}</button>`).join("")}</div>
+   <div><label class="glabel" for="b-eigen">In je eigen woorden (mag leeg)</label><textarea id="b-eigen" class="text" data-p="eigen" placeholder="bijv. Ik gebruik de app zelf elke week en wil graag meebouwen aan iets wat ik echt belangrijk vind.">${esc(P.eigen)}</textarea></div>`},
+ {t:"Welke toon?",h:"Overheid en banken houden meestal van formeel. Jonge bedrijven vaak van enthousiast.",ok:()=>true,html:()=>`<div class="opts big">${[["formeel","Formeel","Met u, netjes en zakelijk"],["enthousiast","Enthousiast","Met jullie, persoonlijk en vrolijk"],["kort","Kort & krachtig","Drie alinea's, to the point"]].map(([v,l,s])=>`<button type="button" class="opt" data-ps="toon" data-v="${v}" aria-pressed="${P.toon===v}">${l}<small>${s}</small></button>`).join("")}</div>`},
+];
+const REDEN_LBL={missie:"De missie",producten:"Wat ze maken",groei:"Kansen om te groeien",team:"Het team",impact:"Maatschappelijke impact",vak:"Het vak zelf"};
+function openBrief(id){
+  BJ=VAC.find(v=>v.id===id);if(!BJ)return;
+  if(!P.opl&&A.opl.tekst)P.opl=A.opl.tekst;
+  if(!P.skills.length){const eis=(BJ.eisen||[]).filter(e=>e.k).map(e=>e.k);P.skills=A.skills.filter(s=>eis.includes(s)).concat(A.skills.filter(s=>!eis.includes(s))).slice(0,4);}
+  bstap=0;renderBrief();
+  try{dlg.showModal();}catch(e){dlg.setAttribute("open","");}
+}
+function renderBrief(){
+  const kop=`<div class="bhead"><div><span class="eyebrow">Motivatiebrief${bstap<BSTAPPEN.length?` · stap ${bstap+1} van ${BSTAPPEN.length}`:""}</span><h3>${bstap<BSTAPPEN.length?BSTAPPEN[bstap].t:"Je brief staat klaar"}</h3><p>${esc(BJ.titel)} bij ${esc(BJ.org)}</p></div><button type="button" class="bx" id="b-close" aria-label="Sluiten">✕</button></div>`;
+  if(bstap>=BSTAPPEN.length){
+    bw.innerHTML=kop+`<p class="btip">Lees je brief na en maak hem persoonlijk. Je kunt de tekst hieronder direct aanpassen.</p>
+      <textarea id="b-letter" class="text letter" aria-label="Je motivatiebrief">${esc(maakBrief())}</textarea>
+      <div class="qnav"><button type="button" class="btn ghost" id="b-back">← Antwoorden aanpassen</button>
+      <span style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn" id="b-again">Andere versie</button><button type="button" class="btn or" id="b-copy">Kopieer brief</button></span></div>`;
+    return;
+  }
+  const s=BSTAPPEN[bstap];
+  bw.innerHTML=kop+`<div class="prog" aria-hidden="true">${BSTAPPEN.map((_,i)=>`<span class="${i<bstap?"done":i===bstap?"now":""}"></span>`).join("")}</div>
+    <p class="qhint" style="margin:0">${s.h}</p><div class="qbody anim">${s.html()}</div>
+    <div class="qnav"><button type="button" class="btn ghost" id="b-prev" ${bstap?"":"disabled"}>← Vorige</button>
+    <button type="button" class="btn or" id="b-next" ${s.ok()?"":"disabled"}>${bstap===BSTAPPEN.length-1?"Maak mijn brief →":"Volgende →"}</button></div>`;
+  const f=bw.querySelector("input.text,textarea.text");if(f&&bstap===0)f.focus();
+}
+bw.addEventListener("input",e=>{const el=e.target,k=el.dataset.p;if(!k)return;
+  P[k]=el.type==="checkbox"?el.checked:el.value;saveP();
+  if(k==="geenWerk"){renderBrief();return;}
+  const nb=$("#b-next");if(nb)nb.disabled=!BSTAPPEN[bstap].ok();});
+bw.addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  if(t.id==="b-close"){dlg.close();return;}
+  if(t.id==="b-next"){bstap++;renderBrief();return;}
+  if(t.id==="b-prev"){bstap--;renderBrief();return;}
+  if(t.id==="b-back"){bstap=0;renderBrief();return;}
+  if(t.id==="b-again"){$("#b-letter").value=maakBrief();return;}
+  if(t.id==="b-copy"){const ta=$("#b-letter");
+    const fb=()=>{ta.focus();ta.select();t.textContent="Geselecteerd, kopieer met Cmd/Ctrl+C";};
+    try{navigator.clipboard.writeText(ta.value).then(()=>{t.textContent="Gekopieerd!";setTimeout(()=>t.textContent="Kopieer brief",2000);},fb);}catch(err){fb();}
+    return;}
+  if(t.id==="b-skadd"){const i=$("#b-sk"),v=i.value.trim();if(v&&!P.skills.includes(v)){P.skills=[...P.skills,v].slice(-4);saveP();renderBrief();}return;}
+  if(t.dataset.ps){P[t.dataset.ps]=t.dataset.v;saveP();renderBrief();return;}
+  if(t.dataset.pk){const k=t.dataset.pk,v=t.dataset.v;let a=P[k].includes(v)?P[k].filter(x=>x!==v):[...P[k],v];if(k==="skills"&&a.length>4)a=a.slice(-4);P[k]=a;saveP();renderBrief();}
+});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-brief]");if(b)openBrief(b.dataset.brief);});
+dlg.addEventListener("click",e=>{if(e.target===dlg)dlg.close();});
+
+const kies=a=>a[Math.floor(Math.random()*a.length)];
+function zin(s){s=(s||"").trim().replace(/\s+/g," ");if(!s)return"";s=s[0].toUpperCase()+s.slice(1);return /[.!?…]$/.test(s)?s:s+".";}
+function lijst(a){return a.length<2?(a[0]||""):a.slice(0,-1).join(", ")+" en "+a[a.length-1];}
+const klein=s=>{s=(s||"").trim();return s&&!/^[A-Z]{2,}/.test(s)?s[0].toLowerCase()+s.slice(1):s;};
+function maakBrief(){
+  const j=BJ,form=P.toon==="formeel",kort=P.toon==="kort",u=form?"u":"jullie",uw=form?"uw":"jullie";
+  const nu=new Date().toLocaleDateString("nl-NL",{day:"numeric",month:"long",year:"numeric"});
+  const RZ={missie:`de missie van ${j.org} spreekt me echt aan`,producten:`ik ben enthousiast over wat ${j.org} maakt en levert`,groei:`ik zie bij ${j.org} veel ruimte om te groeien`,
+    team:`ik werk graag in een team als dat van ${j.org}`,impact:`ik wil werk doen dat echt verschil maakt`,vak:`het werk van een ${klein(j.titel)} past precies bij wat ik leuk vind`};
+  const reds=P.redenen.map(r=>RZ[r]).filter(Boolean);
+  const eis=(j.eisen||[]).filter(e=>e.k).map(e=>e.k.toLowerCase());
+  const sk=P.skills.slice(0,4),match=sk.filter(s=>eis.includes(s.toLowerCase())),rest=sk.filter(s=>!eis.includes(s.toLowerCase()));
+  const p1=[],p2=[],p3=[];
+  p1.push(form?kies([`Met veel interesse las ik ${uw} vacature voor ${j.titel} bij ${j.org}.`,`Graag solliciteer ik naar de functie van ${j.titel} bij ${j.org} in ${j.plaats}.`])
+              :kies([`Toen ik jullie vacature voor ${j.titel} zag, wist ik het meteen: dit wil ik.`,`Ik zag jullie vacature voor ${j.titel} en ben meteen gaan schrijven.`]));
+  if(reds.length) p1.push(form?zin(`Deze baan past goed bij mij, want ${lijst(reds)}`):`Waarom? ${zin(lijst(reds))}`);
+  if(P.eigen.trim()) p1.push(zin(P.eigen));
+  if(P.opl.trim()) p2.push(P.oplStatus==="bezig"?zin(`Op dit moment studeer ik ${P.opl.trim()}`):zin(`Ik heb de opleiding ${P.opl.trim()} afgerond`));
+  if(P.geenWerk) p2.push(form?"Ik heb nog geen betaalde werkervaring, maar ik breng veel energie en leervermogen mee.":"Werkervaring heb ik nog niet, maar wel heel veel zin om te leren.");
+  else if(P.functie.trim()){p2.push(zin(`${kies(["Als","In mijn werk als"])} ${klein(P.functie)}${P.werkgever.trim()?` bij ${P.werkgever.trim()}`:""} heb ik veel ervaring opgedaan`));if(P.werk.trim()&&!kort)p2.push(zin(P.werk));}
+  if(match.length) p3.push(zin(`${form?"Ik beheers":"Ik kan goed overweg met"} ${lijst(match)}, precies wat ${u} in de vacature ${form?"vraagt":"vragen"}`));
+  if(rest.length) p3.push(zin(`${match.length?"Daarnaast breng ik":"Ik breng"} ${lijst(rest)} mee`));
+  if(P.project.trim()) p3.push((form?"Een project waar ik trots op ben: "+klein(zin(kort?P.project.split(/(?<=[.!?])\s/)[0]:P.project)):"Mijn vetste project tot nu toe? "+zin(kort?P.project.split(/(?<=[.!?])\s/)[0]:P.project)));
+  const slot=form?`Ik vertel ${u} graag in een persoonlijk gesprek meer over wat ik voor ${j.org} kan betekenen.`:kies([`Ik vertel jullie graag meer in een gesprek. Hopelijk tot snel!`,`Zin om kennis te maken? Ik hoor graag van jullie!`]);
+  let paras=kort?[[...p1].join(" "),[...p2,...p3].join(" "),slot]:[p1.join(" "),p2.join(" "),p3.join(" "),slot];
+  paras=paras.filter(x=>x.trim());
+  const kopRegels=[P.naam.trim(),P.woonplaats.trim()?`${P.woonplaats.trim()}, ${nu}`:nu,"",`${j.org}`,`Betreft: sollicitatie ${j.titel}`,""];
+  const aanhef=form?"Geachte heer, mevrouw,":`Beste team van ${j.org},`;
+  const groet=form?"Met vriendelijke groet,":"Hartelijke groet,";
+  return `${kopRegels.join("\n")}\n${aanhef}\n\n${paras.join("\n\n")}\n\n${groet}\n\n${P.naam.trim()}`;
+}
+
 if(klaar)stap=STEPS.length-1;
 vulFilters();renderQuiz(false);renderResults();route();
 </script>
