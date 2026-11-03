@@ -616,7 +616,7 @@ function parseOpl(t){
 }
 
 // Antwoorden (per bezoeker bewaard in deze browser)
-const LEEG=()=>({vak:[],opl:{tekst:"",niveau:null,hand:false,richting:[]},skills:[],jaren:null,uren:null,steden:[],vorm:null,sector:[],grootte:null,branche:[],sal:null,omgeving:null,taken:[],sterk:[],talen:[],leiding:null,contract:[],diensten:null,engels:null,reizen:null,fysiek:null,impact:null,type:null,fav:[],deal:[],niv:null,skillsUnknown:false,studie:"",beeldKlaar:false});
+const LEEG=()=>({vak:[],opl:{tekst:"",niveau:null,hand:false,richting:[]},skills:[],jaren:null,uren:null,steden:[],vorm:null,sector:[],grootte:null,branche:[],sal:null,omgeving:null,taken:[],sterk:[],talen:[],leiding:null,contract:[],diensten:null,engels:null,reizen:null,fysiek:null,impact:null,type:null,fav:[],deal:[],niv:null,skillsUnknown:false,studie:"",beeldKlaar:false,gevraagd:null});
 let A=LEEG(), stap=0, klaar=false;
 try{const s=JSON.parse(localStorage.getItem("valcature-v1")||"null");if(s&&s.A){A=Object.assign(LEEG(),s.A);klaar=!!s.klaar;}}catch(e){}
 const save=()=>{try{localStorage.setItem("valcature-v1",JSON.stringify({A,klaar}))}catch(e){}};
@@ -758,6 +758,7 @@ const STEPS_B=[
  {kicker:"Sterke punten",titel:"Welke past het best bij jou?",hint:"Kies er maximaal twee.",groups:[{key:"sterk",img:true,multi:true,max:2,opts:[o("analytisch","Analytisch","magnifier"),o("creatief","Creatief","sparkle"),o("sociaal","Sociaal","heart"),o("praktisch","Praktisch","hammer"),o("georganiseerd","Georganiseerd","calendar")]}],ok:()=>A.sterk.length>0},
  {kicker:"Opleiding",titel:"Wat is je hoogste diploma?",groups:[{key:"niv",img:true,opts:[o("MO","Middelbare school","book"),o("MBO","MBO","cap1"),o("HBO","HBO","cap2"),o("WO","Universiteit","cap3")]}],ok:()=>!!A.niv},
  {kicker:"Studie",titel:"Wat heb je gestudeerd?",hint:"Typ het in je eigen woorden. Mag ook leeg.",custom:"studie",ok:()=>true},
+ {kicker:"Werkervaring",titel:"Hoeveel werkervaring heb je?",hint:"Betaald werk in je vak. Bijbanen tellen half.",groups:[{key:"jaren",img:true,opts:[o("0","Starter","seedling"),o("2","1 – 2 jaar","bag"),o("4","3 – 5 jaar","briefcase"),o("7","6 – 9 jaar","chart"),o("10","10 jaar of meer","crown")]}],ok:()=>A.jaren!==null},
  {kicker:"Soort werk",titel:"Hoe ziet je ideale werkdag eruit?",groups:[{key:"fysiek",img:true,opts:[o("fysiek","Actief bezig","sneaker"),o("mix","Een mix","mix"),o("bureau","Achter een bureau","desk")]}],ok:()=>!!A.fysiek},
  {kicker:"Werkplek",titel:"Waar werk je het liefst?",groups:[{key:"vorm",img:true,opts:[o("locatie","Op locatie","office"),o("hybride","Thuis én kantoor","hybride"),o("remote","Vooral thuis","house"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.vorm},
  {kicker:"Uren",titel:"Hoeveel wil je werken?",groups:[{key:"uren",img:true,opts:[o("part","Parttime","clockhalf"),o("full","Fulltime","clockfull"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.uren},
@@ -771,6 +772,7 @@ const STEPS_B=[
  {kicker:"Impact",titel:"Moet je werk de wereld beter maken?",groups:[{key:"impact",img:true,opts:[o("belangrijk","Heel belangrijk","seedling"),o("leuk","Mooi meegenomen","heart"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.impact},
  {kicker:"Taal",titel:"In welke taal werk je het liefst?",groups:[{key:"engels",img:true,opts:[o("graag","Engels, graag","globe"),o("prima","Allebei prima","chat"),o("nee","Nederlands","nl")]}],ok:()=>!!A.engels},
  {kicker:"Branche",titel:"Waar wil je aan bijdragen?",hint:"Kies er zoveel je wilt.",groups:[{key:"branche",img:true,multi:true,any:true,opts:[o("publiek","Publieke diensten","building"),o("zorg","Zorg","zorg"),o("retail","Winkels","bag"),o("bouw","Bouw","crane"),o("tech","Tech","chip"),o("onderwijs","Onderwijs","board"),o("transport","Transport","truck"),o("food","Eten & horeca","fork"),o("finance","Bank & geld","coins"),o("energie","Energie","bolt"),o("media","Media","play"),o("advies","Advies","briefcase"),o("cultuur","Kunst & cultuur","frame"),o("any","Alles is goed","infinity")]}],ok:()=>A.branche.length>0},
+ {kicker:"Check",titel:"Wat kun je al?",hint:"Dit vragen je beste matches. Tik aan wat je echt kunt. Wat je niet aantikt, telt als: kan ik nog niet.",custom:"check",ok:()=>true}
 ];
 
 /* ---------- Swipe-quiz ---------- */
@@ -924,14 +926,16 @@ function score(j,a){
     else add(0,`Gevraagd niveau ${j.niveau}`,"no");}
   if((a.opl.richting||[]).includes(j.vak)) add(12,"Je studie sluit precies aan op dit werk","ok");
   const sMis=studieMis(j,a);
-  const mine=new Set([...a.skills,...(a.talen||[])].map(s=>s.toLowerCase())), js=j.skills||[], kE=(j.eisen||[]).filter(e=>e.k);
+  const mine=new Set([...a.skills,...(a.talen||[])].map(s=>s.toLowerCase()));
+  const gv=a.gevraagd?new Set(a.gevraagd.map(s=>s.toLowerCase())):null, bekend=s=>!gv||gv.has(s.toLowerCase())||mine.has(s.toLowerCase());
+  const js=(j.skills||[]).filter(bekend), kE=(j.eisen||[]).filter(e=>e.k&&bekend(e.k));
   let cap=100;const miss=[];
   const skU=a.skillsUnknown&&!a.skills.length;
   if(kE.length&&!skU){
     let tot=0,got=0,hitN=0;
     kE.forEach(e=>{const w=e.h?2:1,has=mine.has(e.k.toLowerCase());tot+=w;if(has){got+=w;hitN++;}else if(e.h)miss.push(e.k);});
     add(Math.round(14*got/tot),`Je voldoet aan ${hitN} van de ${kE.length} eisen die we kunnen checken`,hitN===kE.length?"ok":hitN?"part":"no");
-    (j.eisen||[]).filter(e=>e.k&&e.h&&!mine.has(e.k.toLowerCase())).forEach(e=>r.push({txt:`Harde eis die je mist: ${e.t}`,st:"no",hard:1}));
+    kE.filter(e=>e.h&&!mine.has(e.k.toLowerCase())).forEach(e=>r.push({txt:`Harde eis die je mist: ${e.t}`,st:"no",hard:1}));
     if(miss.length) cap=miss.length>1?40:55;
   }
   if((a.talen||[]).length&&!mine.has("nederlands")&&(j.eisen||[]).some(e=>e.h&&/nederlands/i.test(e.t))){miss.push("Nederlands");cap=Math.min(cap,40);r.push({txt:"Harde eis die je mist: goed Nederlands",st:"no",hard:1});}
@@ -977,6 +981,7 @@ function score(j,a){
     if(a.omgeving===j.omgeving) r.push({txt:j.omgeving==="team"?"Je werkt veel samen in een team":"Je werkt grotendeels zelfstandig",st:"ok"});
     else{t-=3;r.push({txt:j.omgeving==="team"?"Deze rol vraagt veel samenwerking":"Deze rol vraagt veel zelfstandigheid",st:"part"});}}
   const X=extra(j,a);t=t*0.72+X.v*28+(X.fav?6:0);r.push(...X.r);
+  if(a.jaren!=null&&+a.jaren>2&&/trainee/i.test(j.titel)){cap=Math.min(cap,20);miss.push("starter");r.push({txt:"Traineeship is voor starters met 0 – 2 jaar werkervaring",st:"no",hard:1});}
   if(sMis){cap=Math.min(cap,25);miss.push("passende studie");r.push({txt:`Hier hoort een studie in ${sMis.toLowerCase()} bij, en dat past niet bij wat jij hebt gestudeerd`,st:"no",hard:1});}
   if(X.deal.length){cap=Math.min(cap,30);X.deal.forEach(d=>{miss.push("deal-breaker: "+d);r.push({txt:`Deal-breaker: ${d}`,st:"no",hard:1});});}
   const ord={ok:1,part:2,no:3};r.sort((x,y)=>(x.hard?0:ord[x.st])-(y.hard?0:ord[y.st]));
@@ -998,6 +1003,20 @@ function oplHTML(){
     <div class="lees" id="opl-lees"></div></div>
     <div class="group"><span class="glabel">Niveau</span><div class="opts" id="opl-niv">${NIVEAUS.map(n=>`<button type="button" class="opt" data-key="oplniveau" data-v="${n}" aria-pressed="${A.opl.niveau===n}">${NIVLABEL[n]}</button>`).join("")}</div></div>`;
 }
+function beeldA(metCheck){const ps=parseOpl(A.studie||"");
+  const a=Object.assign({},A,{opl:{tekst:A.studie||"",niveau:A.niv||ps.niveau,hand:true,richting:ps.richting},grootte:A.grootte||"any",contract:A.contract.length?A.contract:["any"],sal:A.sal===null?"0":A.sal});
+  if(metCheck){a.skillsUnknown=!(A.gevraagd&&A.gevraagd.length);}else{a.skillsUnknown=true;a.gevraagd=null;a.skills=[];}
+  return a;}
+function checkHTML(){
+  const a=beeldA(false);
+  const top=VAC.map(j=>({j,p:score(j,a).pct})).filter(x=>(x.j.eisen||[]).some(e=>e.k)).sort((x,y)=>y.p-x.p).slice(0,8);
+  const alle=new Set();
+  const h=top.map(({j,p})=>{const ks=[...new Set((j.eisen||[]).filter(e=>e.k).sort((x,y)=>y.h-x.h).map(e=>e.k))];ks.forEach(k=>alle.add(k));
+    return `<div class="group"><span class="glabel">${esc(j.titel)} · ${esc(j.org)}</span><div class="opts">${ks.map(k=>{const e=j.eisen.find(x=>x.k===k);
+      return `<button type="button" class="opt" data-key="skills" data-v="${esc(k)}" aria-pressed="${A.skills.includes(k)}" title="${esc(e.t)}">${esc(k)}${e.h?' <small>eis</small>':""}</button>`}).join("")}</div></div>`;}).join("");
+  A.gevraagd=[...alle];save();
+  return h||`<p>Voor je beste matches hoeven we niets extra te checken.</p>`;
+}
 function skillsHTML(){
   const shown=new Set();const grp=(label,list)=>{list.forEach(s=>shown.add(s));
     return `<div class="group"><span class="glabel">${label}</span><div class="opts">${list.map(s=>`<button type="button" class="opt" data-key="skills" data-v="${esc(s)}" aria-pressed="${A.skills.includes(s)}">${esc(s)}</button>`).join("")}</div></div>`};
@@ -1007,7 +1026,7 @@ function skillsHTML(){
     ${eigen.length?`<div class="opts" style="margin-top:10px">${eigen.map(s=>`<button type="button" class="opt x" data-key="skills" data-v="${esc(s)}" aria-pressed="true" aria-label="${esc(s)} verwijderen">${esc(s)}</button>`).join("")}</div>`:""}</div>`;
   return h;
 }
-const verderTekst=s=>stap===STEPS.length-1?"Toon mijn matches →":((s.custom==="studie"&&!(A.studie||"").trim())||(s.custom==="skills"&&!A.skills.length)||(s.custom==="fav"&&!A.fav.length)?"Overslaan →":"Volgende →");
+const verderTekst=s=>stap===STEPS.length-1?"Toon mijn matches →":((s.custom==="studie"&&!(A.studie||"").trim())||(s.custom==="skills"&&!A.skills.length)||(s.custom==="check"&&!A.skills.length&&stap<STEPS.length-1)||(s.custom==="fav"&&!A.fav.length)?"Overslaan →":"Volgende →");
 function renderQuiz(anim=true){
   if(MODE==="swipe"){if(klaar&&SW.i>=SW.deck.length&&SW.deck.length)renderSwipeDone();else{klaar=false;renderSwipe();}return;}
   renderAsked();
@@ -1020,7 +1039,7 @@ function renderQuiz(anim=true){
     return;
   }
   const s=STEPS[stap];
-  const body=s.custom==="studie"?`<div class="group"><label class="glabel" for="studie-tekst">Je studie</label><input id="studie-tekst" class="text" autocomplete="off" placeholder="bijv. hbo Social Work, mbo Logistiek of master Rechten" value="${esc(A.studie||"")}"><div class="lees" id="studie-lees"></div></div>`:s.custom==="opl"?oplHTML():s.custom==="skills"?skillsHTML():s.custom==="fav"?groupHTML({key:"fav",multi:true,big:false,opts:[...new Set(VAC.map(v=>v.org))].sort((x,y)=>x.localeCompare(y,"nl")).map(o=>({v:o,l:o}))}):s.groups.map(groupHTML).join("");
+  const body=s.custom==="check"?checkHTML():s.custom==="studie"?`<div class="group"><label class="glabel" for="studie-tekst">Je studie</label><input id="studie-tekst" class="text" autocomplete="off" placeholder="bijv. hbo Social Work, mbo Logistiek of master Rechten" value="${esc(A.studie||"")}"><div class="lees" id="studie-lees"></div></div>`:s.custom==="opl"?oplHTML():s.custom==="skills"?skillsHTML():s.custom==="fav"?groupHTML({key:"fav",multi:true,big:false,opts:[...new Set(VAC.map(v=>v.org))].sort((x,y)=>x.localeCompare(y,"nl")).map(o=>({v:o,l:o}))}):s.groups.map(groupHTML).join("");
   qcard.innerHTML=`<div class="prog" aria-hidden="true">${STEPS.map((_,i)=>`<span class="${i<stap?"done":i===stap?"now":""}"></span>`).join("")}</div>
     <div class="qtop"><span class="eyebrow">${s.kicker}</span><span class="qnum">${stap+1} / ${STEPS.length}</span></div>
     <h3 class="qtitle">${s.titel}</h3>${s.hint?`<p class="qhint">${s.hint}</p>`:""}
@@ -1073,8 +1092,8 @@ function pick(key,v,btn){
 }
 function verder(){
   if(stap<STEPS.length-1){stap++;renderQuiz();return;}
-  if(MODE==="beeld"){const ps=parseOpl(A.studie||"");A.opl={tekst:A.studie||"",niveau:A.niv||ps.niveau,hand:true,richting:ps.richting};A.beeldKlaar=true;if(!A.grootte)A.grootte="any";if(!A.contract.length)A.contract=["any"];if(A.sal===null)A.sal="0";A.skillsUnknown=!A.skills.length;}
-  else A.skillsUnknown=false;
+  if(MODE==="beeld"){const b=beeldA(true);A.opl=b.opl;A.grootte=b.grootte;A.contract=b.contract;A.sal=b.sal;A.skillsUnknown=b.skillsUnknown;A.beeldKlaar=true;}
+  else{A.skillsUnknown=false;A.gevraagd=null;}
   klaar=true;save();renderQuiz();renderResults();renderVac();
   requestAnimationFrame(()=>$("#resultaten").scrollIntoView({behavior:"smooth"}));
 }
