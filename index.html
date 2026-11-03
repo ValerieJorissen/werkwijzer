@@ -323,6 +323,7 @@ footer p{margin:0;font-size:14px;opacity:.8;max-width:56ch}
     <nav class="tabs" role="tablist" aria-label="Weergave">
       <button class="tab" role="tab" id="tab-match" data-view="match" aria-selected="true">Vind je match</button>
       <button class="tab" role="tab" id="tab-vacatures" data-view="vacatures" aria-selected="false">Alle vacatures <span class="n" id="tab-n">0</span></button>
+      <button class="tab" role="tab" id="tab-swipen" data-view="swipen" aria-selected="false">Swipen</button>
       <button class="tab" role="tab" id="tab-over" data-view="over" aria-selected="false" hidden>Over mij</button>
     </nav>
     <span class="upd" id="upd"></span>
@@ -334,10 +335,9 @@ footer p{margin:0;font-size:14px;opacity:.8;max-width:56ch}
     <div class="in">
       <div class="copy">
         <h1 class="disp"><span>Werk dat</span><span>écht bij je</span><span>past<svg class="flower fl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0l2.4 7.2L21 3l-4.2 6.6L24 12l-7.2 2.4L21 21l-6.6-4.2L12 24l-2.4-7.2L3 21l4.2-6.6L0 12l7.2-2.4L3 3l6.6 4.2z"/></svg></span></h1>
-        <p class="lead">Een uitgebreide quiz over wat je kunt en wat je wilt. Wij zetten vacatures in de Randstad op volgorde van match. Solliciteren doe je direct bij de werkgever.</p>
+        <p class="lead">Tik op de plaatjes die bij je passen, of swipe door echte vacatures. Wij zetten vacatures in de Randstad op volgorde van match. Solliciteren doe je direct bij de werkgever.</p>
         <div class="cta">
           <button class="btn or" id="start">Start de quiz →</button>
-          <button class="btn" id="start-beeld">Doe de beeldquiz</button>
           <button class="btn" id="start-swipe">Swipe vacatures</button>
           <button class="btn ghost" data-goto="vacatures">Bekijk alle vacatures</button>
         </div>
@@ -356,10 +356,10 @@ footer p{margin:0;font-size:14px;opacity:.8;max-width:56ch}
     <div class="in">
       <div class="side">
         <span class="eyebrow">De quiz</span>
-        <h2 class="disp" style="margin-top:6px">Vind je match</h2>
-        <p>Vertel wat je hebt gestudeerd, wat je kunt en wat je zoekt. Je antwoorden blijven op dit apparaat bewaard. Opnieuw beginnen kan altijd.</p>
+        <h2 class="disp" style="margin-top:6px" id="quiz-titel">Vind je match</h2>
+        <p id="quiz-tekst">Tik op de plaatjes die bij je passen. Je antwoorden blijven op dit apparaat bewaard. Opnieuw beginnen kan altijd.</p>
         <button class="btn ghost" data-reset style="margin-top:18px;color:var(--cream);border-color:var(--cream)">Quiz opnieuw doen</button>
-        <div class="modes" role="group" aria-label="Soort quiz"><button type="button" data-mode="klassiek" aria-pressed="true">Klassieke quiz</button><button type="button" data-mode="beeld" aria-pressed="false">Beeldquiz</button><button type="button" data-mode="swipe" aria-pressed="false">Swipen</button></div>
+        <div class="modes" role="group" aria-label="Soort quiz" hidden><button type="button" data-mode="klassiek" aria-pressed="true">Klassieke quiz</button><button type="button" data-mode="beeld" aria-pressed="false">Beeldquiz</button><button type="button" data-mode="swipe" aria-pressed="false">Swipen</button></div>
         <div class="asked" id="asked"></div>
       </div>
       <div class="qcard" id="qcard" aria-live="polite"></div>
@@ -614,7 +614,7 @@ function parseOpl(t){
 }
 
 // Antwoorden (per bezoeker bewaard in deze browser)
-const LEEG=()=>({vak:[],opl:{tekst:"",niveau:null,hand:false,richting:[]},skills:[],jaren:null,uren:null,steden:[],vorm:null,sector:[],grootte:null,branche:[],sal:null,omgeving:null,taken:[],sterk:[],talen:[],leiding:null,contract:[],diensten:null,engels:null,reizen:null,fysiek:null,impact:null,type:null,fav:[],deal:[],niv:null,skillsUnknown:false});
+const LEEG=()=>({vak:[],opl:{tekst:"",niveau:null,hand:false,richting:[]},skills:[],jaren:null,uren:null,steden:[],vorm:null,sector:[],grootte:null,branche:[],sal:null,omgeving:null,taken:[],sterk:[],talen:[],leiding:null,contract:[],diensten:null,engels:null,reizen:null,fysiek:null,impact:null,type:null,fav:[],deal:[],niv:null,skillsUnknown:false,studie:"",beeldKlaar:false});
 let A=LEEG(), stap=0, klaar=false;
 try{const s=JSON.parse(localStorage.getItem("valcature-v1")||"null");if(s&&s.A){A=Object.assign(LEEG(),s.A);klaar=!!s.klaar;}}catch(e){}
 const save=()=>{try{localStorage.setItem("valcature-v1",JSON.stringify({A,klaar}))}catch(e){}};
@@ -755,6 +755,7 @@ const STEPS_B=[
  {kicker:"Soort taken",titel:"Waar word je blij van?",hint:"Kies er maximaal twee.",groups:[{key:"taken",img:true,multi:true,max:2,any:true,opts:[o("mensen","Met mensen","chat"),o("data","Met cijfers","chart"),o("handen","Met je handen","hammer"),o("creatief","Iets bedenken","bulb"),o("organiseren","Organiseren","check"),o("any","Van alles wat","infinity")]}],ok:()=>A.taken.length>0},
  {kicker:"Sterke punten",titel:"Welke past het best bij jou?",hint:"Kies er maximaal twee.",groups:[{key:"sterk",img:true,multi:true,max:2,opts:[o("analytisch","Analytisch","magnifier"),o("creatief","Creatief","sparkle"),o("sociaal","Sociaal","heart"),o("praktisch","Praktisch","hammer"),o("georganiseerd","Georganiseerd","calendar")]}],ok:()=>A.sterk.length>0},
  {kicker:"Opleiding",titel:"Wat is je hoogste diploma?",groups:[{key:"niv",img:true,opts:[o("MO","Middelbare school","book"),o("MBO","MBO","cap1"),o("HBO","HBO","cap2"),o("WO","Universiteit","cap3")]}],ok:()=>!!A.niv},
+ {kicker:"Studie",titel:"Wat heb je gestudeerd?",hint:"Typ het in je eigen woorden. Mag ook leeg.",custom:"studie",ok:()=>true},
  {kicker:"Soort werk",titel:"Hoe ziet je ideale werkdag eruit?",groups:[{key:"fysiek",img:true,opts:[o("fysiek","Actief bezig","sneaker"),o("mix","Een mix","mix"),o("bureau","Achter een bureau","desk")]}],ok:()=>!!A.fysiek},
  {kicker:"Werkplek",titel:"Waar werk je het liefst?",groups:[{key:"vorm",img:true,opts:[o("locatie","Op locatie","office"),o("hybride","Thuis én kantoor","hybride"),o("remote","Vooral thuis","house"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.vorm},
  {kicker:"Uren",titel:"Hoeveel wil je werken?",groups:[{key:"uren",img:true,opts:[o("part","Parttime","clockhalf"),o("full","Fulltime","clockfull"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.uren},
@@ -888,9 +889,13 @@ function renderSwipeDone(){
   $("#sw-again").onclick=()=>{SW={deck:maakDeck(),i:0,log:[]};saveSW();MODEL=null;klaar=false;save();renderQuiz();renderResults();renderVac();};
 }
 
-let MODE="klassiek";try{MODE=localStorage.getItem("valcature-mode")||"klassiek";}catch(e){}
-let STEPS=MODE==="beeld"?STEPS_B:STEPS_K;
-function setMode(m){MODE=m;MODEL=null;STEPS=m==="beeld"?STEPS_B:STEPS_K;try{localStorage.setItem("valcature-mode",m)}catch(e){}stap=0;klaar=false;save();
+let MODE=location.hash==="#swipen"?"swipe":"beeld";
+let STEPS=MODE==="klassiek"?STEPS_K:STEPS_B;
+function modeTeksten(){const s=MODE==="swipe";$("#quiz-titel").textContent=s?"Swipe je match":"Vind je match";
+  $("#quiz-tekst").textContent=s?"Swipe door echte vacatures. Rechts is ja, links is nee. Hoe snel je kiest, telt ook mee.":"Tik op de plaatjes die bij je passen. Je antwoorden blijven op dit apparaat bewaard. Opnieuw beginnen kan altijd.";
+  const rb=$("#quiz .side [data-reset]");if(rb)rb.textContent=s?"Opnieuw beginnen":"Quiz opnieuw doen";}
+function setMode(m){MODE=m;MODEL=null;STEPS=m==="klassiek"?STEPS_K:STEPS_B;
+  klaar=m==="swipe"?(SW.deck.length>0&&SW.i>=SW.deck.length):!!A.beeldKlaar;stap=klaar?STEPS.length-1:0;modeTeksten();
   document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===m)));renderQuiz();renderResults();renderVac();}
 
 // Matchscore 0-100
@@ -987,7 +992,7 @@ function skillsHTML(){
     ${eigen.length?`<div class="opts" style="margin-top:10px">${eigen.map(s=>`<button type="button" class="opt x" data-key="skills" data-v="${esc(s)}" aria-pressed="true" aria-label="${esc(s)} verwijderen">${esc(s)}</button>`).join("")}</div>`:""}</div>`;
   return h;
 }
-const verderTekst=s=>stap===STEPS.length-1?"Toon mijn matches →":((s.custom==="skills"&&!A.skills.length)||(s.custom==="fav"&&!A.fav.length)?"Overslaan →":"Volgende →");
+const verderTekst=s=>stap===STEPS.length-1?"Toon mijn matches →":((s.custom==="studie"&&!(A.studie||"").trim())||(s.custom==="skills"&&!A.skills.length)||(s.custom==="fav"&&!A.fav.length)?"Overslaan →":"Volgende →");
 function renderQuiz(anim=true){
   if(MODE==="swipe"){if(klaar&&SW.i>=SW.deck.length&&SW.deck.length)renderSwipeDone();else{klaar=false;renderSwipe();}return;}
   renderAsked();
@@ -1000,13 +1005,16 @@ function renderQuiz(anim=true){
     return;
   }
   const s=STEPS[stap];
-  const body=s.custom==="opl"?oplHTML():s.custom==="skills"?skillsHTML():s.custom==="fav"?groupHTML({key:"fav",multi:true,big:false,opts:[...new Set(VAC.map(v=>v.org))].sort((x,y)=>x.localeCompare(y,"nl")).map(o=>({v:o,l:o}))}):s.groups.map(groupHTML).join("");
+  const body=s.custom==="studie"?`<div class="group"><label class="glabel" for="studie-tekst">Je studie</label><input id="studie-tekst" class="text" autocomplete="off" placeholder="bijv. hbo Social Work, mbo Logistiek of master Rechten" value="${esc(A.studie||"")}"><div class="lees" id="studie-lees"></div></div>`:s.custom==="opl"?oplHTML():s.custom==="skills"?skillsHTML():s.custom==="fav"?groupHTML({key:"fav",multi:true,big:false,opts:[...new Set(VAC.map(v=>v.org))].sort((x,y)=>x.localeCompare(y,"nl")).map(o=>({v:o,l:o}))}):s.groups.map(groupHTML).join("");
   qcard.innerHTML=`<div class="prog" aria-hidden="true">${STEPS.map((_,i)=>`<span class="${i<stap?"done":i===stap?"now":""}"></span>`).join("")}</div>
     <div class="qtop"><span class="eyebrow">${s.kicker}</span><span class="qnum">${stap+1} / ${STEPS.length}</span></div>
     <h3 class="qtitle">${s.titel}</h3>${s.hint?`<p class="qhint">${s.hint}</p>`:""}
     <div class="qbody${anim?" anim":""}">${body}</div>
     <div class="qnav"><button type="button" class="btn ghost" id="q-terug" ${stap?"":"disabled"}>← Vorige</button>
     <button type="button" class="btn or" id="q-verder" ${s.ok()?"":"disabled"}>${verderTekst(s)}</button></div>`;
+  if(s.custom==="studie"){const inp=$("#studie-tekst"),upd=()=>{const p=parseOpl(A.studie||"");const bits=[];if(p.niveau)bits.push(`<span class="pill">${NIVLABEL[p.niveau]}</span>`);p.richting.forEach(v=>bits.push(`<span class="pill b">${VAKKEN[v]}</span>`));
+      $("#studie-lees").innerHTML=!(A.studie||"").trim()?"Typ je studie, dan lezen we mee.":bits.length?"We lezen: "+bits.join(""):"Dank je! Dit nemen we mee in je motivatiebrief.";$("#q-verder").textContent=verderTekst(STEPS[stap]);};
+    inp.addEventListener("input",()=>{A.studie=inp.value;save();upd();});upd();}
   if(s.custom==="opl"){const inp=$("#opl-tekst");inp.addEventListener("input",()=>{A.opl.tekst=inp.value;const p=parseOpl(inp.value);A.opl.richting=p.richting;if(p.niveau&&!A.opl.hand)A.opl.niveau=p.niveau;if(!inp.value.trim()&&!A.opl.hand)A.opl.niveau=null;updOpl();save();});updOpl();}
   if(s.custom==="skills"){const inp=$("#sk-eigen");const addIt=()=>{const v=inp.value.trim();if(v&&!A.skills.some(x=>x.toLowerCase()===v.toLowerCase())){A.skills.push(v);save();renderQuiz(false);$("#sk-eigen").focus();}else inp.value="";};
     $("#sk-add").onclick=addIt;inp.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addIt();}});}
@@ -1050,21 +1058,20 @@ function pick(key,v,btn){
 }
 function verder(){
   if(stap<STEPS.length-1){stap++;renderQuiz();return;}
-  if(MODE==="beeld"){A.opl={tekst:"",niveau:A.niv,hand:true,richting:[]};if(!A.grootte)A.grootte="any";if(!A.contract.length)A.contract=["any"];if(A.sal===null)A.sal="0";A.skillsUnknown=!A.skills.length;}
+  if(MODE==="beeld"){const ps=parseOpl(A.studie||"");A.opl={tekst:A.studie||"",niveau:A.niv||ps.niveau,hand:true,richting:ps.richting};A.beeldKlaar=true;if(!A.grootte)A.grootte="any";if(!A.contract.length)A.contract=["any"];if(A.sal===null)A.sal="0";A.skillsUnknown=!A.skills.length;}
   else A.skillsUnknown=false;
   klaar=true;save();renderQuiz();renderResults();renderVac();
   requestAnimationFrame(()=>$("#resultaten").scrollIntoView({behavior:"smooth"}));
 }
-function opnieuw(){klaar=false;stap=0;save();renderQuiz();renderResults();renderVac();$("#quiz").scrollIntoView({behavior:"smooth"});}
+function opnieuw(){if(MODE==="swipe"){SW={deck:maakDeck(),i:0,log:[]};saveSW();MODEL=null;}else A.beeldKlaar=false;klaar=false;stap=0;save();renderQuiz();renderResults();renderVac();$("#quiz").scrollIntoView({behavior:"smooth"});}
 $("#edit").onclick=opnieuw;
 document.addEventListener("click",e=>{const b=e.target.closest("[data-reset]");if(!b)return;
   if(!b.dataset.sure){b.dataset.sure="1";b.textContent="Zeker? Klik nog eens";setTimeout(()=>{if(b.isConnected){delete b.dataset.sure;b.textContent="Quiz opnieuw doen";}},4000);return;}
   A=LEEG();klaar=false;stap=0;SW={deck:[],i:0,log:[]};saveSW();MODEL=null;save();renderQuiz();renderResults();renderVac();
   if(location.hash==="#vacatures"||location.hash==="#over")location.hash="#match";
   requestAnimationFrame(()=>$("#quiz").scrollIntoView({behavior:"smooth"}));});
-$("#start").onclick=()=>{if(MODE!=="klassiek")setMode("klassiek");$("#quiz").scrollIntoView({behavior:"smooth"});};
-$("#start-swipe").onclick=()=>{if(MODE!=="swipe")setMode("swipe");$("#quiz").scrollIntoView({behavior:"smooth"});};
-$("#start-beeld").onclick=()=>{if(MODE!=="beeld")setMode("beeld");$("#quiz").scrollIntoView({behavior:"smooth"});};
+$("#start").onclick=()=>{if(location.hash==="#swipen")location.hash="#match";else if(MODE!=="beeld")setMode("beeld");setTimeout(()=>$("#quiz").scrollIntoView({behavior:"smooth"}),50);};
+$("#start-swipe").onclick=()=>{location.hash="#swipen";setTimeout(()=>$("#quiz").scrollIntoView({behavior:"smooth"}),50);};
 document.querySelectorAll("[data-mode]").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.mode===MODE));b.onclick=()=>{if(MODE!==b.dataset.mode)setMode(b.dataset.mode);};});
 
 /* ---------- Kaarten ---------- */
@@ -1139,8 +1146,10 @@ function renderVac(){
 /* ---------- Tabs ---------- */
 function route(){
   const OVER_ZICHTBAAR=false;
-  const view=location.hash==="#vacatures"?"vacatures":(OVER_ZICHTBAAR&&location.hash==="#over")?"over":"match";
-  $("#view-match").hidden=view!=="match";$("#view-vacatures").hidden=view!=="vacatures";$("#view-over").hidden=view!=="over";
+  const view=location.hash==="#vacatures"?"vacatures":location.hash==="#swipen"?"swipen":(OVER_ZICHTBAAR&&location.hash==="#over")?"over":"match";
+  $("#view-match").hidden=view!=="match"&&view!=="swipen";
+  if(view==="swipen"&&MODE!=="swipe")setMode("swipe");
+  if(view==="match"&&MODE!=="beeld")setMode("beeld");$("#view-vacatures").hidden=view!=="vacatures";$("#view-over").hidden=view!=="over";
   document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",String(t.dataset.view===view)));
   if(view==="vacatures")renderVac();
 }
@@ -1272,8 +1281,9 @@ function maakBrief(){
   return `${kopRegels.join("\n")}\n${aanhef}\n\n${paras.join("\n\n")}\n\n${groet}\n\n${P.naam.trim()}`;
 }
 
+klaar=MODE==="swipe"?(SW.deck.length>0&&SW.i>=SW.deck.length):!!A.beeldKlaar;
 if(klaar)stap=STEPS.length-1;
-vulFilters();renderQuiz(false);renderResults();route();
+modeTeksten();vulFilters();renderQuiz(false);renderResults();route();
 </script>
 
 </body>
