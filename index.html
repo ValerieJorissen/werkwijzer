@@ -236,6 +236,38 @@ textarea.letter{min-height:min(420px,52dvh);font-size:15px;line-height:1.6;backg
 .opt.pic[aria-pressed="true"]::after{content:"✓";position:absolute;top:6px;right:8px;width:24px;height:24px;border-radius:50%;background:var(--lime);color:var(--ink);display:grid;place-items:center;font-size:13px;font-weight:800}
 @media (prefers-reduced-motion:no-preference){.opt.pic[aria-pressed="true"] svg{animation:pop .35s ease}}
 @keyframes pop{50%{transform:scale(1.12) rotate(4deg)}}
+.modes{flex-wrap:wrap}
+.swipe{position:relative;height:min(470px,64vh);min-height:380px;margin-top:4px}
+.scard{position:absolute;inset:0;background:var(--paper);border:2px solid var(--ink);border-radius:28px;padding:20px;display:grid;grid-template-rows:auto 1fr;gap:14px;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;box-shadow:6px 6px 0 var(--c);overflow:hidden}
+.scard.top{transition:transform .25s ease}
+.scard.top.drag{transition:none;cursor:grabbing}
+.scard.next{transform:scale(.94) translateY(14px);box-shadow:none;opacity:.85}
+.shead{display:grid;grid-template-columns:92px minmax(0,1fr);gap:14px;align-items:center}
+.shead svg{width:92px;height:92px}
+.shead h3{font-family:var(--f-display);font-weight:800;font-variation-settings:"wdth" 86;font-size:24px;line-height:1.05;margin:6px 0 4px;overflow-wrap:anywhere;text-wrap:balance}
+.sbody{display:grid;gap:12px;align-content:start;min-width:0}
+.seisen{margin:0;padding:0 0 0 18px;font-size:14.5px;color:var(--muted);display:grid;gap:4px}
+.stamp{position:absolute;top:18px;z-index:2;font-family:var(--f-display);font-weight:900;font-size:30px;text-transform:uppercase;border:4px solid;border-radius:12px;padding:0 12px;opacity:0;pointer-events:none;background:var(--paper)}
+.stamp.ja{left:18px;color:var(--green);transform:rotate(-14deg)}
+.stamp.nee{right:18px;color:var(--red);transform:rotate(14deg)}
+.stimer{position:absolute;right:16px;bottom:14px;font-size:12px;font-weight:700;background:var(--cream);border:1.5px solid var(--line);border-radius:999px;padding:3px 10px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.sbtns{display:flex;justify-content:center;gap:28px}
+.sbtn{width:66px;height:66px;border-radius:50%;border:2px solid var(--ink);font-size:26px;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.sbtn:hover{transform:translateY(-3px);box-shadow:0 4px 0 var(--ink)}
+.sbtn.no{background:var(--paper);color:var(--red)}
+.sbtn.yes{background:var(--green);color:var(--cream)}
+.skeys{margin:-6px 0 0;text-align:center;font-size:13px;color:var(--muted)}
+@media (hover:none){.skeys{display:none}}
+.sstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:10px}
+.sstats div{background:var(--cream);border-radius:16px;padding:12px 14px;display:grid;gap:2px}
+.sstats b{font-family:var(--f-display);font-weight:900;font-variation-settings:"wdth" 80;font-size:28px;color:var(--green);font-variant-numeric:tabular-nums}
+.sstats span{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.sbars{display:flex;align-items:flex-end;gap:4px;height:90px;background:var(--cream);border-radius:14px;padding:10px}
+.sbars i{flex:1;border-radius:6px 6px 2px 2px;min-width:4px}
+.sbars i.r,.slegend i.r{background:var(--green)}.sbars i.l,.slegend i.l{background:var(--red)}
+.slegend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:6px}
+.slegend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.pill.neg{background:#FCE2DC;color:#8E1E0E}
 /* How it works */
 .how{background:var(--pink);border-top:2px solid var(--ink)}
 .how .in{padding-block:72px}
@@ -305,6 +337,7 @@ footer p{margin:0;font-size:14px;opacity:.8;max-width:56ch}
         <div class="cta">
           <button class="btn or" id="start">Start de quiz →</button>
           <button class="btn" id="start-beeld">Doe de beeldquiz</button>
+          <button class="btn" id="start-swipe">Swipe vacatures</button>
           <button class="btn ghost" data-goto="vacatures">Bekijk alle vacatures</button>
         </div>
         <div class="stats" id="stats"></div>
@@ -325,7 +358,7 @@ footer p{margin:0;font-size:14px;opacity:.8;max-width:56ch}
         <h2 class="disp" style="margin-top:6px">Vind je match</h2>
         <p>Vertel wat je hebt gestudeerd, wat je kunt en wat je zoekt. Je antwoorden blijven op dit apparaat bewaard. Opnieuw beginnen kan altijd.</p>
         <button class="btn ghost" data-reset style="margin-top:18px;color:var(--cream);border-color:var(--cream)">Quiz opnieuw doen</button>
-        <div class="modes" role="group" aria-label="Soort quiz"><button type="button" data-mode="klassiek" aria-pressed="true">Klassieke quiz</button><button type="button" data-mode="beeld" aria-pressed="false">Beeldquiz</button></div>
+        <div class="modes" role="group" aria-label="Soort quiz"><button type="button" data-mode="klassiek" aria-pressed="true">Klassieke quiz</button><button type="button" data-mode="beeld" aria-pressed="false">Beeldquiz</button><button type="button" data-mode="swipe" aria-pressed="false">Swipen</button></div>
         <div class="asked" id="asked"></div>
       </div>
       <div class="qcard" id="qcard" aria-live="polite"></div>
@@ -736,9 +769,127 @@ const STEPS_B=[
  {kicker:"Branche",titel:"Waar wil je aan bijdragen?",hint:"Kies er zoveel je wilt.",groups:[{key:"branche",img:true,multi:true,any:true,opts:[o("publiek","Publieke diensten","building"),o("zorg","Zorg","zorg"),o("retail","Winkels","bag"),o("bouw","Bouw","crane"),o("tech","Tech","chip"),o("onderwijs","Onderwijs","board"),o("transport","Transport","truck"),o("food","Eten & horeca","fork"),o("finance","Bank & geld","coins"),o("energie","Energie","bolt"),o("media","Media","play"),o("advies","Advies","briefcase"),o("cultuur","Kunst & cultuur","frame"),o("any","Alles is goed","infinity")]}],ok:()=>A.branche.length>0},
 ];
 
+/* ---------- Swipe-quiz ---------- */
+const VAKICON={zorg:"zorg",ict:"laptop",techniek:"gear",overheid:"building",klant:"headset",commercieel:"megaphone",admin:"folder",logistiek:"truck",onderwijs:"board",creatief:"palette",horeca:"chef",financieel:"coins",juridisch:"scale",hr:"people",veiligheid:"shield"};
+let SW={deck:[],i:0,log:[]};
+try{const s=JSON.parse(localStorage.getItem("valcature-swipe")||"null");if(s&&Array.isArray(s.deck))SW=s;}catch(e){}
+const saveSW=()=>{try{localStorage.setItem("valcature-swipe",JSON.stringify(SW))}catch(e){}};
+function maakDeck(){
+  // Afwisselende stapel: Amsterdam + fulltime eerst, verdeeld over vakgebieden
+  const pool=VAC.slice().sort((a,b)=>((b.plaats==="Amsterdam")+(b.uren&&b.uren[1]>=36))-((a.plaats==="Amsterdam")+(a.uren&&a.uren[1]>=36))||Math.random()-.5);
+  const per={};pool.forEach(v=>(per[v.vak]=per[v.vak]||[]).push(v));
+  const vakken=Object.keys(per).sort(()=>Math.random()-.5),deck=[];
+  for(let r=0;deck.length<20&&r<10;r++)vakken.forEach(k=>{if(deck.length<20&&per[k][r])deck.push(per[k][r].id);});
+  return deck;
+}
+function kenmerken(v){
+  const k=kenmerk(v),f=[];
+  const add=(key,label)=>{if(label)f.push([key,label]);};
+  add("vak:"+v.vak,VAKKEN[v.vak]);
+  add("sector:"+v.sector,SECTOR[v.sector]);
+  add("branche:"+v.branche,BRANCHE[v.branche]);
+  if(v.grootte)add("grootte:"+v.grootte,GROOTTE[v.grootte]);
+  if(k.type)add("type:"+k.type,k.type==="scaleup"?"Scale-ups":"Gevestigde organisaties");
+  if(k.werkplek)add("werk:"+k.werkplek,({fysiek:"Actief werk",mix:"Mix van actief en bureau",bureau:"Bureauwerk"})[k.werkplek]);
+  if(v.vorm)add("vorm:"+v.vorm,WERKVORM[v.vorm]);
+  if(k.taal==="en")add("taal:en","Engelstalig werk");
+  if(v.niveau)add("niv:"+v.niveau,"Niveau "+v.niveau);
+  if(k.contract)add("contract:"+k.contract,({vast:"Vast contract",tijdelijk:"Tijdelijk contract",traineeship:"Traineeships",werkstudent:"Werkstudentbanen"})[k.contract]);
+  if(k.diensten)add("diensten","Avond- en weekendwerk");
+  if(k.impact)add("impact","Maatschappelijke impact");
+  if(k.leiding)add("leiding","Leidinggeven");
+  return f;
+}
+const zeker=ms=>ms<900?1.5:ms<2000?1.2:ms<4000?1:ms<8000?.7:.5;
+const sec=ms=>(ms/1000).toLocaleString("nl-NL",{maximumFractionDigits:1})+" s";
+function swipeModel(){
+  const w={},lab={},n={};
+  SW.log.forEach(x=>{const v=VAC.find(y=>y.id===x.id);if(!v)return;const s=(x.dir==="r"?1:-1)*zeker(x.ms);
+    kenmerken(v).forEach(([k,l])=>{w[k]=(w[k]||0)+s;lab[k]=l;n[k]=(n[k]||0)+1;});});
+  // gemiddelde per kenmerk: -1.5 (altijd snel nee) tot +1.5 (altijd snel ja)
+  Object.keys(w).forEach(k=>{w[k]=w[k]/n[k]*Math.min(1,0.5+n[k]/4);});
+  return {w,lab,n};
+}
+let MODEL=null;
+function swipeScore(v){
+  if(!MODEL)MODEL=swipeModel();
+  const f=kenmerken(v);let raw=0;const pos=[],neg=[];
+  let cnt=0;f.forEach(([k,l])=>{if(!(k in MODEL.w))return;const x=MODEL.w[k];raw+=x;cnt++;if(x>=.5&&MODEL.n[k]>=2)pos.push([x,l]);else if(x<=-.5&&MODEL.n[k]>=2)neg.push([x,l]);});
+  if(cnt)raw/=cnt;
+  let pct=Math.round(50+50*Math.tanh(raw*1.8));
+  const r=[];pos.sort((a,b)=>b[0]-a[0]).slice(0,3).forEach(([,l])=>r.push({txt:`Je swipete vaak en snel naar rechts bij: ${l}`,st:"ok"}));
+  neg.sort((a,b)=>a[0]-b[0]).slice(0,3).forEach(([,l])=>r.push({txt:`Je swipete vaak naar links bij: ${l}`,st:"no"}));
+  const eigen=SW.log.find(x=>x.id===v.id);
+  if(eigen){if(eigen.dir==="r"){pct=Math.max(pct,Math.min(98,70+Math.round(zeker(eigen.ms)*15)));r.unshift({txt:`Je swipete deze naar rechts, in ${sec(eigen.ms)}`,st:"ok"});}
+    else{pct=Math.min(pct,25);r.unshift({txt:`Je swipete deze naar links, in ${sec(eigen.ms)}`,st:"no",hard:1});}}
+  if(!r.length)r.push({txt:"Nog weinig swipes die hierover gaan",st:"part"});
+  return {pct:Math.max(0,Math.min(100,pct)),r,miss:[]};
+}
+const matchFor=v=>MODE==="swipe"?swipeScore(v):score(v,A);
+let swT0=0,swRAF=0;
+function renderSwipe(){
+  if(!SW.deck.length){SW={deck:maakDeck(),i:0,log:[]};saveSW();}
+  $("#asked").innerHTML="";
+  if(SW.i>=SW.deck.length){klaar=true;save();MODEL=null;renderSwipeDone();renderResults();renderVac();return;}
+  const v=VAC.find(x=>x.id===SW.deck[SW.i]);if(!v){SW.i++;saveSW();return renderSwipe();}
+  const nv=VAC.find(x=>x.id===SW.deck[SW.i+1]);
+  const kaart=(v,cls)=>{const u=v.uren?(v.uren[0]===v.uren[1]?`${v.uren[0]} uur`:`${v.uren[0]}–${v.uren[1]} uur`):"Uren onbekend";
+    const sal=v.sal?`${euro(v.sal[0])} – ${euro(v.sal[1])}`:v.salTekst||"";
+    return `<div class="scard ${cls}" style="--c:${VAKKLEUR[v.vak]||"var(--sky)"}">
+      ${cls==="top"?`<span class="stamp ja">Ja!</span><span class="stamp nee">Nee</span><span class="stimer" id="stimer">0,0 s</span>`:""}
+      <div class="shead">${pic(VAKICON[v.vak]||"briefcase")}<div><span class="vk"><i></i>${esc(VAKKEN[v.vak]||v.vak)}</span><h3>${esc(v.titel)}</h3><div class="org">${esc(v.org)} · ${esc(v.plaats)}</div></div></div>
+      <div class="sbody"><div class="tags"><span class="tag">${u}</span>${v.vorm?`<span class="tag">${WERKVORM[v.vorm]}</span>`:""}${v.niveau?`<span class="tag">${v.niveau}</span>`:""}${sal?`<span class="tag sal">${esc(sal)}</span>`:""}${v.sector?`<span class="tag">${SECTOR[v.sector]}</span>`:""}</div>
+      ${(v.eisen||[]).length?`<ul class="seisen">${v.eisen.slice(0,3).map(e=>`<li>${esc(e.t)}</li>`).join("")}</ul>`:""}</div>
+    </div>`;};
+  qcard.innerHTML=`<div class="prog" aria-hidden="true">${SW.deck.map((_,i)=>`<span class="${i<SW.i?"done":i===SW.i?"now":""}"></span>`).join("")}</div>
+    <div class="qtop"><span class="eyebrow">Swipe-quiz</span><span class="qnum">${SW.i+1} / ${SW.deck.length}</span></div>
+    <h3 class="qtitle">Zou je hier willen werken?</h3><p class="qhint">Sleep naar rechts voor ja, naar links voor nee. Hoe snel je kiest, telt ook mee.</p>
+    <div class="swipe" id="swipe">${nv?kaart(nv,"next"):""}${kaart(v,"top")}</div>
+    <div class="sbtns"><button type="button" class="sbtn no" id="sw-no" aria-label="Nee, naar links">✕</button><button type="button" class="sbtn yes" id="sw-yes" aria-label="Ja, naar rechts">♥</button></div>
+    <p class="skeys">Of gebruik de pijltjestoetsen ← →</p>`;
+  swT0=performance.now();cancelAnimationFrame(swRAF);
+  const tick=()=>{const el=$("#stimer");if(!el)return;el.textContent=sec(performance.now()-swT0);swRAF=requestAnimationFrame(tick);};tick();
+  const top=qcard.querySelector(".scard.top");let x0=null,dx=0;
+  top.addEventListener("pointerdown",e=>{x0=e.clientX;dx=0;top.setPointerCapture(e.pointerId);top.classList.add("drag");});
+  top.addEventListener("pointermove",e=>{if(x0===null)return;dx=e.clientX-x0;top.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`;
+    top.querySelector(".ja").style.opacity=Math.max(0,Math.min(1,dx/90));top.querySelector(".nee").style.opacity=Math.max(0,Math.min(1,-dx/90));});
+  const los=()=>{if(x0===null)return;x0=null;top.classList.remove("drag");if(Math.abs(dx)>90)swipe(dx>0?"r":"l");else{top.style.transform="";top.querySelectorAll(".stamp").forEach(s=>s.style.opacity=0);}};
+  top.addEventListener("pointerup",los);top.addEventListener("pointercancel",los);
+  $("#sw-no").onclick=()=>swipe("l");$("#sw-yes").onclick=()=>swipe("r");
+}
+function swipe(dir){
+  const top=qcard.querySelector(".scard.top");if(!top||top.dataset.gone)return;top.dataset.gone=1;
+  const ms=Math.round(performance.now()-swT0);cancelAnimationFrame(swRAF);
+  SW.log.push({id:SW.deck[SW.i],dir,ms,t:new Date().toISOString()});SW.i++;saveSW();MODEL=null;
+  top.querySelector(dir==="r"?".ja":".nee").style.opacity=1;
+  top.style.transition="transform .35s ease, opacity .35s";top.style.transform=`translateX(${dir==="r"?520:-520}px) rotate(${dir==="r"?24:-24}deg)`;top.style.opacity=0;
+  setTimeout(renderSwipe,matchMedia("(prefers-reduced-motion: reduce)").matches?0:280);
+}
+document.addEventListener("keydown",e=>{if(MODE!=="swipe"||klaar||$("#view-match").hidden)return;if(e.target.closest&&e.target.closest("input,textarea,select"))return;
+  if(e.key==="ArrowRight"){e.preventDefault();swipe("r");}else if(e.key==="ArrowLeft"){e.preventDefault();swipe("l");}});
+function renderSwipeDone(){
+  const L=SW.log,ja=L.filter(x=>x.dir==="r"),nee=L.filter(x=>x.dir==="l");
+  const gem=L.length?L.reduce((s,x)=>s+x.ms,0)/L.length:0;
+  const snelJa=ja.slice().sort((a,b)=>a.ms-b.ms)[0],twijfel=L.slice().sort((a,b)=>b.ms-a.ms)[0];
+  const naam=x=>{const v=VAC.find(y=>y.id===x.id);return v?esc(v.titel):"?";};
+  MODEL=swipeModel();
+  const fs=Object.entries(MODEL.w).filter(([k])=>MODEL.n[k]>=2).sort((a,b)=>b[1]-a[1]);
+  const plus=fs.filter(([,x])=>x>=.5).slice(0,5),min=fs.filter(([,x])=>x<=-.5).reverse().slice(0,5);
+  const maxMs=Math.max(1000,...L.map(x=>x.ms));
+  qcard.innerHTML=`<div class="done anim" style="display:grid;gap:16px"><span class="eyebrow" style="color:var(--green)">Klaar met swipen!</span>
+    <h3 class="qtitle">${ja.length}× ja, ${nee.length}× nee</h3>
+    <div class="sstats"><div><b>${sec(gem)}</b><span>gemiddelde beslistijd</span></div>${snelJa?`<div><b>${sec(snelJa.ms)}</b><span>snelste ja: ${naam(snelJa)}</span></div>`:""}${twijfel?`<div><b>${sec(twijfel.ms)}</b><span>langste twijfel: ${naam(twijfel)}</span></div>`:""}</div>
+    <div><span class="glabel">Elke swipe, op volgorde (hoogte = denktijd)</span><div class="sbars" role="img" aria-label="Beslistijd per swipe">${L.map(x=>`<i class="${x.dir}" style="height:${Math.max(8,Math.round(100*x.ms/maxMs))}%" title="${naam(x)}: ${x.dir==="r"?"ja":"nee"} in ${sec(x.ms)}"></i>`).join("")}</div>
+      <div class="slegend"><span><i class="r"></i>ja</span><span><i class="l"></i>nee</span></div></div>
+    ${plus.length?`<div><span class="glabel">Hier zeg je snel ja tegen</span><div class="opts">${plus.map(([k])=>`<span class="pill">${esc(MODEL.lab[k])}</span>`).join("")}</div></div>`:""}
+    ${min.length?`<div><span class="glabel">Hier haak je op af</span><div class="opts">${min.map(([k])=>`<span class="pill neg">${esc(MODEL.lab[k])}</span>`).join("")}</div></div>`:""}
+    <div class="qnav"><button class="btn or" id="q-naar">Bekijk mijn matches ↓</button><button class="btn ghost danger" id="sw-again">Opnieuw swipen</button></div></div>`;
+  $("#sw-again").onclick=()=>{SW={deck:maakDeck(),i:0,log:[]};saveSW();MODEL=null;klaar=false;save();renderQuiz();renderResults();renderVac();};
+}
+
 let MODE="klassiek";try{MODE=localStorage.getItem("valcature-mode")||"klassiek";}catch(e){}
 let STEPS=MODE==="beeld"?STEPS_B:STEPS_K;
-function setMode(m){MODE=m;STEPS=m==="beeld"?STEPS_B:STEPS_K;try{localStorage.setItem("valcature-mode",m)}catch(e){}stap=0;klaar=false;save();
+function setMode(m){MODE=m;MODEL=null;STEPS=m==="beeld"?STEPS_B:STEPS_K;try{localStorage.setItem("valcature-mode",m)}catch(e){}stap=0;klaar=false;save();
   document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===m)));renderQuiz();renderResults();renderVac();}
 
 // Matchscore 0-100
@@ -837,9 +988,10 @@ function skillsHTML(){
 }
 const verderTekst=s=>stap===STEPS.length-1?"Toon mijn matches →":((s.custom==="skills"&&!A.skills.length)||(s.custom==="fav"&&!A.fav.length)?"Overslaan →":"Volgende →");
 function renderQuiz(anim=true){
+  if(MODE==="swipe"){if(klaar&&SW.i>=SW.deck.length&&SW.deck.length)renderSwipeDone();else{klaar=false;renderSwipe();}return;}
   renderAsked();
   if(klaar){
-    const n=VAC.filter(v=>score(v,A).pct>=70).length;
+    const n=VAC.filter(v=>matchFor(v).pct>=70).length;
     qcard.innerHTML=`<div class="done anim" style="display:grid;gap:14px"><span class="eyebrow" style="color:var(--green)">Klaar!</span>
       <h3 class="qtitle">${n?`${n} vacature${n>1?"s":""} met een sterke match`:"Je matches staan klaar"}</h3>
       <p>We hebben alle ${VAC.length} vacatures gescoord op jouw antwoorden. De beste staan bovenaan.${MODE==="beeld"?" Tip: doe ook de klassieke quiz, dan checken we ook je diploma's en vaardigheden.":""}</p>
@@ -906,10 +1058,11 @@ function opnieuw(){klaar=false;stap=0;save();renderQuiz();renderResults();render
 $("#edit").onclick=opnieuw;
 document.addEventListener("click",e=>{const b=e.target.closest("[data-reset]");if(!b)return;
   if(!b.dataset.sure){b.dataset.sure="1";b.textContent="Zeker? Klik nog eens";setTimeout(()=>{if(b.isConnected){delete b.dataset.sure;b.textContent="Quiz opnieuw doen";}},4000);return;}
-  A=LEEG();klaar=false;stap=0;save();renderQuiz();renderResults();renderVac();
+  A=LEEG();klaar=false;stap=0;SW={deck:[],i:0,log:[]};saveSW();MODEL=null;save();renderQuiz();renderResults();renderVac();
   if(location.hash==="#vacatures"||location.hash==="#over")location.hash="#match";
   requestAnimationFrame(()=>$("#quiz").scrollIntoView({behavior:"smooth"}));});
 $("#start").onclick=()=>{if(MODE!=="klassiek")setMode("klassiek");$("#quiz").scrollIntoView({behavior:"smooth"});};
+$("#start-swipe").onclick=()=>{if(MODE!=="swipe")setMode("swipe");$("#quiz").scrollIntoView({behavior:"smooth"});};
 $("#start-beeld").onclick=()=>{if(MODE!=="beeld")setMode("beeld");$("#quiz").scrollIntoView({behavior:"smooth"});};
 document.querySelectorAll("[data-mode]").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.mode===MODE));b.onclick=()=>{if(MODE!==b.dataset.mode)setMode(b.dataset.mode);};});
 
@@ -946,10 +1099,11 @@ function rings(root){requestAnimationFrame(()=>requestAnimationFrame(()=>root.qu
 
 function renderResults(){
   const sec=$("#resultaten");sec.hidden=!klaar;if(!klaar)return;
-  const list=VAC.map(v=>({v,m:score(v,A)})).sort((x,y)=>y.m.pct-x.m.pct);
+  const list=VAC.map(v=>({v,m:matchFor(v)})).sort((x,y)=>y.m.pct-x.m.pct);
   const chips=[...A.vak.map(v=>VAKKEN[v]),A.opl.niveau&&NIVLABEL[A.opl.niveau],A.uren==="part"?"Parttime":A.uren==="full"?"Fulltime":null,
     ...(A.steden.includes("any")?["Hele Randstad"]:A.steden),...A.sector.filter(s=>s!=="any").map(s=>SECTOR[s]),A.grootte&&A.grootte!=="any"?GROOTTE[A.grootte]:null,...(A.talen||[]),...A.skills.slice(0,6),...(A.fav||[]).map(f=>"♥ "+f)].filter(Boolean);
-  $("#sum").innerHTML=chips.map(c=>`<span>${esc(c)}</span>`).join("");
+  let ch=chips;if(MODE==="swipe"){const M=MODEL||swipeModel();ch=Object.entries(M.w).filter(([k,x])=>x>=.5&&M.n[k]>=2).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([k])=>"♥ "+M.lab[k]);}
+  $("#sum").innerHTML=ch.map(c=>`<span>${esc(c)}</span>`).join("");
   $("#reslist").innerHTML=list.map((x,i)=>card(x.v,x.m,i===0&&x.m.pct>=50)).join("");
   rings($("#reslist"));
 }
@@ -971,7 +1125,7 @@ function renderVac(){
   const q=F.q.trim().toLowerCase();
   let list=VAC.filter(v=>(!q||[v.titel,v.org,v.plaats,...(v.skills||[])].join(" ").toLowerCase().includes(q))
     &&(!F.stad||v.plaats===F.stad)&&(!F.vak||v.vak===F.vak)&&(!F.sector||v.sector===F.sector)
-    &&(!F.uren||(v.uren&&(F.uren==="part"?v.uren[0]<=32:v.uren[1]>=36)))).map(v=>({v,m:klaar?score(v,A):null}));
+    &&(!F.uren||(v.uren&&(F.uren==="part"?v.uren[0]<=32:v.uren[1]>=36)))).map(v=>({v,m:klaar?matchFor(v):null}));
   if(F.sort==="match") list.sort((x,y)=>y.m.pct-x.m.pct);
   else if(F.sort==="az") list.sort((x,y)=>x.v.titel.localeCompare(y.v.titel,"nl"));
   else list.sort((x,y)=>(x.v.sluit||"9999").localeCompare(y.v.sluit||"9999"));
