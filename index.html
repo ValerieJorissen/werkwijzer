@@ -1016,7 +1016,7 @@ function renderQuiz(anim=true){
     const n=VAC.filter(v=>matchFor(v).pct>=70).length;
     qcard.innerHTML=`<div class="done anim" style="display:grid;gap:14px"><span class="eyebrow" style="color:var(--green)">Klaar!</span>
       <h3 class="qtitle">${n?`${n} vacature${n>1?"s":""} met een sterke match`:"Je matches staan klaar"}</h3>
-      <p>We hebben alle ${VAC.length} vacatures gescoord op jouw antwoorden. De beste staan bovenaan.${MODE==="beeld"?" Tip: doe ook de klassieke quiz, dan checken we ook je diploma's en vaardigheden.":""}</p>
+      <p>We hebben alle ${VAC.length} vacatures vergeleken met je antwoorden, je diploma, je studie en wat je al kunt. De beste staan bovenaan.</p>
       <div class="qnav"><button class="btn or" id="q-naar">Bekijk mijn matches ↓</button><span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" id="q-opnieuw">Antwoorden aanpassen</button><button class="btn ghost danger" data-reset>Quiz opnieuw doen</button></span></div></div>`;
     return;
   }
