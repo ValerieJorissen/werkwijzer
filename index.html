@@ -188,6 +188,8 @@ dialog.brief{border:2px solid var(--ink);border-radius:32px;padding:0;width:min(
 dialog.brief::backdrop{background:rgba(8,40,30,.6)}
 .bwrap{padding:26px;display:grid;gap:16px;overflow:auto;max-height:calc(100dvh - 28px)}
 @media (max-width:520px){.bwrap{padding:18px}dialog.brief{border-radius:24px}}
+.bnote{margin:14px 0 4px;padding:12px 14px;border-radius:14px;background:#fff1c9;border:2px solid var(--ink);font-size:15px;line-height:1.4}
+.bnote b{font-weight:700}
 .bhead{display:flex;justify-content:space-between;align-items:start;gap:12px}
 .bhead .eyebrow{color:var(--orange);font-size:16px}
 .bhead h3{font-family:var(--f-display);font-weight:800;font-variation-settings:"wdth" 82;text-transform:uppercase;font-size:26px;line-height:1;margin:4px 0 0}
@@ -600,7 +602,7 @@ const RICHTING=[
  [/accountancy|financ|fiscaal|bedrijfseconomie|controlling|boekhoud/,"financieel"],
  [/secretar|office|administra/,"admin"],
  [/klantcontact|callcenter|klantenservice/,"klant"],
- [/rechten|\brecht\b|juridisch|notariaat|advocat/,"juridisch"],
+ [/rechten|\brecht\b|rechtsgeleerd|juridisch|notariaat|advocat|\blaw\b|\blegal\b|\bllm?\b/,"juridisch"],
  [/personeel|\bhrm?\b|human resource|arbeids/,"hr"],
  [/beveilig|handhav|veiligheid|politie/,"veiligheid"]];
 function parseOpl(t){
@@ -899,6 +901,17 @@ function setMode(m){MODE=m;MODEL=null;STEPS=m==="klassiek"?STEPS_K:STEPS_B;
   document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===m)));renderQuiz();renderResults();renderVac();}
 
 // Matchscore 0-100
+// Studie past bij vakgebied? Specialistisch werk vraagt bijna altijd een passende studie.
+const STUDIE_VAK=["ict","juridisch","zorg","techniek","financieel","onderwijs","veiligheid"];
+const STUDIE_OK={juridisch:["juridisch","overheid","hr"],overheid:["overheid","juridisch"],financieel:["financieel","commercieel"],commercieel:["commercieel","financieel","logistiek"],ict:["ict"],logistiek:["logistiek","commercieel"]};
+function studieMis(j,a){
+  const mijn=(a.opl&&a.opl.richting)||[];if(!mijn.length)return null;
+  const past=new Set(mijn.flatMap(r=>STUDIE_OK[r]||[r]));mijn.forEach(r=>past.add(r));
+  if(STUDIE_VAK.includes(j.vak)&&!past.has(j.vak)) return VAKKEN[j.vak];
+  for(const e of j.eisen||[]){
+    if(!e.h||!/opleid|studie|master|bachelor|diploma|hotelschool|achtergrond in/i.test(e.t)||/elke richting|zwemdiploma|rijbewijs/i.test(e.t))continue;
+    const nodig=parseOpl(e.t).richting;if(nodig.length&&!nodig.some(r=>past.has(r)))return VAKKEN[nodig[0]];}
+  return null;}
 function score(j,a){
   const r=[];let t=0;const add=(p,txt,st)=>{t+=p;r.push({txt,st});};
   if(a.vak.includes(j.vak)) add(20,`Vakgebied ${VAKKEN[j.vak]} past bij je keuze`,"ok"); else add(0,`Ander vakgebied: ${VAKKEN[j.vak]||j.vak}`,"no");
@@ -909,7 +922,8 @@ function score(j,a){
     else if(d>0) add(7,`Gevraagd niveau ${j.niveau}, jij hebt een hoger niveau`,"part");
     else if(d===-1) add(3,`Gevraagd niveau ${j.niveau} is één stap hoger dan jouw opleiding`,"part");
     else add(0,`Gevraagd niveau ${j.niveau}`,"no");}
-  if((a.opl.richting||[]).includes(j.vak)) add(4,"Je studierichting sluit aan op dit werk","ok");
+  if((a.opl.richting||[]).includes(j.vak)) add(12,"Je studie sluit precies aan op dit werk","ok");
+  const sMis=studieMis(j,a);
   const mine=new Set([...a.skills,...(a.talen||[])].map(s=>s.toLowerCase())), js=j.skills||[], kE=(j.eisen||[]).filter(e=>e.k);
   let cap=100;const miss=[];
   const skU=a.skillsUnknown&&!a.skills.length;
@@ -963,6 +977,7 @@ function score(j,a){
     if(a.omgeving===j.omgeving) r.push({txt:j.omgeving==="team"?"Je werkt veel samen in een team":"Je werkt grotendeels zelfstandig",st:"ok"});
     else{t-=3;r.push({txt:j.omgeving==="team"?"Deze rol vraagt veel samenwerking":"Deze rol vraagt veel zelfstandigheid",st:"part"});}}
   const X=extra(j,a);t=t*0.72+X.v*28+(X.fav?6:0);r.push(...X.r);
+  if(sMis){cap=Math.min(cap,25);miss.push("passende studie");r.push({txt:`Hier hoort een studie in ${sMis.toLowerCase()} bij, en dat past niet bij wat jij hebt gestudeerd`,st:"no",hard:1});}
   if(X.deal.length){cap=Math.min(cap,30);X.deal.forEach(d=>{miss.push("deal-breaker: "+d);r.push({txt:`Deal-breaker: ${d}`,st:"no",hard:1});});}
   const ord={ok:1,part:2,no:3};r.sort((x,y)=>(x.hard?0:ord[x.st])-(y.hard?0:ord[y.st]));
   return {pct:Math.max(0,Math.min(cap,100,Math.round(t))),r,miss,capped:cap<100&&Math.round(t)>cap};
@@ -1100,7 +1115,7 @@ function card(v,m,best){
     ${eis}
     ${m?`<details class="why"><summary>Waarom ${m.pct}%?</summary><ul>${m.r.map(x=>`<li class="${x.st}">${esc(x.txt)}</li>`).join("")}</ul></details>`:""}
     <div class="vfoot"><div class="vmeta">${v.sluit?`<span>Sluit ${datum(v.sluit)}</span>`:""}${v.branche?`<span>${BRANCHE[v.branche]||""}</span>`:""}<span>${esc(host)}</span></div>
-      <div class="acts"><button type="button" class="go alt" data-brief="${esc(v.id)}">Schrijf motivatiebrief</button><a class="go" href="${esc(v.url)}" target="_blank" rel="noopener">Bekijk bij werkgever ↗</a></div></div>
+      <div class="acts"><button type="button" class="go alt" data-brief="${esc(v.id)}">Opzet motivatiebrief</button><a class="go" href="${esc(v.url)}" target="_blank" rel="noopener">Bekijk bij werkgever ↗</a></div></div>
   </article>`;
 }
 function rings(root){requestAnimationFrame(()=>requestAnimationFrame(()=>root.querySelectorAll(".ring").forEach(r=>{r.querySelector(".val").style.strokeDashoffset=(119.4*(1-r.dataset.p/100)).toFixed(1);})));}
@@ -1211,16 +1226,16 @@ function openBrief(id){
   try{dlg.showModal();}catch(e){dlg.setAttribute("open","");}
 }
 function renderBrief(){
-  const kop=`<div class="bhead"><div><span class="eyebrow">Motivatiebrief${bstap<BSTAPPEN.length?` · stap ${bstap+1} van ${BSTAPPEN.length}`:""}</span><h3>${bstap<BSTAPPEN.length?BSTAPPEN[bstap].t:"Je brief staat klaar"}</h3><p>${esc(BJ.titel)} bij ${esc(BJ.org)}</p></div><button type="button" class="bx" id="b-close" aria-label="Sluiten">✕</button></div>`;
+  const kop=`<div class="bhead"><div><span class="eyebrow">Motivatiebrief${bstap<BSTAPPEN.length?` · stap ${bstap+1} van ${BSTAPPEN.length}`:""}</span><h3>${bstap<BSTAPPEN.length?BSTAPPEN[bstap].t:"Je opzet staat klaar"}</h3><p>${esc(BJ.titel)} bij ${esc(BJ.org)}</p></div><button type="button" class="bx" id="b-close" aria-label="Sluiten">✕</button></div>`;
   if(bstap>=BSTAPPEN.length){
-    bw.innerHTML=kop+`<p class="btip">Lees je brief na en maak hem persoonlijk. Je kunt de tekst hieronder direct aanpassen.</p>
-      <textarea id="b-letter" class="text letter" aria-label="Je motivatiebrief">${esc(maakBrief())}</textarea>
+    bw.innerHTML=kop+`<div class="bnote"><b>Let op: dit is alleen een opzet.</b> Werkgevers waarderen het echt als je je brief zelf schrijft. Gebruik dit als startpunt en zet het daarna in je eigen woorden, met je eigen voorbeelden.</div><p class="btip">Herschrijf de opzet hieronder in je eigen woorden. Je kunt de tekst direct aanpassen.</p>
+      <textarea id="b-letter" class="text letter" aria-label="Opzet van je motivatiebrief">${esc(maakBrief())}</textarea>
       <div class="qnav"><button type="button" class="btn ghost" id="b-back">← Antwoorden aanpassen</button>
-      <span style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn" id="b-again">Andere versie</button><button type="button" class="btn or" id="b-copy">Kopieer brief</button></span></div>`;
+      <span style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn" id="b-again">Andere versie</button><button type="button" class="btn or" id="b-copy">Kopieer opzet</button></span></div>`;
     return;
   }
   const s=BSTAPPEN[bstap];
-  bw.innerHTML=kop+`<div class="prog" aria-hidden="true">${BSTAPPEN.map((_,i)=>`<span class="${i<bstap?"done":i===bstap?"now":""}"></span>`).join("")}</div>
+  bw.innerHTML=kop+(bstap===0?`<div class="bnote"><b>Let op: dit is alleen een opzet.</b> Werkgevers waarderen het echt als je je brief zelf schrijft. Gebruik dit als startpunt en zet het daarna in je eigen woorden, met je eigen voorbeelden.</div>`:"")+`<div class="prog" aria-hidden="true">${BSTAPPEN.map((_,i)=>`<span class="${i<bstap?"done":i===bstap?"now":""}"></span>`).join("")}</div>
     <p class="qhint" style="margin:0">${s.h}</p><div class="qbody anim">${s.html()}</div>
     <div class="qnav"><button type="button" class="btn ghost" id="b-prev" ${bstap?"":"disabled"}>← Vorige</button>
     <button type="button" class="btn or" id="b-next" ${s.ok()?"":"disabled"}>${bstap===BSTAPPEN.length-1?"Maak mijn brief →":"Volgende →"}</button></div>`;
