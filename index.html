@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Vind de vacature die bij je past: beantwoord zeven vragen en zie openstaande vacatures in de Randstad op volgorde van match.">
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Werkwijzer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: smalle kolom; vragenlijst bovenaan als hoofdtaak, vacatures eronder als lijst die na de test op matchscore sorteert */
+:root{
+  --bg:#f3f6f5; --surface:#ffffff; --ink:#14302c; --muted:#5a6f6b; --line:#d6e0dd;
+  --accent:#e0a21b; --accent-ink:#3a2a00; --brand:#1d5c52; --brand-soft:#e1efeb;
+  --good:#2f7d4f; --mid:#b07a0c; --low:#8a8f8e;
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Source Sans 3",ui-sans-serif,system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1a18; --surface:#162523; --ink:#e4efec; --muted:#93aaa5; --line:#28403b;
+  --accent:#f0b73a; --accent-ink:#2a1e00; --brand:#7cc8b8; --brand-soft:#1c3531;
+  --good:#6cc890; --mid:#e6b04a; --low:#7d8987; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1a18; --surface:#162523; --ink:#e4efec; --muted:#93aaa5; --line:#28403b;
+  --accent:#f0b73a; --accent-ink:#2a1e00; --brand:#7cc8b8; --brand-soft:#1c3531;
+  --good:#6cc890; --mid:#e6b04a; --low:#7d8987; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--f-body)}
+.wrap{max-width:860px;margin:0 auto;padding-block:32px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:grid;gap:40px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+header{display:grid;gap:10px}
+.brand{font-family:var(--f-display);font-weight:700;color:var(--brand);font-size:15px;letter-spacing:.04em;text-transform:uppercase}
+h1{font-size:clamp(30px,5vw,44px);font-weight:700;max-width:18ch}
+.lead{color:var(--muted);max-width:60ch;margin:0}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.quiz{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;display:grid;gap:20px}
+.progress{display:flex;gap:6px}
+.progress span{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.progress span.done{background:var(--brand)}
+.progress span.now{background:var(--accent)}
+.qhead{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.qcount{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.qtitle{font-size:23px;font-weight:500}
+.qhint{color:var(--muted);margin:-8px 0 0;font-size:15px}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.opt{font:inherit;text-align:left;cursor:pointer;background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:2px}
+.opt small{color:var(--muted);font-size:13px}
+.opt:hover{border-color:var(--brand)}
+.opt[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft);box-shadow:inset 0 0 0 1px var(--brand)}
+.opt:focus-visible,.btn:focus-visible,select:focus-visible,.go:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.btn{font:600 15px var(--f-body);cursor:pointer;border-radius:999px;padding:10px 20px;border:1.5px solid var(--line);background:transparent;color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.done-box{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.done-box p{margin:0;max-width:52ch}
+.listhead{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}
+.listhead h2{font-size:26px}
+.filters{display:flex;gap:10px;flex-wrap:wrap}
+select{font:inherit;font-size:15px;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.note{font-size:14px;color:var(--muted);margin:0;max-width:70ch}
+.jobs{display:grid;gap:12px}
+.job{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;grid-template-columns:1fr auto;gap:6px 18px}
+.job>div{min-width:0}
+.job h3{font-size:19px;font-weight:500}
+.org{color:var(--muted);font-size:15px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{font-size:13px;padding:2px 9px;border-radius:999px;background:var(--brand-soft);color:var(--ink)}
+.tag.sal{font-family:var(--f-mono);font-size:12px;padding-top:3px}
+.tag.unk{background:transparent;border:1px dashed var(--line);color:var(--muted)}
+.side{grid-row:1/span 2;grid-column:2;display:grid;justify-items:end;align-content:space-between;gap:12px}
+.score{text-align:right;display:grid;justify-items:end;gap:4px}
+.score b{font-family:var(--f-mono);font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+.score .lbl{font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.s-hi{color:var(--good)} .s-mid{color:var(--mid)} .s-lo{color:var(--low)}
+.go{font:600 14px var(--f-body);color:var(--brand);text-decoration:none;border:1.5px solid var(--brand);border-radius:999px;padding:6px 14px;white-space:nowrap}
+.go:hover{background:var(--brand-soft)}
+.foot{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);font-family:var(--f-mono);margin-top:8px}
+.why{grid-column:1/-1;margin:8px 0 0;padding:10px 0 0;border-top:1px dashed var(--line);font-size:14px;color:var(--muted);display:grid;gap:3px;list-style:none}
+.why li::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:8px;vertical-align:1px;background:var(--line)}
+.why li.ok::before{background:var(--good)}
+.why li.part::before{background:var(--mid)}
+.empty{padding:24px;text-align:center;color:var(--muted);border:1.5px dashed var(--line);border-radius:12px}
+@media (max-width:560px){.job{grid-template-columns:1fr}.side{grid-row:auto;grid-column:1;justify-items:start;grid-auto-flow:column;align-items:center;justify-content:space-between}.score{justify-items:start;text-align:left}}
+@media (prefers-reduced-motion:no-preference){.opt{transition:border-color .15s,background .15s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">Werkwijzer</div>
+    <h1>Welke vacature past bij jou?</h1>
+    <p class="lead">Beantwoord zeven korte vragen. We zetten openstaande vacatures in de Randstad op volgorde van hoe goed ze bij je passen. Elke vacature linkt naar de originele pagina van de werkgever, waar je ook solliciteert.</p>
+  </header>
+
+  <section class="quiz" id="quiz" aria-live="polite"></section>
+
+  <section style="display:grid;gap:16px">
+    <div class="listhead">
+      <div>
+        <div class="eyebrow" id="sortlabel">Alle vacatures</div>
+        <h2><span id="count">0</span> openstaande vacatures</h2>
+      </div>
+      <div class="filters">
+        <label><span class="eyebrow" style="display:block">Regio</span><select id="f-regio"></select></label>
+        <label><span class="eyebrow" style="display:block">Vakgebied</span><select id="f-vak"></select></label>
+      </div>
+    </div>
+    <p class="note" id="bijgewerkt"></p>
+    <div class="jobs" id="jobs"></div>
+  </section>
+</div>
+
+<!-- VACATUREDATA: wordt elke werkdag bijgewerkt. Alleen kerngegevens + link naar de werkgever. null = niet vermeld. -->
+<script type="application/json" id="vacaturedata">
+{"bijgewerkt":"2026-11-03","vacatures":[
+{"id":"ams-coord-groen","titel":"Coördinator Groen","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"overheid","uren":[36,40],"vorm":"hybride","niveau":"MBO","sal":[3206,4499],"omgeving":"team","sluit":"2026-11-16","url":"https://werkenbij.amsterdam.nl/vacatures/coordinator-groen-d235d3aa-3001-4f30-a91b-5521f973840f"},
+{"id":"ams-verkeersontwerper","titel":"(Junior) Verkeersontwerper","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"techniek","uren":[32,36],"vorm":"hybride","niveau":"HBO","sal":[3568,5096],"omgeving":"team","sluit":"2026-11-22","url":"https://werkenbij.amsterdam.nl/vacatures/-junior-verkeersontwerper-55a38e89-7180-4676-b865-f62c7a072740"},
+{"id":"ams-monteur-elektro","titel":"1e monteur elektrotechniek","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"techniek","uren":[32,36],"vorm":"locatie","niveau":"MBO","sal":[2840,4015],"omgeving":"team","sluit":"2026-12-31","url":"https://werkenbij.amsterdam.nl/vacatures/1e-monteur-elektrotechniek-d7deefec-0f7c-4d36-9b6b-51d37de9827c"},
+{"id":"ams-monteur-wtb","titel":"1e monteur werktuigbouw","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"techniek","uren":[32,36],"vorm":"locatie","niveau":null,"sal":[2840,4015],"omgeving":"team","sluit":null,"url":"https://werkenbij.amsterdam.nl/vacatures/1e-monteur-werktuigbouw-6ee486de-8df3-40d9-b344-3c98c86544a4"},
+{"id":"ams-jongerenadviseur","titel":"Jongerenadviseur dak- en thuisloze jongeren","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[32,36],"vorm":"hybride","niveau":"HBO","sal":[3568,5096],"omgeving":"team","sluit":"2026-11-08","url":"https://werkenbij.amsterdam.nl/vacatures/jongerenadviseur-dak-en-thuisloze-jongeren-16-27-jaar-0b30975a-a502-4d41-a371-66027901530b"},
+{"id":"ams-veilig-thuis","titel":"Medewerker Veilig Thuis","org":"Gemeente Amsterdam","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[32,36],"vorm":"hybride","niveau":"HBO","sal":[3824,5624],"omgeving":"team","sluit":"2026-11-15","url":"https://werkenbij.amsterdam.nl/vacatures/medewerker-veilig-thuis-44648be5-2a88-4846-8475-1e6ca613b8a6"},
+{"id":"aumc-reuma","titel":"Gespecialiseerd verpleegkundige polikliniek Reumatologie","org":"Amsterdam UMC","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[24,32],"vorm":"locatie","niveau":null,"sal":[3171,4492],"omgeving":"team","sluit":null,"url":"https://werkenbij.amsterdamumc.org/nl/vacatures/zorg/gespecialiseerd-verpleegkundige-polikliniek-reumatologie"},
+{"id":"aumc-ccu","titel":"Cardiac Care (CCU) verpleegkundige","org":"Amsterdam UMC","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[24,36],"vorm":"locatie","niveau":null,"sal":[4185,5499],"omgeving":"team","sluit":null,"url":"https://werkenbij.amsterdamumc.org/nl/vacatures/zorg/cardiac-care-ccu-verpleegkundige-1"},
+{"id":"aumc-ccu-opl","titel":"Cardiac Care (CCU) verpleegkundige in opleiding","org":"Amsterdam UMC","plaats":"Amsterdam","regio":"Noord-Holland","vak":"zorg","uren":[32,36],"vorm":"locatie","niveau":null,"sal":[3171,4492],"omgeving":"team","sluit":null,"url":"https://werkenbij.amsterdamumc.org/nl/vacatures/zorg/cardiac-care-ccu-verpleegkundige-in-opleiding-1"},
+{"id":"breman-monteur-w","titel":"Leidinggevend monteur W / Uitvoerder W","org":"Breman","plaats":"Heemskerk","regio":"Noord-Holland","vak":"techniek","uren":[32,40],"vorm":"locatie","niveau":null,"sal":null,"omgeving":"team","sluit":null,"url":"https://www.breman.nl/werken-bij/vacature/leidinggevend-monteur-w-uitvoerder-w-regio-haarlem/"},
+{"id":"coolblue-ks","titel":"Klantenservice medewerker","org":"Coolblue","plaats":"Rotterdam","regio":"Zuid-Holland","vak":"klant","uren":[20,40],"vorm":"hybride","niveau":"MBO","sal":null,"salTekst":"€ 15 per uur","omgeving":"team","sluit":null,"url":"https://www.coolblue.nl/vacatures/klantenservice-medewerker"},
+{"id":"coolblue-am","titel":"Junior Accountmanager Binnendienst","org":"Coolblue","plaats":"Rotterdam","regio":"Zuid-Holland","vak":"commercieel","uren":[40,40],"vorm":"hybride","niveau":"MBO","sal":null,"omgeving":"team","sluit":null,"url":"https://www.coolblue.nl/vacatures/accountmanager-coolblue-zakelijk"},
+{"id":"coolblue-cjs","titel":"Customer Journey Specialist","org":"Coolblue","plaats":"Rotterdam","regio":"Zuid-Holland","vak":"ict","uren":[40,40],"vorm":"hybride","niveau":"HBO","sal":null,"omgeving":"team","sluit":null,"url":"https://www.coolblue.nl/vacatures/customer-journey-specialist"},
+{"id":"utr-or-secretaris","titel":"Ambtelijk secretaris OR","org":"Gemeente Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"overheid","uren":[32,36],"vorm":null,"niveau":null,"sal":[3568,5096],"omgeving":null,"sluit":"2026-11-14","url":"https://www.werkenbijutrecht.nl/vacature/ambtelijk-secretaris-or-1344929/"},
+{"id":"utr-assetbeheer","titel":"Coördinator assetbeheer inzamelvoorzieningen","org":"Gemeente Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"techniek","uren":[32,36],"vorm":null,"niveau":null,"sal":[3824,5624],"omgeving":null,"sluit":"2026-11-14","url":"https://www.werkenbijutrecht.nl/vacature/co%c3%b6rdinator-assetbeheer-inzamelvoorzieningen-1338517/"},
+{"id":"utr-informatiebeheer","titel":"Adviseur Informatiebeheer","org":"Gemeente Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"ict","uren":[32,36],"vorm":null,"niveau":null,"sal":[3824,5624],"omgeving":null,"sluit":"2026-11-19","url":"https://www.werkenbijutrecht.nl/vacature/adviseur-informatiebeheer-1344755/"},
+{"id":"utr-verkeerskundige","titel":"Senior Verkeerskundige","org":"Gemeente Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"techniek","uren":[32,36],"vorm":null,"niveau":null,"sal":[5369,7253],"omgeving":null,"sluit":"2026-11-21","url":"https://www.werkenbijutrecht.nl/vacature/senior-verkeerskundige-1323981/"},
+{"id":"umcu-apotheek","titel":"Apothekersassistent inkoop geneesmiddelenlogistiek","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"zorg","uren":[32,36],"vorm":"locatie","niveau":null,"sal":[3126,4182],"omgeving":null,"sluit":"2026-11-17","url":"https://www.werkenbijumcutrecht.nl/vacatures/apothekersassistent-inkoop-geneesmiddelenlogistiek-2026-7546"},
+{"id":"umcu-secretarieel","titel":"Medisch secretarieel medewerker cardiologie","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"admin","uren":[32,36],"vorm":null,"niveau":null,"sal":[2744,3636],"omgeving":null,"sluit":"2026-11-30","url":"https://www.werkenbijumcutrecht.nl/vacatures/administratief-secretarieel/medisch-secretarieel-medewerker-cardiologie-aangeboren-hartafwijkingen-2026-7377"},
+{"id":"umcu-pacu","titel":"PACU/Recoveryverpleegkundige volwassenen","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"zorg","uren":[18,36],"vorm":"locatie","niveau":null,"sal":[3626,5134],"omgeving":"team","sluit":null,"url":"https://www.werkenbijumcutrecht.nl/vacatures/recovery-verpleegkundige/pacu-recoveryverpleegkundige-volwassenen-2026-6805"},
+{"id":"umcu-leerling-mbo","titel":"Leerling verpleegkundige mbo","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"zorg","uren":[32,36],"vorm":"locatie","niveau":"MBO","sal":null,"omgeving":"team","sluit":"2027-03-01","url":"https://www.werkenbijumcutrecht.nl/vacatures/opleidingsplekken/leerling-verpleegkundige-mbo-2026-7540"},
+{"id":"umcu-leerling-hbo","titel":"Leerling verpleegkundige hbo","org":"UMC Utrecht","plaats":"Utrecht","regio":"Utrecht","vak":"zorg","uren":[32,36],"vorm":"locatie","niveau":"HBO","sal":null,"omgeving":"team","sluit":"2027-01-16","url":"https://www.werkenbijumcutrecht.nl/vacatures/opleidingsplekken/leerling-verpleegkundige-hbo-2026-7538"}
+]}
+</script>
+
+<script>
+const DATA=JSON.parse(document.getElementById("vacaturedata").textContent);
+const VAKKEN={zorg:"Zorg & welzijn",ict:"ICT & data",onderwijs:"Onderwijs",techniek:"Techniek",logistiek:"Logistiek",commercieel:"Sales & marketing",klant:"Klantcontact",creatief:"Design & creatief",overheid:"Overheid & beleid",admin:"Administratie & secretariaat",horeca:"Horeca & retail",financieel:"Financieel"};
+const WERKVORM={locatie:"Op locatie",hybride:"Hybride",remote:"Thuiswerk"};
+const NIVEAU=["MBO","HBO","WO"];
+const REGIOS=["Noord-Holland","Zuid-Holland","Utrecht","Flevoland"];
+const vandaag=new Date().toISOString().slice(0,10);
+const VACATURES=DATA.vacatures.filter(v=>!v.sluit||v.sluit>=vandaag);
+
+const VRAGEN=[
+ {key:"vak",titel:"In welk vakgebied wil je werken?",hint:"Kies er maximaal drie.",multi:3,opties:Object.entries(VAKKEN).map(([v,l])=>({v,l}))},
+ {key:"uren",titel:"Hoeveel uur per week wil je werken?",opties:[{v:"16-24",l:"16 – 24 uur",s:"Parttime"},{v:"24-32",l:"24 – 32 uur",s:"Ruim parttime"},{v:"32-40",l:"32 – 40 uur",s:"Fulltime"}]},
+ {key:"vorm",titel:"Waar werk je het liefst?",opties:[{v:"locatie",l:"Op locatie",s:"Elke dag op de werkplek"},{v:"hybride",l:"Hybride",s:"Deels thuis, deels op kantoor"},{v:"remote",l:"Thuis",s:"(Bijna) volledig thuiswerken"},{v:"maakt",l:"Maakt niet uit"}]},
+ {key:"regio",titel:"In welke regio zoek je?",hint:"Thuiswerkvacatures tellen altijd mee.",opties:REGIOS.map(r=>({v:r,l:r})).concat([{v:"overal",l:"Hele Randstad"}])},
+ {key:"niveau",titel:"Wat is je hoogst afgeronde opleiding?",opties:[{v:"MBO",l:"MBO"},{v:"HBO",l:"HBO"},{v:"WO",l:"WO (universiteit)"}]},
+ {key:"sal",titel:"Wat is je minimale bruto maandsalaris?",hint:"Bij een fulltime baan.",opties:[{v:2400,l:"€ 2.400"},{v:3000,l:"€ 3.000"},{v:3600,l:"€ 3.600"},{v:4200,l:"€ 4.200"},{v:0,l:"Geen voorkeur"}]},
+ {key:"omgeving",titel:"Hoe werk je het liefst?",opties:[{v:"team",l:"Samen in een team",s:"Veel overleg en samenwerken"},{v:"zelfstandig",l:"Zelfstandig",s:"Eigen planning en verantwoordelijkheid"},{v:"maakt",l:"Allebei prima"}]},
+];
+
+let stap=0, antwoorden={}, klaar=false;
+const euro=n=>"€ "+n.toLocaleString("nl-NL");
+const datum=d=>new Date(d+"T12:00").toLocaleDateString("nl-NL",{day:"numeric",month:"long",year:"numeric"});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+// Matchscore 0-100. Onbekende gegevens tellen voor de helft mee.
+function score(job,a){
+  const r=[];let tot=0;
+  const add=(pts,tekst,status)=>{tot+=pts;r.push({tekst,status});};
+  add((a.vak||[]).includes(job.vak)?30:0,(a.vak||[]).includes(job.vak)?`Vakgebied ${VAKKEN[job.vak]} past bij je keuze`:`Ander vakgebied: ${VAKKEN[job.vak]}`,(a.vak||[]).includes(job.vak)?"ok":"no");
+  const [lo,hi]=a.uren.split("-").map(Number);
+  if(Math.min(hi,job.uren[1])>=Math.max(lo,job.uren[0])) add(15,`${job.uren[0]}–${job.uren[1]} uur sluit aan bij jouw ${lo}–${hi} uur`,"ok");
+  else {const af=Math.min(Math.abs(job.uren[0]-hi),Math.abs(lo-job.uren[1]));
+    af<=4?add(8,`${job.uren[0]}–${job.uren[1]} uur ligt net buiten je wens`,"part"):add(0,`${job.uren[0]}–${job.uren[1]} uur past niet bij je wens`,"no");}
+  if(!job.vorm) add(8,"Werkvorm staat niet in de vacature","part");
+  else if(a.vorm==="maakt"||a.vorm===job.vorm) add(15,`Werkvorm: ${WERKVORM[job.vorm].toLowerCase()}`,"ok");
+  else if(a.vorm==="hybride"||job.vorm==="hybride") add(8,`Werkvorm is ${WERKVORM[job.vorm].toLowerCase()}, jij wilt ${WERKVORM[a.vorm].toLowerCase()}`,"part");
+  else add(0,`Werkvorm is ${WERKVORM[job.vorm].toLowerCase()}`,"no");
+  if(a.regio==="overal"||job.vorm==="remote"||job.regio===a.regio) add(15,job.vorm==="remote"?"Thuiswerk, dus regio maakt niet uit":`${job.plaats} ligt in jouw regio`,"ok");
+  else add(0,`${job.plaats} (${job.regio}) ligt buiten je regio`,"no");
+  if(!job.niveau) add(8,"Opleidingsniveau staat niet in de vacature","part");
+  else {const d=NIVEAU.indexOf(a.niveau)-NIVEAU.indexOf(job.niveau);
+    if(d===0) add(15,`Gevraagd niveau ${job.niveau} past precies`,"ok");
+    else if(d>0) add(10,`Gevraagd niveau ${job.niveau}, jij hebt meer opleiding`,"part");
+    else if(d===-1) add(4,`Gevraagd niveau ${job.niveau} is hoger dan jouw opleiding`,"part");
+    else add(0,`Gevraagd niveau ${job.niveau}`,"no");}
+  if(!a.sal) add(10,"Je hebt geen salariswens opgegeven","ok");
+  else if(!job.sal) add(5,"Salaris staat niet als maandbedrag in de vacature","part");
+  else if(job.sal[1]>=a.sal) add(10,`Salaris tot ${euro(job.sal[1])} haalt je minimum`,"ok");
+  else if(job.sal[1]>=a.sal-400) add(5,`Salaris tot ${euro(job.sal[1])}, net onder je minimum`,"part");
+  else add(0,`Salaris tot ${euro(job.sal[1])} ligt onder je minimum`,"no");
+  if(a.omgeving!=="maakt"&&job.omgeving){
+    if(a.omgeving===job.omgeving) r.push({tekst:job.omgeving==="team"?"Je werkt veel samen in een team":"Je werkt grotendeels zelfstandig",status:"ok"});
+    else {tot-=5;r.push({tekst:job.omgeving==="team"?"Rol vraagt veel samenwerking":"Rol vraagt veel zelfstandigheid",status:"part"});}}
+  return {pct:Math.max(0,Math.min(100,tot)),redenen:r};
+}
+
+function renderQuiz(){
+  const el=document.getElementById("quiz");
+  if(klaar){
+    el.innerHTML=`<div class="done-box"><div><div class="eyebrow">Vragenlijst ingevuld</div>
+      <p>Je matches staan hieronder, de beste bovenaan. Pas je antwoorden aan om een ander resultaat te zien.</p></div>
+      <button class="btn" id="opnieuw">Antwoorden aanpassen</button></div>`;
+    document.getElementById("opnieuw").onclick=()=>{klaar=false;stap=0;renderQuiz();renderJobs();};
+    return;
+  }
+  const q=VRAGEN[stap], val=antwoorden[q.key];
+  const gekozen=v=>q.multi?(val||[]).includes(v):val===v;
+  const prog=VRAGEN.map((_,i)=>`<span class="${i<stap?"done":i===stap?"now":""}"></span>`).join("");
+  el.innerHTML=`<div class="progress" aria-hidden="true">${prog}</div>
+    <div class="qhead"><h2 class="qtitle">${q.titel}</h2><span class="qcount">${stap+1} / ${VRAGEN.length}</span></div>
+    ${q.hint?`<p class="qhint">${q.hint}</p>`:""}
+    <div class="opts">${q.opties.map((o,i)=>`<button class="opt" id="opt-${q.key}-${i}" data-i="${i}" aria-pressed="${gekozen(o.v)}"><span>${o.l}</span>${o.s?`<small>${o.s}</small>`:""}</button>`).join("")}</div>
+    <div class="nav"><button class="btn" id="terug" ${stap===0?"disabled":""}>Vorige</button>
+      <button class="btn primary" id="verder" ${val===undefined||(q.multi&&!val.length)?"disabled":""}>${stap===VRAGEN.length-1?"Toon mijn matches":"Volgende"}</button></div>`;
+  el.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    const v=q.opties[+b.dataset.i].v;
+    if(q.multi){let arr=[...(antwoorden[q.key]||[])];
+      arr=arr.includes(v)?arr.filter(x=>x!==v):arr.length<q.multi?[...arr,v]:arr;
+      antwoorden[q.key]=arr;}
+    else{antwoorden[q.key]=v; if(stap<VRAGEN.length-1) stap++;}
+    renderQuiz();
+  });
+  document.getElementById("terug").onclick=()=>{stap--;renderQuiz();};
+  document.getElementById("verder").onclick=()=>{
+    if(stap<VRAGEN.length-1){stap++;renderQuiz();}
+    else{klaar=true;renderQuiz();renderJobs();document.getElementById("sortlabel").scrollIntoView({behavior:"smooth",block:"start"});}
+  };
+}
+
+function vulFilters(){
+  const regios=[...new Set(VACATURES.map(v=>v.regio))].sort();
+  const vakken=[...new Set(VACATURES.map(v=>v.vak))];
+  document.getElementById("f-regio").innerHTML=`<option value="">Alle regio's</option>`+regios.map(r=>`<option>${esc(r)}</option>`).join("");
+  document.getElementById("f-vak").innerHTML=`<option value="">Alle vakgebieden</option>`+Object.entries(VAKKEN).filter(([k])=>vakken.includes(k)).map(([k,l])=>`<option value="${k}">${l}</option>`).join("");
+  ["f-regio","f-vak"].forEach(id=>document.getElementById(id).onchange=renderJobs);
+  document.getElementById("bijgewerkt").textContent=`Vacatures verzameld van de websites van werkgevers. Laatst bijgewerkt op ${datum(DATA.bijgewerkt)}. Controleer altijd de actuele gegevens bij de werkgever.`;
+}
+
+function renderJobs(){
+  const fr=document.getElementById("f-regio").value, fv=document.getElementById("f-vak").value;
+  let lijst=VACATURES.filter(v=>(!fr||v.regio===fr)&&(!fv||v.vak===fv)).map(v=>({...v,m:klaar?score(v,antwoorden):null}));
+  if(klaar) lijst.sort((a,b)=>b.m.pct-a.m.pct);
+  document.getElementById("count").textContent=lijst.length;
+  document.getElementById("sortlabel").textContent=klaar?"Gesorteerd op jouw match":"Alle vacatures";
+  const box=document.getElementById("jobs");
+  if(!lijst.length){box.innerHTML=`<div class="empty">Geen vacatures met deze filters. Kies een andere regio of vakgebied.</div>`;return;}
+  box.innerHTML=lijst.map(v=>{
+    let sc="";
+    if(v.m){const c=v.m.pct>=75?"s-hi":v.m.pct>=50?"s-mid":"s-lo", l=v.m.pct>=75?"Sterke match":v.m.pct>=50?"Redelijke match":"Minder passend";
+      sc=`<div class="score ${c}"><b>${v.m.pct}%</b><span class="lbl">${l}</span></div>`;}
+    const sal=v.sal?`<span class="tag sal">${euro(v.sal[0])} – ${euro(v.sal[1])}</span>`:v.salTekst?`<span class="tag sal">${esc(v.salTekst)}</span>`:`<span class="tag unk">Salaris niet vermeld</span>`;
+    return `<article class="job"><div><h3>${esc(v.titel)}</h3><div class="org">${esc(v.org)} · ${esc(v.plaats)}</div>
+      <div class="meta"><span class="tag">${VAKKEN[v.vak]||esc(v.vak)}</span><span class="tag">${v.uren[0]===v.uren[1]?v.uren[0]:v.uren[0]+"–"+v.uren[1]} uur</span>
+      ${v.vorm?`<span class="tag">${WERKVORM[v.vorm]}</span>`:""}${v.niveau?`<span class="tag">${v.niveau}</span>`:""}${sal}</div>
+      <div class="foot">${v.sluit?`<span>Sluit ${datum(v.sluit)}</span>`:""}<span>${esc(new URL(v.url).hostname.replace(/^www\./,""))}</span></div></div>
+      <div class="side">${sc}<a class="go" href="${esc(v.url)}" target="_blank" rel="noopener">Bekijk bij werkgever ↗</a></div>
+      ${v.m?`<ul class="why">${v.m.redenen.map(r=>`<li class="${r.status}">${r.tekst}</li>`).join("")}</ul>`:""}</article>`;
+  }).join("");
+}
+
+vulFilters();renderQuiz();renderJobs();
+</script>
+
+</body>
+</html>
