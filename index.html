@@ -224,6 +224,18 @@ textarea.letter{min-height:min(420px,52dvh);font-size:15px;line-height:1.6;backg
 .ovcta p{margin:0;max-width:52ch;font-size:17px}
 .ovcta .ovurl{font-size:14px;color:var(--muted);user-select:all}
 .btn.danger{border-color:var(--red);color:var(--red)}
+.modes{display:inline-flex;gap:4px;margin-top:22px;background:var(--green-d);border:2px solid var(--cream);border-radius:999px;padding:4px}
+.modes button{font-weight:700;font-size:14px;border:0;border-radius:999px;padding:9px 16px;cursor:pointer;background:transparent;color:var(--cream)}
+.modes button[aria-pressed="true"]{background:var(--lime);color:var(--ink)}
+.opts.img{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,118px),1fr));gap:10px}
+.opt.pic{border-radius:22px;padding:10px 8px 12px;display:grid;justify-items:center;gap:6px;text-align:center;background:var(--paper);position:relative}
+.opt.pic svg{width:100%;max-width:96px;aspect-ratio:1;display:block;transition:transform .25s}
+.opt.pic span{font-size:13.5px;line-height:1.2;font-weight:700}
+.opt.pic:hover svg{transform:rotate(-6deg) scale(1.06)}
+.opt.pic[aria-pressed="true"]{background:var(--green);color:var(--cream);border-color:var(--ink)}
+.opt.pic[aria-pressed="true"]::after{content:"✓";position:absolute;top:6px;right:8px;width:24px;height:24px;border-radius:50%;background:var(--lime);color:var(--ink);display:grid;place-items:center;font-size:13px;font-weight:800}
+@media (prefers-reduced-motion:no-preference){.opt.pic[aria-pressed="true"] svg{animation:pop .35s ease}}
+@keyframes pop{50%{transform:scale(1.12) rotate(4deg)}}
 /* How it works */
 .how{background:var(--pink);border-top:2px solid var(--ink)}
 .how .in{padding-block:72px}
@@ -292,6 +304,7 @@ footer p{margin:0;font-size:14px;opacity:.8;max-width:56ch}
         <p class="lead">Een uitgebreide quiz over wat je kunt en wat je wilt. Wij zetten vacatures in de Randstad op volgorde van match. Solliciteren doe je direct bij de werkgever.</p>
         <div class="cta">
           <button class="btn or" id="start">Start de quiz →</button>
+          <button class="btn" id="start-beeld">Doe de beeldquiz</button>
           <button class="btn ghost" data-goto="vacatures">Bekijk alle vacatures</button>
         </div>
         <div class="stats" id="stats"></div>
@@ -312,6 +325,7 @@ footer p{margin:0;font-size:14px;opacity:.8;max-width:56ch}
         <h2 class="disp" style="margin-top:6px">Vind je match</h2>
         <p>Vertel wat je hebt gestudeerd, wat je kunt en wat je zoekt. Je antwoorden blijven op dit apparaat bewaard. Opnieuw beginnen kan altijd.</p>
         <button class="btn ghost" data-reset style="margin-top:18px;color:var(--cream);border-color:var(--cream)">Quiz opnieuw doen</button>
+        <div class="modes" role="group" aria-label="Soort quiz"><button type="button" data-mode="klassiek" aria-pressed="true">Klassieke quiz</button><button type="button" data-mode="beeld" aria-pressed="false">Beeldquiz</button></div>
         <div class="asked" id="asked"></div>
       </div>
       <div class="qcard" id="qcard" aria-live="polite"></div>
@@ -566,12 +580,12 @@ function parseOpl(t){
 }
 
 // Antwoorden (per bezoeker bewaard in deze browser)
-const LEEG=()=>({vak:[],opl:{tekst:"",niveau:null,hand:false,richting:[]},skills:[],jaren:null,uren:null,steden:[],vorm:null,sector:[],grootte:null,branche:[],sal:null,omgeving:null,taken:[],sterk:[],talen:[],leiding:null,contract:[],diensten:null,engels:null,reizen:null,fysiek:null,impact:null,type:null,fav:[],deal:[]});
+const LEEG=()=>({vak:[],opl:{tekst:"",niveau:null,hand:false,richting:[]},skills:[],jaren:null,uren:null,steden:[],vorm:null,sector:[],grootte:null,branche:[],sal:null,omgeving:null,taken:[],sterk:[],talen:[],leiding:null,contract:[],diensten:null,engels:null,reizen:null,fysiek:null,impact:null,type:null,fav:[],deal:[],niv:null,skillsUnknown:false});
 let A=LEEG(), stap=0, klaar=false;
 try{const s=JSON.parse(localStorage.getItem("valcature-v1")||"null");if(s&&s.A){A=Object.assign(LEEG(),s.A);klaar=!!s.klaar;}}catch(e){}
 const save=()=>{try{localStorage.setItem("valcature-v1",JSON.stringify({A,klaar}))}catch(e){}};
 
-const STEPS=[
+const STEPS_K=[
  {kicker:"Vakgebied",titel:"In welk vakgebied wil je werken?",hint:"Kies er maximaal drie.",groups:[{key:"vak",multi:true,max:3,opts:Object.entries(VAKKEN).map(([v,l])=>({v,l}))}],ok:()=>A.vak.length>0},
  {kicker:"Soort taken",titel:"Waar word je blij van?",hint:"Kies er maximaal twee.",groups:[{key:"taken",multi:true,max:2,any:true,big:true,opts:[{v:"mensen",l:"Met mensen",s:"Helpen, adviseren, begeleiden"},{v:"data",l:"Met data & cijfers",s:"Analyseren, puzzelen, rekenen"},{v:"handen",l:"Met je handen",s:"Bouwen, repareren, aanpakken"},{v:"creatief",l:"Creatief",s:"Ontwerpen, schrijven, bedenken"},{v:"organiseren",l:"Organiseren",s:"Plannen, regelen, overzicht houden"},{v:"any",l:"Van alles wat"}]}],ok:()=>A.taken.length>0},
  {kicker:"Sterke punten",titel:"Hoe zouden anderen je omschrijven?",hint:"Kies er maximaal twee. Die gebruiken we ook in je motivatiebrief.",groups:[{key:"sterk",multi:true,max:2,big:true,opts:[{v:"analytisch",l:"Analytisch",s:"Ik zie snel patronen en verbanden"},{v:"creatief",l:"Creatief",s:"Ik bedenk graag nieuwe dingen"},{v:"sociaal",l:"Sociaal",s:"Ik voel mensen goed aan"},{v:"praktisch",l:"Praktisch",s:"Ik pak dingen gewoon aan"},{v:"georganiseerd",l:"Georganiseerd",s:"Ik houd overal overzicht"}]}],ok:()=>A.sterk.length>0},
@@ -633,6 +647,100 @@ function extra(j,a){
   return {v:sw?sv/sw:.7,r,fav,deal};
 }
 
+/* ---------- Beeldquiz: zelfgetekende illustraties ---------- */
+const IK='stroke="#17221D" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"',IF='fill="#FFFDF8"',IN='fill="none"';
+const sc=(s,x,y)=>`<g transform="translate(${x} ${y}) scale(.56)">${s}</g>`;
+const IC={};
+IC.heart=`<path ${IK} ${IF} d="M50 76C30 62 22 52 22 40a13 13 0 0 1 28-6 13 13 0 0 1 28 6c0 12-8 22-28 36z"/>`;
+IC.zorg=IC.heart+`<path ${IK} ${IN} d="M50 40v16M42 48h16"/>`;
+IC.laptop=`<rect ${IK} ${IF} x="24" y="28" width="52" height="34" rx="4"/><path ${IK} ${IN} d="M18 70h64M42 40l-6 6 6 6M58 40l6 6-6 6"/>`;
+IC.gear=`<circle ${IK} ${IF} cx="46" cy="54" r="16"/><circle ${IK} ${IN} cx="46" cy="54" r="5"/><path ${IK} ${IN} d="M46 30v6M46 72v6M22 54h6M64 54h6M29 37l4 4M59 67l4 4M63 37l-4 4M29 71l4-4"/><path ${IK} ${IF} d="M66 18l12 12-6 6-12-12z"/>`;
+IC.building=`<path ${IK} ${IF} d="M20 44l30-18 30 18z"/><path ${IK} ${IF} d="M26 44h48v30H26z"/><path ${IK} ${IN} d="M18 76h64M37 50v18M50 50v18M63 50v18"/>`;
+IC.headset=`<path ${IK} ${IN} d="M28 54v-6a22 22 0 0 1 44 0v6M72 70c0 6-8 8-16 8"/><rect ${IK} ${IF} x="22" y="50" width="12" height="20" rx="5"/><rect ${IK} ${IF} x="66" y="50" width="12" height="20" rx="5"/>`;
+IC.megaphone=`<path ${IK} ${IF} d="M24 42h12l30-14v42L36 56H24z"/><path ${IK} ${IN} d="M36 56l4 16h8l-3-14M74 40c4 5 4 13 0 18"/>`;
+IC.folder=`<path ${IK} ${IF} d="M20 30h22l6 6h32v38H20z"/><path ${IK} ${IN} d="M20 46h60"/>`;
+IC.truck=`<rect ${IK} ${IF} x="16" y="34" width="40" height="28" rx="3"/><path ${IK} ${IF} d="M56 42h14l12 12v8H56z"/><circle ${IK} ${IF} cx="31" cy="66" r="7"/><circle ${IK} ${IF} cx="69" cy="66" r="7"/>`;
+IC.board=`<rect ${IK} ${IF} x="18" y="22" width="64" height="42" rx="3"/><path ${IK} ${IN} d="M36 78l14-14 14 14M30 54l8-20 8 20M33 47h10M56 34h14M56 44h10"/>`;
+IC.palette=`<path ${IK} ${IF} d="M50 20c-17 0-30 12-30 29s12 29 26 29c7 0 7-6 3-9s-2-9 5-9h9c9 0 17-5 17-14 0-15-14-26-30-26z"/><circle cx="35" cy="44" r="5" fill="#FF6A2B"/><circle cx="50" cy="33" r="5" fill="#2A8EE2"/><circle cx="65" cy="41" r="5" fill="#0C5B44"/>`;
+IC.chef=`<path ${IK} ${IF} d="M32 58c-8 0-12-6-12-12 0-8 8-13 15-11 2-7 9-11 15-11s13 4 15 11c7-2 15 3 15 11 0 6-4 12-12 12z"/><path ${IK} ${IF} d="M33 58h34v16H33z"/>`;
+IC.coins=`<ellipse ${IK} ${IF} cx="50" cy="68" rx="22" ry="7"/><path ${IK} ${IF} d="M28 56v12c0 4 10 7 22 7s22-3 22-7V56"/><ellipse ${IK} ${IF} cx="50" cy="56" rx="22" ry="7"/><path ${IK} ${IF} d="M28 42v14c0 4 10 7 22 7s22-3 22-7V42"/><ellipse ${IK} fill="#D2D63E" cx="50" cy="42" rx="22" ry="7"/>`;
+IC.scale=`<path ${IK} ${IN} d="M50 22v52M34 76h32M22 34h56M24 34l-8 20M24 34l8 20M76 34l-8 20M76 34l8 20"/><path ${IK} ${IF} d="M14 54a10 7 0 0 0 20 0zM66 54a10 7 0 0 0 20 0z"/>`;
+IC.people=`<circle ${IK} ${IF} cx="37" cy="38" r="9"/><circle ${IK} ${IF} cx="63" cy="38" r="9"/><path ${IK} ${IF} d="M21 74c0-13 7-21 16-21s16 8 16 21zM47 74c0-13 7-21 16-21s16 8 16 21z"/>`;
+IC.shield=`<path ${IK} ${IF} d="M50 18l26 10v20c0 16-11 27-26 32-15-5-26-16-26-32V28z"/><path ${IK} ${IN} d="M38 50l8 8 16-16"/>`;
+IC.chat=`<path ${IK} ${IF} d="M16 26h42v26H34l-10 8v-8h-8z"/><path ${IK} fill="#D2D63E" d="M42 46h40v24h-6v8l-10-8H42z"/>`;
+IC.chart=`<path ${IK} ${IN} d="M18 78h64M18 78V20"/><rect ${IK} ${IF} x="27" y="54" width="11" height="24"/><rect ${IK} fill="#D2D63E" x="44" y="40" width="11" height="38"/><rect ${IK} ${IF} x="61" y="26" width="11" height="52"/>`;
+IC.hammer=`<path ${IK} ${IF} d="M26 26h32l10 9-10 5H26z"/><path ${IK} ${IF} d="M40 40h9v40h-9z"/>`;
+IC.bulb=`<path ${IK} ${IF} d="M50 18c-13 0-22 9-22 21 0 9 6 14 9 19v7h26v-7c3-5 9-10 9-19 0-12-9-21-22-21z"/><path ${IK} ${IN} d="M40 74h20M44 81h12M50 30v-4"/>`;
+IC.check=`<rect ${IK} ${IF} x="24" y="18" width="52" height="64" rx="4"/><path ${IK} ${IN} d="M33 35l4 4 8-8M52 36h14M33 53l4 4 8-8M52 54h14M33 70h33"/>`;
+IC.magnifier=`<circle ${IK} ${IF} cx="44" cy="44" r="19"/><path ${IK} ${IN} d="M58 58l18 18M36 40a9 9 0 0 1 9-8"/>`;
+IC.sparkle=`<path ${IK} ${IF} d="M50 16l8 22 22 8-22 8-8 22-8-22-22-8 22-8z"/><path ${IK} ${IN} d="M76 18v8M72 22h8"/>`;
+IC.calendar=`<rect ${IK} ${IF} x="20" y="24" width="60" height="54" rx="4"/><path ${IK} ${IN} d="M20 40h60M35 18v12M65 18v12M32 52h8M46 52h8M60 52h8M32 65h8M46 65h8"/>`;
+IC.sneaker=`<path ${IK} ${IF} d="M16 66V42l14 4c6 2 10-2 12-6l8 2c4 10 14 14 26 14 5 0 8 4 8 10z"/><path ${IK} ${IN} d="M16 66h68M40 49l6 4M46 45l6 4"/>`;
+IC.desk=`<rect ${IK} ${IF} x="27" y="24" width="46" height="30" rx="3"/><path ${IK} ${IN} d="M18 64h64M28 64v14M72 64v14M44 54l-3 10M56 54l3 10"/>`;
+IC.mix=sc(IC.laptop,0,12)+sc(IC.sneaker,44,26);
+IC.office=`<rect ${IK} ${IF} x="30" y="16" width="40" height="64" rx="2"/><path ${IK} ${IN} d="M40 28h6M54 28h6M40 40h6M54 40h6M40 52h6M54 52h6M46 80V68h8v12"/>`;
+IC.house=`<path ${IK} ${IF} d="M20 48L50 22l30 26v32H20z"/><path ${IK} ${IN} d="M42 80V60h16v20"/>`;
+IC.hybride=sc(IC.house,0,22)+sc(IC.office,42,10);
+IC.clockhalf=`<circle ${IK} ${IF} cx="50" cy="50" r="28"/><path d="M50 22a28 28 0 0 1 0 56z" fill="#D2D63E"/><circle ${IK} ${IN} cx="50" cy="50" r="28"/><path ${IK} ${IN} d="M50 34v16l10 6"/>`;
+IC.clockfull=`<circle ${IK} fill="#FF6A2B" cx="50" cy="50" r="28"/><path ${IK} ${IN} d="M50 32v18l12 8" stroke="#FFFDF8"/>`;
+IC.infinity=`<path ${IK} ${IN} d="M50 50c-8-10-14-14-20-14a14 14 0 0 0 0 28c6 0 12-4 20-14s14-14 20-14a14 14 0 0 1 0 28c-6 0-12-4-20-14z"/>`;
+IC.shop=`<path ${IK} ${IF} d="M22 42h56v36H22z"/><path ${IK} fill="#FF6A2B" d="M16 42l7-18h54l7 18z"/><path ${IK} ${IN} d="M44 78V58h12v20"/>`;
+IC.rocket=`<path ${IK} ${IF} d="M50 14c12 10 16 24 14 42H36c-2-18 2-32 14-42z"/><circle ${IK} fill="#2A8EE2" cx="50" cy="36" r="6"/><path ${IK} ${IF} d="M36 56l-10 12 12-2zM64 56l10 12-12-2z"/><path d="M43 62h14l-7 18z" fill="#FF6A2B"/>`;
+IC.moon=`<path ${IK} ${IF} d="M58 20a28 28 0 1 0 22 42 24 24 0 0 1-22-42z"/><path ${IK} ${IN} d="M26 24v8M22 28h8M74 22v6M71 25h6"/>`;
+IC.sun=`<circle ${IK} fill="#D2D63E" cx="50" cy="50" r="15"/><path ${IK} ${IN} d="M50 20v8M50 72v8M20 50h8M72 50h8M29 29l6 6M65 65l6 6M71 29l-6 6M29 71l6-6"/>`;
+IC.sunmoon=sc(IC.sun,0,10)+sc(IC.moon,44,30);
+IC.pin=`<path ${IK} ${IF} d="M50 16c-11 0-19 8-19 19 0 14 19 31 19 31s19-17 19-31c0-11-8-19-19-19z"/><circle ${IK} fill="#FF6A2B" cx="50" cy="35" r="6"/><path ${IK} ${IN} d="M22 82l8-10h40l8 10"/>`;
+IC.bike=`<circle ${IK} ${IF} cx="29" cy="62" r="13"/><circle ${IK} ${IF} cx="71" cy="62" r="13"/><path ${IK} ${IN} d="M29 62l13-22h18l11 22M42 40l8 22H29M55 30h11"/>`;
+IC.globe=`<circle ${IK} fill="#BDDFEF" cx="50" cy="50" r="28"/><path ${IK} ${IN} d="M22 50h56M50 22c-11 10-11 46 0 56M50 22c11 10 11 46 0 56M27 36h46M27 64h46"/>`;
+IC.nl=`<path d="M20 28h60v14H20z" fill="#C8102E"/><path d="M20 42h60v14H20z" fill="#FFFDF8"/><path d="M20 56h60v14H20z" fill="#21468B"/><rect ${IK} ${IN} x="20" y="28" width="60" height="42" rx="3"/>`;
+IC.person=`<circle ${IK} ${IF} cx="50" cy="34" r="12"/><path ${IK} ${IF} d="M28 78c0-15 10-26 22-26s22 11 22 26z"/>`;
+IC.team=`<circle ${IK} ${IF} cx="28" cy="42" r="8"/><circle ${IK} ${IF} cx="72" cy="42" r="8"/><path ${IK} ${IF} d="M14 74c0-11 6-18 14-18s14 7 14 18zM58 74c0-11 6-18 14-18s14 7 14 18z"/><circle ${IK} fill="#D2D63E" cx="50" cy="34" r="10"/><path ${IK} fill="#D2D63E" d="M33 78c0-13 7-22 17-22s17 9 17 22z"/>`;
+IC.crown=`<path ${IK} fill="#D2D63E" d="M20 66l-4-34 19 15 15-23 15 23 19-15-4 34z"/><path ${IK} ${IN} d="M20 76h60"/>`;
+IC.seedling=`<path ${IK} ${IN} d="M50 80V48"/><path ${IK} fill="#0C5B44" d="M50 54c-17 0-26-11-26-24 15 0 26 9 26 24z"/><path ${IK} fill="#D2D63E" d="M50 46c0-15 11-24 26-24 0 13-9 24-26 24z"/>`;
+IC.book=`<path ${IK} ${IF} d="M50 30c-8-6-18-8-28-6v50c10-2 20 0 28 6 8-6 18-8 28-6V24c-10-2-20 0-28 6z"/><path ${IK} ${IN} d="M50 30v50"/>`;
+const cap=n=>`<path ${IK} fill="#17221D" d="M50 24l32 14-32 14-32-14z"/><path ${IK} ${IN} d="M34 46v12c8 6 24 6 32 0V46M82 38v16"/>`+Array.from({length:n},(_,i)=>`<circle cx="${50+(i-(n-1)/2)*12}" cy="76" r="4.5" fill="#FF6A2B"/>`).join("");
+IC.cap1=cap(1);IC.cap2=cap(2);IC.cap3=cap(3);
+IC.bag=`<path ${IK} fill="#FF6A2B" d="M24 36h52l-4 44H28z"/><path ${IK} ${IN} d="M40 46V32a10 10 0 0 1 20 0v14"/>`;
+IC.crane=`<path ${IK} ${IN} d="M34 82V22M34 24h46M34 24l-14 10h14M72 24v14M22 82h26M34 36l10-12M34 50l10-12M34 64l10-12"/><rect ${IK} fill="#D2D63E" x="66" y="38" width="13" height="11"/>`;
+IC.chip=`<rect ${IK} ${IF} x="30" y="30" width="40" height="40" rx="4"/><rect ${IK} fill="#2A8EE2" x="41" y="41" width="18" height="18"/><path ${IK} ${IN} d="M40 20v10M50 20v10M60 20v10M40 70v10M50 70v10M60 70v10M20 40h10M20 50h10M20 60h10M70 40h10M70 50h10M70 60h10"/>`;
+IC.fork=`<path ${IK} ${IN} d="M36 20v60M28 20v16c0 7 16 7 16 0V20"/><path ${IK} ${IF} d="M66 80V20c-9 4-12 16-12 28h12"/>`;
+IC.bolt=`<path ${IK} fill="#D2D63E" d="M56 14L26 54h22l-6 32 32-42H52z"/>`;
+IC.play=`<rect ${IK} ${IF} x="18" y="24" width="64" height="48" rx="8"/><path d="M43 37v22l18-11z" fill="#FF6A2B"/>`;
+IC.briefcase=`<rect ${IK} ${IF} x="18" y="34" width="64" height="42" rx="4"/><path ${IK} ${IN} d="M40 34v-8h20v8M18 52h64M46 52v6h8v-6"/>`;
+IC.frame=`<rect ${IK} ${IF} x="20" y="20" width="60" height="60" rx="2"/><rect ${IK} ${IN} x="28" y="28" width="44" height="44"/><path ${IK} ${IN} d="M30 66l12-14 9 9 8-8 11 13"/><circle cx="61" cy="39" r="5" fill="#FF6A2B"/>`;
+IC.canal=`<path ${IK} ${IF} d="M16 78V40l8-10 8 10v38zM34 78V32l8-12 8 12v46zM52 78V40l8-10 8 10v38zM70 78V34l7-10 7 10v44z"/><path ${IK} ${IN} d="M12 78h76M22 50h4M40 44h4M58 50h4M75 46h4"/><path d="M12 84h76" stroke="#2A8EE2" stroke-width="5" stroke-linecap="round"/>`;
+IC.tower=`<path ${IK} ${IF} d="M38 80V30l12-12 12 12v50z"/><path ${IK} ${IN} d="M24 80h52M46 40h8M46 54h8M46 68h8"/>`;
+IC.map=`<path ${IK} ${IF} d="M16 28l22-8 24 8 22-8v54l-22 8-24-8-22 8z"/><path ${IK} ${IN} d="M38 20v54M62 28v54"/><circle cx="50" cy="48" r="5" fill="#FF6A2B"/>`;
+const BLOB=["M50 6C74 6 94 22 94 47S76 94 50 94 6 76 6 51 26 6 50 6Z","M48 7C72 4 95 24 93 50S74 95 47 93 5 72 7 47 25 9 48 7Z","M52 5C77 8 95 28 92 54S70 96 45 92 4 70 8 44 28 3 52 5Z"];
+const BLOBKLEUR=["#F5C8E5","#E6E98F","#BDDFEF","#FFD0B3","#CDE7D9"];
+let icN=0;
+function pic(ic){const n=icN++;return `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${BLOB[n%3]}" fill="${BLOBKLEUR[n%5]}"/>${IC[ic]||""}</svg>`;}
+const o=(v,l,ic)=>({v,l,ic});
+const STEPS_B=[
+ {kicker:"Vakgebied",titel:"Waar zie jij jezelf werken?",hint:"Tik op maximaal drie plaatjes.",groups:[{key:"vak",img:true,multi:true,max:3,opts:[o("zorg","Zorg","zorg"),o("ict","ICT & data","laptop"),o("techniek","Techniek","gear"),o("overheid","Beleid","building"),o("klant","Klantcontact","headset"),o("commercieel","Sales & marketing","megaphone"),o("admin","Administratie","folder"),o("logistiek","Logistiek","truck"),o("onderwijs","Onderwijs","board"),o("creatief","Creatief","palette"),o("horeca","Horeca","chef"),o("financieel","Financieel","coins"),o("juridisch","Juridisch","scale"),o("hr","HR","people"),o("veiligheid","Beveiliging","shield")]}],ok:()=>A.vak.length>0},
+ {kicker:"Soort taken",titel:"Waar word je blij van?",hint:"Kies er maximaal twee.",groups:[{key:"taken",img:true,multi:true,max:2,any:true,opts:[o("mensen","Met mensen","chat"),o("data","Met cijfers","chart"),o("handen","Met je handen","hammer"),o("creatief","Iets bedenken","bulb"),o("organiseren","Organiseren","check"),o("any","Van alles wat","infinity")]}],ok:()=>A.taken.length>0},
+ {kicker:"Sterke punten",titel:"Welke past het best bij jou?",hint:"Kies er maximaal twee.",groups:[{key:"sterk",img:true,multi:true,max:2,opts:[o("analytisch","Analytisch","magnifier"),o("creatief","Creatief","sparkle"),o("sociaal","Sociaal","heart"),o("praktisch","Praktisch","hammer"),o("georganiseerd","Georganiseerd","calendar")]}],ok:()=>A.sterk.length>0},
+ {kicker:"Opleiding",titel:"Wat is je hoogste diploma?",groups:[{key:"niv",img:true,opts:[o("MO","Middelbare school","book"),o("MBO","MBO","cap1"),o("HBO","HBO","cap2"),o("WO","Universiteit","cap3")]}],ok:()=>!!A.niv},
+ {kicker:"Soort werk",titel:"Hoe ziet je ideale werkdag eruit?",groups:[{key:"fysiek",img:true,opts:[o("fysiek","Actief bezig","sneaker"),o("mix","Een mix","mix"),o("bureau","Achter een bureau","desk")]}],ok:()=>!!A.fysiek},
+ {kicker:"Werkplek",titel:"Waar werk je het liefst?",groups:[{key:"vorm",img:true,opts:[o("locatie","Op locatie","office"),o("hybride","Thuis én kantoor","hybride"),o("remote","Vooral thuis","house"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.vorm},
+ {kicker:"Uren",titel:"Hoeveel wil je werken?",groups:[{key:"uren",img:true,opts:[o("part","Parttime","clockhalf"),o("full","Fulltime","clockfull"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.uren},
+ {kicker:"Werktijden",titel:"Avonden en weekenden werken?",groups:[{key:"diensten",img:true,opts:[o("ja","Geen probleem","moon"),o("soms","Af en toe","sunmoon"),o("nee","Liever overdag","sun")]}],ok:()=>!!A.diensten},
+ {kicker:"Locatie",titel:"In welke stad?",hint:"Kies er zoveel je wilt.",groups:[{key:"steden",img:true,multi:true,any:true,opts:[o("Amsterdam","Amsterdam","canal"),o("Rotterdam","Rotterdam","crane"),o("Den Haag","Den Haag","building"),o("Utrecht","Utrecht","tower"),o("any","Maakt niet uit","map")]}],ok:()=>A.steden.length>0},
+ {kicker:"Onderweg",titel:"Ben je graag op pad?",groups:[{key:"reizen",img:true,opts:[o("graag","Graag op pad","pin"),o("soms","Af en toe","bike"),o("nee","Liever op één plek","house")]}],ok:()=>!!A.reizen},
+ {kicker:"Werkstijl",titel:"Samen of alleen?",groups:[{key:"omgeving",img:true,opts:[o("team","In een team","team"),o("zelfstandig","Zelfstandig","person"),o("any","Allebei prima","people")]}],ok:()=>!!A.omgeving},
+ {kicker:"Leidinggeven",titel:"Wil je de leiding hebben?",groups:[{key:"leiding",img:true,opts:[o("ja","Ja, graag","crown"),o("later","Misschien later","seedling"),o("nee","Liever niet","person")]}],ok:()=>!!A.leiding},
+ {kicker:"Werkgever",titel:"Bij wat voor werkgever?",hint:"Kies er zoveel je wilt.",groups:[{key:"sector",img:true,multi:true,any:true,opts:[o("overheid","Overheid","building"),o("commercieel","Bedrijf","shop"),o("nonprofit","Zorg & non-profit","heart"),o("any","Maakt niet uit","infinity")]}],ok:()=>A.sector.length>0},
+ {kicker:"Sfeer",titel:"Jong en snel, of stabiel?",groups:[{key:"type",img:true,opts:[o("scaleup","Startup","rocket"),o("gevestigd","Gevestigd","tower"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.type},
+ {kicker:"Impact",titel:"Moet je werk de wereld beter maken?",groups:[{key:"impact",img:true,opts:[o("belangrijk","Heel belangrijk","seedling"),o("leuk","Mooi meegenomen","heart"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.impact},
+ {kicker:"Taal",titel:"In welke taal werk je het liefst?",groups:[{key:"engels",img:true,opts:[o("graag","Engels, graag","globe"),o("prima","Allebei prima","chat"),o("nee","Nederlands","nl")]}],ok:()=>!!A.engels},
+ {kicker:"Branche",titel:"Waar wil je aan bijdragen?",hint:"Kies er zoveel je wilt.",groups:[{key:"branche",img:true,multi:true,any:true,opts:[o("publiek","Publieke diensten","building"),o("zorg","Zorg","zorg"),o("retail","Winkels","bag"),o("bouw","Bouw","crane"),o("tech","Tech","chip"),o("onderwijs","Onderwijs","board"),o("transport","Transport","truck"),o("food","Eten & horeca","fork"),o("finance","Bank & geld","coins"),o("energie","Energie","bolt"),o("media","Media","play"),o("advies","Advies","briefcase"),o("cultuur","Kunst & cultuur","frame"),o("any","Alles is goed","infinity")]}],ok:()=>A.branche.length>0},
+];
+
+let MODE="klassiek";try{MODE=localStorage.getItem("valcature-mode")||"klassiek";}catch(e){}
+let STEPS=MODE==="beeld"?STEPS_B:STEPS_K;
+function setMode(m){MODE=m;STEPS=m==="beeld"?STEPS_B:STEPS_K;try{localStorage.setItem("valcature-mode",m)}catch(e){}stap=0;klaar=false;save();
+  document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===m)));renderQuiz();renderResults();renderVac();}
+
 // Matchscore 0-100
 function score(j,a){
   const r=[];let t=0;const add=(p,txt,st)=>{t+=p;r.push({txt,st});};
@@ -647,7 +755,8 @@ function score(j,a){
   if((a.opl.richting||[]).includes(j.vak)) add(4,"Je studierichting sluit aan op dit werk","ok");
   const mine=new Set([...a.skills,...(a.talen||[])].map(s=>s.toLowerCase())), js=j.skills||[], kE=(j.eisen||[]).filter(e=>e.k);
   let cap=100;const miss=[];
-  if(kE.length){
+  const skU=a.skillsUnknown&&!a.skills.length;
+  if(kE.length&&!skU){
     let tot=0,got=0,hitN=0;
     kE.forEach(e=>{const w=e.h?2:1,has=mine.has(e.k.toLowerCase());tot+=w;if(has){got+=w;hitN++;}else if(e.h)miss.push(e.k);});
     add(Math.round(14*got/tot),`Je voldoet aan ${hitN} van de ${kE.length} eisen die we kunnen checken`,hitN===kE.length?"ok":hitN?"part":"no");
@@ -655,7 +764,7 @@ function score(j,a){
     if(miss.length) cap=miss.length>1?40:55;
   }
   if((a.talen||[]).length&&!mine.has("nederlands")&&(j.eisen||[]).some(e=>e.h&&/nederlands/i.test(e.t))){miss.push("Nederlands");cap=Math.min(cap,40);r.push({txt:"Harde eis die je mist: goed Nederlands",st:"no",hard:1});}
-  else if(!a.skills.length) add(7,"Je hebt geen vaardigheden gekozen","part");
+  else if(!a.skills.length) add(7,skU?"Vaardigheden niet gevraagd in de beeldquiz: check de eisen zelf":"Je hebt geen vaardigheden gekozen","part");
   else if(!js.length) add(7,"Vacature noemt geen specifieke vaardigheden","part");
   else{const hit=js.filter(s=>mine.has(s.toLowerCase()));
     const p=Math.round(14*hit.length/js.length);
@@ -705,9 +814,10 @@ function score(j,a){
 /* ---------- Quiz ---------- */
 const qcard=$("#qcard");
 function groupHTML(g){
-  const val=A[g.key];
-  return `<div class="group">${g.label?`<span class="glabel">${g.label}</span>`:""}<div class="opts${g.big?" big":""}">${g.opts.map(o=>{
+  const val=A[g.key];icN=0;
+  return `<div class="group">${g.label?`<span class="glabel">${g.label}</span>`:""}<div class="opts${g.big?" big":""}${g.img?" img":""}">${g.opts.map(o=>{
     const on=g.multi?val.includes(o.v):val===o.v;
+    if(g.img) return `<button type="button" class="opt pic" data-key="${g.key}" data-v="${esc(o.v)}" aria-pressed="${on}">${pic(o.ic)}<span>${esc(o.l)}</span></button>`;
     return `<button type="button" class="opt" data-key="${g.key}" data-v="${esc(o.v)}" aria-pressed="${on}">${esc(o.l)}${o.s?`<small>${esc(o.s)}</small>`:""}</button>`}).join("")}</div></div>`;
 }
 function oplHTML(){
@@ -732,7 +842,7 @@ function renderQuiz(anim=true){
     const n=VAC.filter(v=>score(v,A).pct>=70).length;
     qcard.innerHTML=`<div class="done anim" style="display:grid;gap:14px"><span class="eyebrow" style="color:var(--green)">Klaar!</span>
       <h3 class="qtitle">${n?`${n} vacature${n>1?"s":""} met een sterke match`:"Je matches staan klaar"}</h3>
-      <p>We hebben alle ${VAC.length} vacatures gescoord op jouw antwoorden. De beste staan bovenaan.</p>
+      <p>We hebben alle ${VAC.length} vacatures gescoord op jouw antwoorden. De beste staan bovenaan.${MODE==="beeld"?" Tip: doe ook de klassieke quiz, dan checken we ook je diploma's en vaardigheden.":""}</p>
       <div class="qnav"><button class="btn or" id="q-naar">Bekijk mijn matches ↓</button><span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" id="q-opnieuw">Antwoorden aanpassen</button><button class="btn ghost danger" data-reset>Quiz opnieuw doen</button></span></div></div>`;
     return;
   }
@@ -787,6 +897,8 @@ function pick(key,v,btn){
 }
 function verder(){
   if(stap<STEPS.length-1){stap++;renderQuiz();return;}
+  if(MODE==="beeld"){A.opl={tekst:"",niveau:A.niv,hand:true,richting:[]};if(!A.grootte)A.grootte="any";if(!A.contract.length)A.contract=["any"];if(A.sal===null)A.sal="0";A.skillsUnknown=!A.skills.length;}
+  else A.skillsUnknown=false;
   klaar=true;save();renderQuiz();renderResults();renderVac();
   requestAnimationFrame(()=>$("#resultaten").scrollIntoView({behavior:"smooth"}));
 }
@@ -797,7 +909,9 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-reset]");i
   A=LEEG();klaar=false;stap=0;save();renderQuiz();renderResults();renderVac();
   if(location.hash==="#vacatures"||location.hash==="#over")location.hash="#match";
   requestAnimationFrame(()=>$("#quiz").scrollIntoView({behavior:"smooth"}));});
-$("#start").onclick=()=>$("#quiz").scrollIntoView({behavior:"smooth"});
+$("#start").onclick=()=>{if(MODE!=="klassiek")setMode("klassiek");$("#quiz").scrollIntoView({behavior:"smooth"});};
+$("#start-beeld").onclick=()=>{if(MODE!=="beeld")setMode("beeld");$("#quiz").scrollIntoView({behavior:"smooth"});};
+document.querySelectorAll("[data-mode]").forEach(b=>{b.setAttribute("aria-pressed",String(b.dataset.mode===MODE));b.onclick=()=>{if(MODE!==b.dataset.mode)setMode(b.dataset.mode);};});
 
 /* ---------- Kaarten ---------- */
 function card(v,m,best){
@@ -810,7 +924,7 @@ function card(v,m,best){
   const sk=E.length?"":(v.skills||[]).map(s=>`<span class="tag sk${m&&mine.has(s.toLowerCase())?" hit":""}">${esc(s)}</span>`).join("");
   const eis=`<div class="eisen"><span class="glabel">Wat ze vragen${v.ervaring?` · minimaal ${v.ervaring} jaar ervaring`:""}</span>${E.length?`<ul>${E.map(e=>{let st="neu",ic="•";
       const ek=e.k||(/\bnederlands\b/i.test(e.t)&&(A.talen||[]).length?"Nederlands":null);
-      if(m){if(ek){if(mine.has(ek.toLowerCase())){st="ok";ic="✓";}else{st=e.h?"no":"pl";ic=e.h?"✕":"–";}}else{st="chk";ic="?";}}
+      if(m){if(ek&&A.skillsUnknown&&!A.skills.length){st="chk";ic="?";}else if(ek){if(mine.has(ek.toLowerCase())){st="ok";ic="✓";}else{st=e.h?"no":"pl";ic=e.h?"✕":"–";}}else{st="chk";ic="?";}}
       return `<li class="${st}"><i aria-hidden="true">${ic}</i><span>${esc(e.t)}</span><em>${e.h?"Eis":"Pluspunt"}</em></li>`}).join("")}</ul>${m?`<p class="elegend"><b>✓</b> heb je &nbsp; <b class="r">✕</b> mis je &nbsp; <b class="q">?</b> check zelf</p>`:""}`:`<p class="elegend">We konden de eisen niet uitlezen. Bekijk ze bij de werkgever.</p>`}</div>`;
   let sc="";
   if(m){let cls=m.pct>=75?"hi":m.pct>=50?"mid":"lo",lbl=m.pct>=75?"Sterke match":m.pct>=50?"Redelijke match":"Minder passend";
