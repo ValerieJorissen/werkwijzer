@@ -981,6 +981,7 @@ function score(j,a){
     if(a.omgeving===j.omgeving) r.push({txt:j.omgeving==="team"?"Je werkt veel samen in een team":"Je werkt grotendeels zelfstandig",st:"ok"});
     else{t-=3;r.push({txt:j.omgeving==="team"?"Deze rol vraagt veel samenwerking":"Deze rol vraagt veel zelfstandigheid",st:"part"});}}
   const X=extra(j,a);t=t*0.72+X.v*28+(X.fav?6:0);r.push(...X.r);
+  if(j.niveau&&["MO","MBO"].includes(j.niveau)&&["HBO","WO"].includes(a.opl.niveau)){cap=Math.min(cap,20);miss.push("niveau");r.push({txt:`Dit is een ${j.niveau==="MO"?"functie zonder vervolgopleiding":"mbo-functie"}, jij hebt ${a.opl.niveau==="WO"?"universiteit":"hbo"} gedaan`,st:"no",hard:1});}
   if(a.jaren!=null&&+a.jaren>2&&/trainee/i.test(j.titel)){cap=Math.min(cap,20);miss.push("starter");r.push({txt:"Traineeship is voor starters met 0 – 2 jaar werkervaring",st:"no",hard:1});}
   if(sMis){cap=Math.min(cap,25);miss.push("passende studie");r.push({txt:`Hier hoort een studie in ${sMis.toLowerCase()} bij, en dat past niet bij wat jij hebt gestudeerd`,st:"no",hard:1});}
   if(X.deal.length){cap=Math.min(cap,30);X.deal.forEach(d=>{miss.push("deal-breaker: "+d);r.push({txt:`Deal-breaker: ${d}`,st:"no",hard:1});});}
