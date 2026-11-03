@@ -322,7 +322,7 @@ footer p{margin:0;font-size:14px;opacity:.8;max-width:56ch}
     <nav class="tabs" role="tablist" aria-label="Weergave">
       <button class="tab" role="tab" id="tab-match" data-view="match" aria-selected="true">Vind je match</button>
       <button class="tab" role="tab" id="tab-vacatures" data-view="vacatures" aria-selected="false">Alle vacatures <span class="n" id="tab-n">0</span></button>
-      <button class="tab" role="tab" id="tab-over" data-view="over" aria-selected="false">Over mij</button>
+      <button class="tab" role="tab" id="tab-over" data-view="over" aria-selected="false" hidden>Over mij</button>
     </nav>
     <span class="upd" id="upd"></span>
   </div>
@@ -1137,7 +1137,8 @@ function renderVac(){
 
 /* ---------- Tabs ---------- */
 function route(){
-  const view=location.hash==="#vacatures"?"vacatures":location.hash==="#over"?"over":"match";
+  const OVER_ZICHTBAAR=false;
+  const view=location.hash==="#vacatures"?"vacatures":(OVER_ZICHTBAAR&&location.hash==="#over")?"over":"match";
   $("#view-match").hidden=view!=="match";$("#view-vacatures").hidden=view!=="vacatures";$("#view-over").hidden=view!=="over";
   document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",String(t.dataset.view===view)));
   if(view==="vacatures")renderVac();
