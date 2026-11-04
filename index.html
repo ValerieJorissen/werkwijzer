@@ -380,7 +380,7 @@ footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
 
 <header class="top">
   <div class="in">
-    <a class="logo" href="#match" aria-label="Valcature, naar de quiz">VAL<span class="dot"></span>CATURE</a>
+    <a class="logo" href="#match" aria-label="Valcature, naar boven">VAL<span class="dot"></span>CATURE</a>
     <nav class="tabs" role="tablist" aria-label="Weergave">
       <button class="tab" role="tab" id="tab-match" data-view="match" aria-selected="true">Vind je match</button>
       <button class="tab" role="tab" id="tab-vacatures" data-view="vacatures" aria-selected="false">Alle vacatures <span class="n" id="tab-n">0</span></button>
@@ -1360,6 +1360,7 @@ function route(){
 }
 document.querySelectorAll("[data-view],[data-goto]").forEach(b=>b.addEventListener("click",()=>{const v=b.dataset.view||b.dataset.goto;location.hash="#"+v;window.scrollTo({top:0});}));
 window.addEventListener("hashchange",route);
+$(".top .logo").addEventListener("click",e=>{e.preventDefault();if(location.hash!=="#match"&&location.hash!==""&&location.hash!=="#")location.hash="#match";window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});setTimeout(()=>window.scrollTo({top:0}),400);});
 
 /* ---------- Beweging & vulling ---------- */
 function flower(n,ri){const p=[];for(let i=0;i<n*2;i++){const r=i%2?ri:50,a=Math.PI*i/n-Math.PI/2;p.push(`${(50+r*Math.cos(a)).toFixed(1)}% ${(50+r*Math.sin(a)).toFixed(1)}%`);}return `polygon(${p.join(",")})`;}
