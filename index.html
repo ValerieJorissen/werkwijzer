@@ -404,7 +404,7 @@ footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
         <div class="stats" id="stats"></div>
       </div>
       <svg class="squig" viewBox="0 0 420 470" aria-hidden="true">
-        <defs><mask id="sqmask" maskUnits="userSpaceOnUse" x="-40" y="-40" width="500" height="560"><path id="sqm" fill="none" stroke="#fff" stroke-width="64" stroke-linecap="round" d="M0 440 L65 440 Q105 440 105 400 L105 360 Q105 320 145 320 L170 320 Q210 320 210 280 L210 240 Q210 200 250 200 L275 200 Q315 200 315 160 L315 120 Q315 80 355 80 L420 80"/></mask></defs>
+        <defs><mask id="sqmask" maskUnits="userSpaceOnUse" x="-40" y="-40" width="1900" height="660"><path id="sqm" fill="none" stroke="#fff" stroke-width="64" stroke-linecap="round" d="M30 560 L30 450 Q30 420 60 420 L120 420 Q150 420 150 390 L150 330 Q150 300 180 300 L240 300 Q270 300 270 270 L270 210 Q270 180 300 180 L360 180 Q390 180 390 150 L390 90 Q390 60 420 60 L1800 60"/></mask></defs>
         <g id="sqg" mask="url(#sqmask)"></g>
       </svg>
     </div>
@@ -1370,7 +1370,7 @@ document.documentElement.style.setProperty("--flower",flower(12,41));
   cols.forEach((c,i)=>{const p=document.createElementNS("http://www.w3.org/2000/svg","path");
     p.setAttribute("d",d);p.setAttribute("fill","none");p.setAttribute("stroke-width","48");p.style.stroke=`var(${c})`;
     p.style.strokeDasharray=`${seg+1} ${L-seg-1}`;p.style.strokeDashoffset=-i*seg;g.appendChild(p);
-    if(!still&&p.animate)p.animate([{strokeDashoffset:-i*seg},{strokeDashoffset:-i*seg-L}],{duration:18000,iterations:Infinity});});
+    if(!still&&p.animate)p.animate([{strokeDashoffset:-i*seg},{strokeDashoffset:-i*seg-L}],{duration:Math.round(L*20),iterations:Infinity});});
   if(!still&&m.animate){m.style.strokeDasharray=L;m.animate([{strokeDashoffset:L},{strokeDashoffset:0}],{duration:1800,easing:"cubic-bezier(.3,.7,.2,1)"});}
 })();
 const orgs=[...new Set(VAC.map(v=>v.org))];
