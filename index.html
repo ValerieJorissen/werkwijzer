@@ -1378,7 +1378,7 @@ const star=`<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor
 const words=[...new Set(VAC.map(v=>VAKKEN[v.vak]))].concat(orgs);
 const half=words.map(w=>`<span>${esc(w)}${star}</span>`).join("");
 $("#track").innerHTML=half+half;
-requestAnimationFrame(()=>{const t=$("#track");if(t)t.style.animationDuration=Math.max(60,Math.round(t.scrollWidth/2/45))+"s";});
+requestAnimationFrame(()=>{const t=$("#track");if(t)t.style.animationDuration=Math.max(120,Math.round(t.scrollWidth/2/22))+"s";});
 $("#stats").innerHTML=`<span><b>${VAC.length}</b> vacatures</span><span><b>${orgs.length}</b> werkgevers</span><span>Bijgewerkt ${datum(DATA.bijgewerkt)}</span>`;
 $("#tab-n").textContent=VAC.length;
 $("#upd").textContent=`Bijgewerkt ${datum(DATA.bijgewerkt)}`;
