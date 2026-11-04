@@ -1034,6 +1034,7 @@ function studieMis(j,a){
 // Automatisch checken van opleidings- en ervaringseisen
 function eisAuto(e,a){
   const s=" "+e.t.toLowerCase()+" ";
+  if(/nationaliteit/.test(s))return true; // we gaan uit van de Nederlandse nationaliteit
   const opl=a.opl||{},un=opl.niveau,g=opl.graad;
   const isOpl=/\b(mbo|hbo|wo|universit\w*|master\w*|bachelor\w*|msc|academie|opleiding|diploma|studie)\b/.test(s)&&!/elke richting|zwemdiploma|lasdiploma|beveiligingsdiploma|rijbewijs|vog|ingeschreven|laatste jaar|kwalificatie|\bbko\b|bevoegdheid/.test(s);
   if(isOpl){
@@ -1066,9 +1067,9 @@ function score(j,a){
   const sA=studieAansluiting(j,a);
   if(sA&&sA.ok)add(16,`Sluit aan op je studie (${sA.naam})`,"ok");
   if(j.spec&&!sMis&&uSpec.size){if(uSpec.has(j.spec))add(8,`Je ${SPECNAAM[j.spec]}-studie past precies`,"ok");else specMis=true;}
-  const mine=new Set([...a.skills,...(a.talen||[])].map(s=>s.toLowerCase()));
-  const gv=a.gevraagd?new Set(a.gevraagd.map(s=>s.toLowerCase())):null, bekend=s=>!gv||gv.has(s.toLowerCase())||mine.has(s.toLowerCase());
-  const js=(j.skills||[]).filter(bekend), kE=(j.eisen||[]).filter(e=>e.k&&bekend(e.k));
+  const mine=new Set([...a.skills,...(a.talen||[]),"Nederlands"].map(s=>s.toLowerCase()));
+  // Alle eisen tellen mee: wat je niet hebt aangevinkt, heb je (nog) niet
+  const js=(j.skills||[]), kE=(j.eisen||[]).filter(e=>e.k);
   let cap=100;const miss=[];
   const skU=a.skillsUnknown&&!a.skills.length;
   if(kE.length&&!skU){
@@ -1076,7 +1077,7 @@ function score(j,a){
     kE.forEach(e=>{const w=e.h?2:1,has=mine.has(e.k.toLowerCase());tot+=w;if(has){got+=w;hitN++;}else if(e.h)miss.push(e.k);});
     add(Math.round(14*got/tot),`Je voldoet aan ${hitN} van de ${kE.length} eisen die we kunnen checken`,hitN===kE.length?"ok":hitN?"part":"no");
     kE.filter(e=>e.h&&!mine.has(e.k.toLowerCase())).forEach(e=>r.push({txt:`Harde eis die je mist: ${e.t}`,st:"no",hard:1}));
-    if(miss.length) cap=miss.length>1?40:55;
+    if(miss.length) cap=miss.length>=3?25:miss.length===2?40:55;
   }
   if((a.talen||[]).length&&!mine.has("nederlands")&&(j.eisen||[]).some(e=>e.h&&/nederlands/i.test(e.t))){miss.push("Nederlands");cap=Math.min(cap,40);r.push({txt:"Harde eis die je mist: goed Nederlands",st:"no",hard:1});}
   else if(!a.skills.length) add(7,skU?"Vaardigheden niet gevraagd in de beeldquiz: check de eisen zelf":"Je hebt geen vaardigheden gekozen","part");
@@ -1176,9 +1177,9 @@ function beeldA(metCheck){const ps=parseOpl(A.studie||"");
   return a;}
 function checkHTML(){
   const a=beeldA(false);
-  const top=VAC.map(j=>({j,p:score(j,a).pct})).filter(x=>(x.j.eisen||[]).some(e=>e.k)).sort((x,y)=>y.p-x.p).slice(0,8);
+  const top=VAC.map(j=>({j,p:score(j,a).pct})).filter(x=>(x.j.eisen||[]).some(e=>e.k)).sort((x,y)=>y.p-x.p).slice(0,20);
   const tel={};top.forEach(({j})=>(j.eisen||[]).filter(e=>e.k).forEach(e=>{tel[e.k]=(tel[e.k]||0)+(e.h?2:1);}));
-  const alle=Object.keys(tel).sort((x,y)=>tel[y]-tel[x]||x.localeCompare(y,"nl")).slice(0,24);
+  const alle=Object.keys(tel).sort((x,y)=>tel[y]-tel[x]||x.localeCompare(y,"nl")).filter(k=>k.toLowerCase()!=="nederlands").slice(0,30);
   const h=alle.length?`<div class="group"><div class="opts">${alle.map(k=>`<button type="button" class="opt" data-key="skills" data-v="${esc(k)}" aria-pressed="${A.skills.includes(k)}">${esc(k)}</button>`).join("")}</div></div>`:"";
   A.gevraagd=[...alle];save();
   return h||`<p>Voor je beste matches hoeven we niets extra te checken.</p>`;
@@ -1280,14 +1281,14 @@ document.querySelectorAll("[data-mode]").forEach(b=>{b.setAttribute("aria-presse
 /* ---------- Kaarten ---------- */
 function card(v,m,best){
   const c=VAKKLEUR[v.vak]||"var(--sky)";
-  const mine=new Set([...A.skills,...(A.talen||[])].map(s=>s.toLowerCase()));
+  const mine=new Set([...A.skills,...(A.talen||[]),"Nederlands"].map(s=>s.toLowerCase()));
   const u=!v.uren?null:v.uren[0]===v.uren[1]?`${v.uren[0]} uur`:`${v.uren[0]}–${v.uren[1]} uur`;
   const sal=v.sal?`<span class="tag sal">${euro(v.sal[0])} – ${euro(v.sal[1])}</span>`:v.salTekst?`<span class="tag sal">${esc(v.salTekst)}</span>`:`<span class="tag unk">Salaris niet vermeld</span>`;
   const tags=[u?`<span class="tag">${u}</span>`:`<span class="tag unk">Uren niet vermeld</span>`,v.vorm?`<span class="tag">${WERKVORM[v.vorm]}</span>`:"",v.niveau?`<span class="tag">${v.niveau}</span>`:"",sal,v.sector?`<span class="tag">${SECTOR[v.sector]}</span>`:"",(()=>{const k=kenmerk(v);return (k.contract?`<span class="tag">${({vast:"Vast contract",tijdelijk:"Tijdelijk",traineeship:"Traineeship",werkstudent:"Werkstudent",freelance:"Freelance"})[k.contract]}</span>`:"")+(k.taal==="en"?`<span class="tag">Engelstalig</span>`:"")+(k.diensten?`<span class="tag">Avond/weekend</span>`:"")+(k.type==="scaleup"?`<span class="tag">Scale-up</span>`:"")})()].join("");
   const E=v.eisen||[];
   const sk=E.length?"":(v.skills||[]).map(s=>`<span class="tag sk${m&&mine.has(s.toLowerCase())?" hit":""}">${esc(s)}</span>`).join("");
   const eis=`<div class="eisen"><span class="glabel">Wat ze vragen${v.ervaring?` · minimaal ${v.ervaring} jaar ervaring`:""}</span>${E.length?`<ul>${E.map(e=>{let st="neu",ic="•";
-      const ek=e.k||(/\bnederlands\b/i.test(e.t)&&(A.talen||[]).length?"Nederlands":null);
+      const ek=e.k||(/\bnederlands\b/i.test(e.t)&&!/nationaliteit/i.test(e.t)?"Nederlands":null);
       const au=m&&!ek?eisAuto(e,huidigA()):null;
       if(m&&au!==null){if(au){st="ok";ic="✓";}else{st=e.h?"no":"pl";ic=e.h?"✕":"–";}}
       else if(m){if(ek&&A.skillsUnknown&&!A.skills.length){st="chk";ic="?";}else if(ek){if(mine.has(ek.toLowerCase())){st="ok";ic="✓";}else{st=e.h?"no":"pl";ic=e.h?"✕":"–";}}else{st="chk";ic="?";}}
