@@ -142,7 +142,7 @@ button,input,select,textarea{font:inherit}
 .gq{font-size:14px;color:var(--muted);font-weight:600}
 .gcount{position:absolute;left:16px;bottom:14px;font-size:12px;font-weight:700;color:var(--muted)}
 .gicon svg{width:96px;height:96px}
-.gtype{display:flex;gap:8px;margin-top:16px}
+.gtype{display:flex;gap:8px;margin-top:16px}.gstudyin{text-align:center}.gstudyin .gtype{margin-top:12px;flex-direction:column}.gstudyin .gtype .btn{width:100%}.gstudyin .text{font-size:18px}
 .gtype .text{flex:1;min-width:0}
 .gniv{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:14px 0}
 .gbtn{font:inherit;font-weight:800;font-size:16px;padding:16px 10px;border:2px solid var(--ink);border-radius:16px;background:var(--paper);box-shadow:0 5px 0 var(--ink);cursor:pointer;transition:transform .1s,box-shadow .1s;animation:gin .4s calc(var(--i)*60ms) both}
@@ -848,10 +848,10 @@ function renderSwipeIntro(){
   if(I.si==null)I.si=0;if(I.bi==null)I.bi=0;if(I.xp==null)I.xp=0;
   $("#asked").innerHTML="";window.gDecide=null;
   const BR=STEPS_B_ALL.find(s=>s.kicker==="Branche").groups[0].opts.filter(o=>o.v!=="any");
-  const voortgang=I.stap===0?(I.vraagNiv?.6:Math.min(I.si/POPSTUDIES.length,.5)):I.stap===1?0:I.bi/BR.length;
+  const voortgang=I.stap===0?(I.vraagNiv?.5:0):I.stap===1?0:I.bi/BR.length;
   const pct=Math.round((I.stap+voortgang)/3*100);
-  const hud=`<div class="hud"><span class="lvl">LEVEL ${I.stap+1}<small>/3</small></span><div class="xp"><i style="width:${pct}%"></i></div><span class="pts" id="g-pts">${I.xp} XP</span></div>`;
-  const pop=(n,txt)=>{I.xp+=n;saveSW();const p=$("#g-pts");if(p)p.textContent=I.xp+" XP";const el=document.createElement("div");el.className="xppop";el.textContent=`+${n} XP${txt?" · "+txt:""}`;qcard.appendChild(el);setTimeout(()=>el.remove(),1100);};
+  const hud=`<div class="hud"><span class="lvl">Vraag ${I.stap+1}<small> van 3</small></span><div class="xp"><i style="width:${pct}%"></i></div><span></span></div>`;
+  const pop=()=>{};
   const naar=fn=>{setTimeout(fn,280);};
   const kaartDrag=(top,beslis)=>{let x0=null,dx=0;
     top.addEventListener("pointerdown",e=>{if(e.target.closest("input,button"))return;x0=e.clientX;dx=0;top.setPointerCapture(e.pointerId);top.classList.add("drag");});
@@ -862,15 +862,13 @@ function renderSwipeIntro(){
   const vlieg=(top,r,cb)=>{const s=top.querySelector(r?".ja":".nee");if(s)s.style.opacity=1;top.style.transition="transform .3s ease";top.style.transform=`translateX(${r?700:-700}px) rotate(${r?28:-28}deg)`;setTimeout(cb,280);};
   let html="";
   if(I.stap===0&&!I.vraagNiv){
-    const s=POPSTUDIES[I.si%POPSTUDIES.length],nx=POPSTUDIES[(I.si+1)%POPSTUDIES.length];
-    html=`<h3 class="qtitle gtitle">Wat heb je gestudeerd?</h3><p class="qhint">Swipe naar rechts als dit jouw studie is. Staat hij er niet tussen? Typ hem hieronder.</p>
-      <div class="swipe gswipe"><div class="scard next gstudy" style="--c:var(--sky)"><div class="gbig">${esc(nx)}</div></div>
-      <div class="scard top gstudy" style="--c:var(--pink)"><span class="stamp ja">Dit!</span><span class="stamp nee">Nee</span><div class="gq">Heb jij dit gestudeerd?</div><div class="gicon">${pic(STUDIEICON[s]||"cap2")}</div><div class="gbig">${esc(s)}</div><div class="gcount">${(I.si%POPSTUDIES.length)+1} / ${POPSTUDIES.length}</div></div></div>
-      <div class="sbtns"><button type="button" class="sbtn no" id="g-no" aria-label="Nee">✕</button><button type="button" class="sbtn yes" id="g-yes" aria-label="Ja, dit is mijn studie">♥</button></div>
-      <div class="gtype"><input id="si-studie" class="text" autocomplete="off" placeholder="Of typ je studie, bijv. master Organisatiewetenschappen" value="${esc(I.studie)}"><button type="button" class="btn or" id="si-ok">OK</button></div>
+    html=`<h3 class="qtitle gtitle">Wat heb je gestudeerd?</h3><p class="qhint">Typ je studie, zo precies mogelijk. Studeer je nog? Typ dan wat je nu studeert.</p>
+      <div class="gcardstatic gstudyin"><div class="gicon">${pic("cap2")}</div>
+      <div class="gtype"><input id="si-studie" class="text" autocomplete="off" list="si-lijst" placeholder="Bijv. Bestuurskunde" value="${esc(I.studie)}" aria-label="Je studie"><button type="button" class="btn or" id="si-ok">Verder →</button></div>
+      <datalist id="si-lijst">${POPSTUDIES.map(x=>`<option value="${esc(x)}">`).join("")}</datalist></div>
       <div class="qnav"><span></span><button type="button" class="btn ghost" id="si-skip">Overslaan →</button></div>`;}
   else if(I.stap===0){
-    html=`<h3 class="qtitle gtitle">Nice! ${esc(I.studie)} 🎓</h3><p class="qhint">Op welk niveau? Tik er één aan.</p>
+    html=`<h3 class="qtitle gtitle">${esc(I.studie)}</h3><p class="qhint">Op welk niveau? Tik er één aan.</p>
       <div class="gniv">${[["MBO","Mbo"],["AD","Associate degree"],["HBO-B","Hbo-bachelor"],["HBO-M","Hbo-master"],["WO-B","Wo-bachelor"],["WO-M","Wo-master"]].map(([v,l],i)=>`<button type="button" class="gbtn" style="--i:${i}" data-si-niv="${v}" aria-pressed="${I.niv===v}">${l}</button>`).join("")}</div>
       <div class="qnav"><button type="button" class="btn ghost" id="si-terug">← Andere studie</button><button type="button" class="btn ghost" id="si-nivskip">Weet ik niet →</button></div>`;}
   else if(I.stap===1){const v=I.jaren==null?"0":I.jaren;const n=v==="student"?-1:+v;
@@ -889,14 +887,12 @@ function renderSwipeIntro(){
   const start=()=>{I.klaar=true;window.gDecide=null;SW.deck=maakDeck();SW.i=0;SW.log=[];MODEL=null;saveSW();qcard.classList.add("shuffle");setTimeout(()=>qcard.classList.remove("shuffle"),600);renderSwipe();};
   const top=qcard.querySelector(".scard.top");
   if(I.stap===0&&!I.vraagNiv){
-    const beslis=r=>{window.gDecide=null;vlieg(top,r,()=>{if(r){I.studie=POPSTUDIES[I.si%POPSTUDIES.length];I.vraagNiv=true;pop(100,"studie gekozen");}else{I.si++;}saveSW();renderSwipeIntro();});};
-    kaartDrag(top,beslis);window.gDecide=beslis;$("#g-yes").onclick=()=>beslis(true);$("#g-no").onclick=()=>beslis(false);
     const inp=$("#si-studie");const ok=()=>{if(!inp.value.trim())return inp.focus();I.studie=inp.value.trim();I.vraagNiv=true;pop(100,"studie ingevuld");saveSW();naar(renderSwipeIntro);};
     $("#si-ok").onclick=ok;inp.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();ok();}});
     $("#si-skip").onclick=()=>{I.stap=1;saveSW();renderSwipeIntro();};}
   else if(I.stap===0){
     qcard.querySelectorAll("[data-si-niv]").forEach(b=>b.onclick=()=>{I.niv=b.dataset.siNiv;b.setAttribute("aria-pressed","true");b.classList.add("pop");pop(50,"niveau");I.stap=1;saveSW();naar(renderSwipeIntro);});
-    $("#si-terug").onclick=()=>{I.vraagNiv=false;I.si++;saveSW();renderSwipeIntro();};
+    $("#si-terug").onclick=()=>{I.vraagNiv=false;saveSW();renderSwipeIntro();};
     $("#si-nivskip").onclick=()=>{I.stap=1;saveSW();renderSwipeIntro();};}
   else if(I.stap===1){const r=$("#si-jaren");if(I.jaren==null){I.jaren="0";saveSW();}
     r.addEventListener("input",()=>{const n=+r.value;I.jaren=n<0?"student":String(n);const l=$("#si-jaren-lbl");l.textContent=JAARLABEL(I.jaren);l.classList.remove("bump");void l.offsetWidth;l.classList.add("bump");saveSW();});
