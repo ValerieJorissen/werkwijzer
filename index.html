@@ -78,8 +78,9 @@ button,input,select,textarea{font:inherit}
 .stats b{color:var(--ink);font-variant-numeric:tabular-nums}
 .flower{position:absolute;width:74px;height:74px;color:var(--lime);animation:spin 16s linear infinite}
 .hero h1 .fl{position:static;display:inline-block;width:.62em;height:.62em;vertical-align:.02em;margin-left:.12em;color:var(--lime)}
-.squig{width:100%;max-width:460px;justify-self:end;overflow:visible}
-@media (max-width:760px){.hero .in{grid-template-columns:1fr;padding-block:36px 8px}.squig{max-width:280px;justify-self:center}}
+.squig{position:absolute;right:0;bottom:0;height:calc(100% - 40px);width:44vw;max-width:560px;overflow:visible;pointer-events:none}
+.hero .copy{z-index:1}
+@media (max-width:760px){.hero .in{grid-template-columns:1fr;padding-block:36px 0}.squig{position:static;display:block;width:62%;height:auto;max-width:300px;justify-self:end;margin-right:calc(-1 * max(20px,env(safe-area-inset-right,0px)));margin-top:20px}}
 
 /* Marquee */
 .marq{background:var(--lime);border-block:2px solid var(--ink);overflow:hidden}
@@ -403,8 +404,8 @@ footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
         </div>
         <div class="stats" id="stats"></div>
       </div>
-      <svg class="squig" viewBox="0 0 420 470" aria-hidden="true">
-        <defs><mask id="sqmask" maskUnits="userSpaceOnUse" x="-40" y="-40" width="1900" height="660"><path id="sqm" fill="none" stroke="#fff" stroke-width="64" stroke-linecap="round" d="M30 560 L30 450 Q30 420 60 420 L120 420 Q150 420 150 390 L150 330 Q150 300 180 300 L240 300 Q270 300 270 270 L270 210 Q270 180 300 180 L360 180 Q390 180 390 150 L390 90 Q390 60 420 60 L1800 60"/></mask></defs>
+      <svg class="squig" viewBox="0 0 420 470" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+        <defs><mask id="sqmask" maskUnits="userSpaceOnUse" x="-40" y="-40" width="1000" height="720"><path id="sqm" fill="none" stroke="#fff" stroke-width="64" stroke-linecap="butt" d="M40 620 L40 446 Q40 410 76 410 L114 410 Q150 410 150 374 L150 326 Q150 290 186 290 L224 290 Q260 290 260 254 L260 206 Q260 170 296 170 L334 170 Q370 170 370 134 L370 86 Q370 50 406 50 L900 50"/></mask></defs>
         <g id="sqg" mask="url(#sqmask)"></g>
       </svg>
     </div>
