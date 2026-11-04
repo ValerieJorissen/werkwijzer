@@ -132,7 +132,7 @@ button,input,select,textarea{font:inherit}
 .hud .pts{font-weight:800;font-size:14px;background:var(--lime);border:2px solid var(--ink);border-radius:999px;padding:2px 10px;font-variant-numeric:tabular-nums}
 .xppop{position:absolute;right:24px;top:56px;font-weight:900;color:var(--green);background:var(--lime);border:2px solid var(--ink);border-radius:12px;padding:4px 10px;animation:xpup 1.1s ease forwards;pointer-events:none;z-index:5}
 @keyframes xpup{0%{opacity:0;transform:translateY(10px) scale(.8)}20%{opacity:1;transform:translateY(0) scale(1.1)}100%{opacity:0;transform:translateY(-40px)}}
-#qcard{position:relative}
+#qcard{overflow-anchor:none;position:relative}
 .gtitle{margin-top:4px}
 .swipe.gswipe{height:min(300px,42vh);min-height:250px}
 .scard.gstudy,.scard.gbr{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:10px}
@@ -843,7 +843,8 @@ function swipeA(){const I=SW.intro||{};const ps=parseOpl(I.studie||"");
   const nm=NIVMAP[I.niv]||[];
   return Object.assign(LEEG(),{vak:Object.keys(VAKKEN),opl:{tekst:I.studie||"",niveau:nm[0]||ps.niveau,graad:nm[1]||ps.graad,hand:true,richting:ps.richting},jaren:I.jaren==null?null:I.jaren,
     branche:I.branche&&I.branche.length?I.branche:["any"],sector:["any"],uren:"any",steden:["any"],vorm:"any",grootte:"any",contract:["any"],sal:"0",skillsUnknown:true});}
-function renderSwipeIntro(){
+function renderSwipeIntro(){try{renderSwipeIntro0();}finally{qHoudInBeeld();}}
+function renderSwipeIntro0(){
   SW.intro=SW.intro||{stap:0,studie:"",niv:null,jaren:null,branche:[],xp:0,si:0,bi:0,vraagNiv:false};const I=SW.intro;
   if(I.si==null)I.si=0;if(I.bi==null)I.bi=0;if(I.xp==null)I.xp=0;
   $("#asked").innerHTML="";window.gDecide=null;
@@ -966,6 +967,15 @@ function renderSwipeDone(){
     <div class="qnav"><button class="btn or" id="q-naar">Bekijk mijn matches ↓</button><button class="btn ghost danger" id="sw-again">Opnieuw swipen</button></div></div>`;
   $("#sw-again").onclick=()=>{SW={deck:[],i:0,log:[],intro:null};saveSW();MODEL=null;klaar=false;save();renderQuiz();renderResults();renderVac();};
 }
+
+// Bij een nieuwe vraag: zorg dat de bovenkant van de vraag in beeld staat (telefoon)
+let qKey=null;
+function qHoudInBeeld(){const I=SW&&SW.intro;
+  const k=[MODE,stap,klaar,I?[I.stap,!!I.vraagNiv,!!I.klaar].join("-"):""].join("|");
+  if(qKey===null||k===qKey){qKey=k;return;}qKey=k;
+  requestAnimationFrame(()=>{const v=$("#view-match");if(v&&v.hidden)return;
+    const hh=($(".top")||{offsetHeight:0}).offsetHeight,r=qcard.getBoundingClientRect();
+    if(r.top<hh+8)window.scrollBy({top:r.top-hh-12,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});});}
 
 let MODE=location.hash==="#swipen"?"swipe":"beeld";
 let STEPS=MODE==="klassiek"?STEPS_K:stepsB();
@@ -1182,7 +1192,8 @@ function skillsHTML(){
   return h;
 }
 const verderTekst=s=>stap===STEPS.length-1?"Toon mijn matches →":((s.custom==="studie"&&!(A.studie||"").trim())||(s.custom==="skills"&&!A.skills.length)||(s.custom==="check"&&!A.skills.length&&stap<STEPS.length-1)||(s.custom==="fav"&&!A.fav.length)?"Overslaan →":"Volgende →");
-function renderQuiz(anim=true){
+function renderQuiz(anim=true){try{renderQuiz0(anim);}finally{qHoudInBeeld();}}
+function renderQuiz0(anim=true){
   if(MODE==="swipe"){if(klaar&&SW.i>=SW.deck.length&&SW.deck.length)renderSwipeDone();else{klaar=false;renderSwipe();}return;}
   renderAsked();
   if(klaar){
