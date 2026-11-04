@@ -1371,7 +1371,7 @@ document.documentElement.style.setProperty("--flower",flower(12,41));
   cols.forEach((c,i)=>{const p=document.createElementNS("http://www.w3.org/2000/svg","path");
     p.setAttribute("d",d);p.setAttribute("fill","none");p.setAttribute("stroke-width","48");p.style.stroke=`var(${c})`;
     p.style.strokeDasharray=`${seg+1} ${L-seg-1}`;p.style.strokeDashoffset=-i*seg;g.appendChild(p);
-    if(!still&&p.animate)p.animate([{strokeDashoffset:-i*seg},{strokeDashoffset:-i*seg-L}],{duration:Math.round(L*20),iterations:Infinity});});
+    if(!still&&p.animate)p.animate([{strokeDashoffset:-i*seg},{strokeDashoffset:-i*seg-L}],{duration:Math.round(L*9),iterations:Infinity});});
   if(!still&&m.animate){m.style.strokeDasharray=L;m.animate([{strokeDashoffset:L},{strokeDashoffset:0}],{duration:1800,easing:"cubic-bezier(.3,.7,.2,1)"});}
 })();
 const orgs=[...new Set(VAC.map(v=>v.org))];
