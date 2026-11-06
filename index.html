@@ -762,9 +762,9 @@ const jobRecht=j=>j.rechtgebied||Object.keys(RECHTRE).filter(k=>RECHTRE[k].test(
 const STEP_RECHT={kicker:"Rechtsgebied",titel:"In welk recht ben je geïnteresseerd?",hint:"Kies er zoveel je wilt.",groups:[{key:"rechtgebied",img:true,multi:true,any:true,opts:[o("ie","Intellectueel eigendom, IT & privacy","bulb"),o("onderneming","Ondernemingsrecht","briefcase"),o("arbeid","Arbeidsrecht","people"),o("duurzaam","Duurzaamheid & milieu","seedling"),o("vastgoed","Vastgoed & bouw","house"),o("proces","Procederen & litigation","scale"),o("straf","Strafrecht","shield"),o("bestuur","Bestuurs- & omgevingsrecht","building"),o("familie","Personen- & familierecht","heart"),o("fiscaal","Fiscaal recht","coins"),o("financieel","Financieel recht & banking","chart"),o("internationaal","Internationaal & Europees","globe"),o("gezondheid","Gezondheidsrecht","zorg"),o("mededinging","Mededinging & regulering","magnifier"),o("any","Weet ik nog niet","infinity")]}],ok:()=>A.rechtgebied.length>0};
 const STEP_ADVWIL={kicker:"Richting",titel:"Wil je de advocatenopleiding gaan doen, of een andere kant op?",groups:[{key:"advwil",img:true,opts:[o("advocaat","Ik wil advocaat worden","scale"),o("anders","Een andere richting","map")]}],ok:()=>!!A.advwil};
 const isLawMaster=()=>/rechten|rechtsgeleerd|\blaw\b|\bllm\b|notari|fiscaal recht|juridisch/i.test(A.studie||"")&&(A.niv==="WO-M"||/master|\bllm\b|\bmr\b/i.test(A.studie||""));
-const STEP_ADV={kicker:"Advocatuur",titel:"Heb je de beroepsopleiding advocatuur afgerond?",groups:[{key:"advopl",img:true,opts:[o("ja","Ja, afgerond","scale"),o("bezig","Ik zit erin (advocaat-stagiaire)","book"),o("nee","Nee","person")]}],ok:()=>!!A.advopl};
+const STEP_ADV={kicker:"Advocatuur",titel:"Heb je de beroepsopleiding advocatuur afgerond?",groups:[{key:"advopl",img:true,opts:[o("ja","Ja, afgerond","scale"),o("bezig","Ik zit erin (advocaat-stagiaire)","book"),o("wil","Nog niet, maar ik wil hem wel doen","seedling"),o("anders","Nee, ik wil een andere kant op","map")]}],ok:()=>!!A.advopl};
 const stepsB=()=>{const med=isMed()&&A.jaren!=="student";const lawAny=!med&&isLawTekst(A.studie);const law=lawAny&&A.jaren!=="student"&&isLawMaster();const out=[];
-  const adv=law?A.advopl:null,brancheVoor=law&&adv==="nee";let branche=null;
+  const adv0=law?A.advopl:null,adv=(adv0==="wil"||adv0==="anders")?"nee":adv0,brancheVoor=law&&adv==="nee";let branche=null;
   for(const s of stepsB0()){
     if(law&&(adv==="bezig"||adv==="nee")&&(s.kicker==="Werkervaring"||s.custom==="functie"))continue; // advocaat-stagiaire of nog niet begonnen: ervaring niet nodig
     if(law&&(adv==="ja"||adv==="bezig")&&s.kicker==="Leidinggeven")continue;
@@ -776,7 +776,7 @@ const stepsB=()=>{const med=isMed()&&A.jaren!=="student";const lawAny=!med&&isLa
     out.push(s);
     if(med&&s.custom==="studie")out.push(STEP_MEDROL);
     if(lawAny&&s.custom==="studie")out.push(STEP_RECHT);
-    if(law&&s.custom==="studie"){out.push(STEP_ADV);if(adv==="nee")out.push(STEP_ADVWIL);
+    if(law&&s.custom==="studie"){out.push(STEP_ADV);
       if(brancheVoor){const b=STEPS_B_ALL.find(x=>x.kicker==="Branche");if(b)out.push(b);}}}
   return out;};
 const stepsB0=()=>STEPS_B_ALL.filter(s=>!(A.jaren==="student"&&STUDENT_SKIP.has(s.kicker))&&!(s.custom==="functie"&&!(+A.jaren>=3))&&!(s.kicker==="Sfeer"&&A.sector.length&&!A.sector.includes("any")&&!A.sector.includes("commercieel")));
@@ -1168,13 +1168,13 @@ function rechtScore(j,a,add,r){
   if(!isLawTekst(a.opl&&a.opl.tekst||a.studie))return 100;let cap=100;const lj=isLawJob(j);
   const rg=(a.rechtgebied||[]).filter(x=>x!=="any");
   if(rg.length&&lj){const jg=jobRecht(j);if(jg.length){const hit=jg.filter(x=>rg.includes(x));if(hit.length)add(14,`Rechtsgebied: ${hit.map(x=>RECHT[x]).join(", ")}`,"ok");else{cap=Math.min(cap,65);r.push({txt:`Rechtsgebied ${jg.map(x=>RECHT[x]).join(", ")}; dat koos je niet`,st:"no",hard:1});}}}
-  if(a.advopl==="nee"&&a.advwil==="anders"){
+  if(a.advopl==="anders"||(a.advopl==="nee"&&a.advwil==="anders")){
     if(advNiv(j)){cap=Math.min(cap,40);r.push({txt:"Advocatenfunctie, en jij wilt een andere richting op",st:"no",hard:1});}
     else if(lj)add(10,"Juridische functie buiten de advocatuur","ok");
     const br=(a.branche||[]).filter(x=>x!=="any");
     if(br.length){if(br.includes(j.branche))add(12,"Past bij waar je aan wilt bijdragen","ok");else{cap=Math.min(cap,60);r.push({txt:"Andere branche dan waar je aan wilt bijdragen",st:"no",hard:1});}}}
   return cap;}
-function advScore(j,a,add,r){const u=a.advopl,n=advNiv(j);if(!u||!n)return 100;
+function advScore(j,a,add,r){const u=(a.advopl==="wil"||a.advopl==="anders")?"nee":a.advopl,n=advNiv(j);if(!u||!n)return 100;
   const T={ja:{stagiair:[50,"Startersfunctie voor advocaat-stagiaires; jij hebt de beroepsopleiding al afgerond"],gevorderd:[0,6],advocaat:[0,10]},
     bezig:{stagiair:[0,10],gevorderd:[0,10],advocaat:[60,"Vraagt meestal een afgeronde beroepsopleiding advocatuur"]},
     nee:{stagiair:[0,12],gevorderd:[60,"Vraagt al ervaring als advocaat-stagiaire"],advocaat:[35,"Vraagt een afgeronde beroepsopleiding advocatuur"]}}[u][n];
