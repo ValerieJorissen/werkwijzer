@@ -743,7 +743,7 @@ let icN=0;
 function pic(ic){const n=icN++;return `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${BLOB[n%3]}" fill="${BLOBKLEUR[n%5]}"/>${IC[ic]||""}</svg>`;}
 const o=(v,l,ic)=>({v,l,ic});
 const STUDENT_SKIP=new Set(["Soort werk","Werktijden","Onderweg","Werkstijl","Leidinggeven","Werkgever","Sfeer","Impact","Branche"]);
-const stepsB=()=>STEPS_B_ALL.filter(s=>!(A.jaren==="student"&&STUDENT_SKIP.has(s.kicker))&&!(s.custom==="functie"&&!(+A.jaren>=3)));
+const stepsB=()=>STEPS_B_ALL.filter(s=>!(A.jaren==="student"&&STUDENT_SKIP.has(s.kicker))&&!(s.custom==="functie"&&!(+A.jaren>=3))&&!(s.kicker==="Sfeer"&&A.sector.length&&!A.sector.includes("any")&&!A.sector.includes("commercieel")));
 const STEPS_B_ALL=[
  {kicker:"Vakgebied",titel:"Waar zie jij jezelf werken?",hint:"Tik op maximaal drie plaatjes.",groups:[{key:"vak",img:true,multi:true,max:3,opts:[o("zorg","Zorg","zorg"),o("ict","ICT & data","laptop"),o("techniek","Techniek","gear"),o("overheid","Beleid","building"),o("klant","Klantcontact","headset"),o("commercieel","Sales & marketing","megaphone"),o("admin","Administratie","folder"),o("logistiek","Logistiek","truck"),o("onderwijs","Onderwijs","board"),o("creatief","Creatief","palette"),o("horeca","Horeca","chef"),o("financieel","Financieel","coins"),o("juridisch","Juridisch","scale"),o("hr","HR","people"),o("veiligheid","Beveiliging","shield")]}],ok:()=>A.vak.length>0},
  {kicker:"Soort taken",titel:"Waar word je blij van?",hint:"Kies er maximaal twee.",groups:[{key:"taken",img:true,multi:true,max:2,any:true,opts:[o("mensen","Met mensen","chat"),o("data","Met cijfers","chart"),o("handen","Met je handen","hammer"),o("creatief","Iets bedenken","bulb"),o("organiseren","Organiseren","check"),o("any","Van alles wat","infinity")]}],ok:()=>A.taken.length>0},
@@ -1335,6 +1335,7 @@ function pick(key,v,btn){
     else arr=arr.includes(v)?arr.filter(x=>x!==v):(g.max&&arr.length>=g.max?arr:[...arr,v]);
     A[key]=arr;}
   else A[key]=v;
+  if(MODE==="beeld"&&key==="sector"){const huidig=STEPS[stap];STEPS=stepsB();stap=Math.max(0,STEPS.indexOf(huidig));}
   save();renderQuiz(false);
   if(s.noAuto&&key==="uren"&&v!=="part"&&stap<STEPS.length-1)setTimeout(()=>{if(STEPS[stap]===s){stap++;renderQuiz();}},450);
   if(!g.multi&&!s.noAuto&&s.groups&&s.groups.length===1&&stap<STEPS.length-1) setTimeout(()=>{if(STEPS[stap]===s){stap++;renderQuiz();}},260);
