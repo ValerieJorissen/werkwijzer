@@ -758,6 +758,7 @@ const STEP_ADV={kicker:"Advocatuur",titel:"Heb je de beroepsopleiding advocatuur
 const stepsB=()=>{const med=isMed()&&A.jaren!=="student";const law=!med&&A.jaren!=="student"&&isLawMaster();const out=[];
   for(const s of stepsB0()){
     if(med&&MED_SKIP.has(s.kicker))continue;
+    if(med&&(s.kicker==="Werkervaring"||s.custom==="functie")&&A.medrol.length&&A.medrol.every(x=>["anios","aios","onderzoek"].includes(x)))continue; // opleidingsplekken: ervaring niet nodig
     if(med&&s.kicker==="Werkgever"){out.push(STEP_MEDPLEK);continue;}
     if(med&&s.kicker==="Branche"){out.push(STEP_MEDSPEC);continue;}
     out.push(s);
@@ -1379,7 +1380,7 @@ function pick(key,v,btn){
     else arr=arr.includes(v)?arr.filter(x=>x!==v):(g.max&&arr.length>=g.max?arr:[...arr,v]);
     A[key]=arr;}
   else A[key]=v;
-  if(MODE==="beeld"&&key==="niv"){const huidig=STEPS[stap];STEPS=stepsB();stap=Math.max(0,STEPS.indexOf(huidig));}
+  if(MODE==="beeld"&&(key==="niv"||key==="medrol")){const huidig=STEPS[stap];STEPS=stepsB();stap=Math.max(0,STEPS.indexOf(huidig));}
   if(MODE==="beeld"&&key==="sector"){const huidig=STEPS[stap];STEPS=stepsB();stap=Math.max(0,STEPS.indexOf(huidig));}
   save();renderQuiz(false);
   if(s.noAuto&&key==="uren"&&v!=="part"&&stap<STEPS.length-1)setTimeout(()=>{if(STEPS[stap]===s){stap++;renderQuiz();}},450);
