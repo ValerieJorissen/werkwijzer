@@ -905,7 +905,7 @@ function logQuiz(){
   }catch(e){}
 }
 let swT0=0,swRAF=0;
-// Swipe: eerst drie korte vragen
+// Swipe: eerst twee korte vragen
 const STUDIEICON={"Rechten": "scale", "Bedrijfskunde": "chart", "Organisatiewetenschappen": "people", "Communicatie": "megaphone", "Verpleegkunde": "zorg", "Informatica": "laptop", "Spatial design": "house", "Mode (AMFI)": "sneaker", "Bestuurskunde": "building", "Psychologie": "chat", "Hotelschool": "chef", "Techniek": "gear"};
 const POPSTUDIES=["Rechten","Bedrijfskunde","Organisatiewetenschappen","Communicatie","Verpleegkunde","Informatica","Spatial design","Mode (AMFI)","Bestuurskunde","Psychologie","Hotelschool","Techniek"];
 const JAARLABEL=j=>j==="student"?"Ik studeer nog":+j===0?"Net klaar":+j>=10?"10+ jaar":j+" jaar";
@@ -919,9 +919,9 @@ function renderSwipeIntro0(){
   if(I.si==null)I.si=0;if(I.bi==null)I.bi=0;if(I.xp==null)I.xp=0;
   $("#asked").innerHTML="";window.gDecide=null;
   const BR=STEPS_B_ALL.find(s=>s.kicker==="Branche").groups[0].opts.filter(o=>o.v!=="any");
-  const voortgang=I.stap===0?(I.vraagNiv?.5:0):I.stap===1?0:I.bi/BR.length;
-  const pct=Math.round((I.stap+voortgang)/3*100);
-  const hud=`<div class="hud"><span class="lvl">Vraag ${I.stap+1}<small> van 3</small></span><div class="xp"><i style="width:${pct}%"></i></div><span></span></div>`;
+  const voortgang=I.stap===0?(I.vraagNiv?.5:0):0;
+  const pct=Math.round((I.stap+voortgang)/2*100);
+  const hud=`<div class="hud"><span class="lvl">Vraag ${Math.min(I.stap,1)+1}<small> van 2</small></span><div class="xp"><i style="width:${pct}%"></i></div><span></span></div>`;
   const pop=()=>{};
   const naar=fn=>{setTimeout(fn,280);};
   const kaartDrag=(top,beslis)=>{let x0=null,dx=0;
@@ -943,20 +943,21 @@ function renderSwipeIntro0(){
       <div class="gniv">${[["MBO","Mbo"],["AD","Associate degree"],["HBO-B","Hbo-bachelor"],["HBO-M","Hbo-master"],["WO-B","Wo-bachelor"],["WO-M","Wo-master"]].map(([v,l],i)=>`<button type="button" class="gbtn" style="--i:${i}" data-si-niv="${v}" aria-pressed="${I.niv===v}">${l}</button>`).join("")}</div>
       <div class="qnav"><button type="button" class="btn ghost" id="si-terug">← Andere studie</button><button type="button" class="btn ghost" id="si-nivskip">Weet ik niet →</button></div>`;}
   else if(I.stap===1){const v=I.jaren==null?"0":I.jaren;const n=v==="student"?-1:+v;
-    html=`<h3 class="qtitle gtitle">Hoeveel werkervaring heb je?</h3><p class="qhint">Schuif het bolletje en druk op Bevestig.</p>
+    html=`<h3 class="qtitle gtitle">Hoeveel werkervaring heb je?</h3><p class="qhint">Schuif het bolletje en start met swipen.</p>
       <div class="gcardstatic"><div class="sislider"><div class="sibig" id="si-jaren-lbl">${JAARLABEL(v)}</div>
       <input type="range" id="si-jaren" min="-1" max="10" step="1" value="${n}" aria-label="Jaren werkervaring">
       <div class="siends"><span>Studeer nog</span><span>10+ jaar</span></div></div>
       <div id="si-fwrap" ${+v>=3?"":"hidden"}><label class="glabel" for="si-functie" style="margin-top:14px">Wat is je huidige of laatste functie?</label><input id="si-functie" class="text" autocomplete="off" placeholder="bijv. CTO, teamleider, accountmanager" value="${esc(I.functie||"")}"></div></div>
-      <div class="qnav"><button type="button" class="btn ghost" id="si-terug">← Vorige</button><button type="button" class="btn or" id="si-ok">Bevestig ✓</button></div>`;}
+      <div class="qnav"><button type="button" class="btn ghost" id="si-terug">← Vorige</button><button type="button" class="btn or" id="si-ok">Start met swipen →</button></div>`;}
   else{const o=BR[I.bi],nx=BR[I.bi+1];
     html=`<h3 class="qtitle gtitle">Waar wil je aan bijdragen?</h3><p class="qhint">Rechts = interessant, links = niks voor mij. ${I.branche.length?`<b>${I.branche.length} gekozen</b>`:""}</p>
       <div class="swipe gswipe">${nx?`<div class="scard next gbr" style="--c:var(--lime)"><div class="gicon">${pic(nx.ic)}</div><div class="gbig">${esc(nx.l)}</div></div>`:""}
       ${o?`<div class="scard top gbr" style="--c:var(--orange)"><span class="stamp ja">Leuk!</span><span class="stamp nee">Nee</span><div class="gicon">${pic(o.ic)}</div><div class="gbig">${esc(o.l)}</div><div class="gcount">${I.bi+1} / ${BR.length}</div></div>`:""}</div>
       <div class="sbtns"><button type="button" class="sbtn no" id="g-no" aria-label="Nee">✕</button><button type="button" class="sbtn yes" id="g-yes" aria-label="Interessant">♥</button></div>
       <div class="qnav"><button type="button" class="btn ghost" id="si-terug">← Vorige</button><button type="button" class="btn or" id="si-start">${I.branche.length?`Start met swipen (${I.branche.length}) →`:"Sla over, start →"}</button></div>`;}
-  qcard.innerHTML=hud+`<div class="gwrap">${html}</div>`;
   const start=()=>{I.klaar=true;window.gDecide=null;SW.deck=maakDeck();SW.i=0;SW.log=[];MODEL=null;saveSW();qcard.classList.add("shuffle");setTimeout(()=>qcard.classList.remove("shuffle"),600);renderSwipe();};
+  if(I.stap>=2){start();return;}
+  qcard.innerHTML=hud+`<div class="gwrap">${html}</div>`;
   const top=qcard.querySelector(".scard.top");
   if(I.stap===0&&!I.vraagNiv){
     const inp=$("#si-studie");const ok=()=>{if(!inp.value.trim())return inp.focus();I.studie=inp.value.trim();I.vraagNiv=true;pop(100,"studie ingevuld");saveSW();naar(renderSwipeIntro);};
@@ -970,7 +971,7 @@ function renderSwipeIntro0(){
     r.addEventListener("input",()=>{const n=+r.value;I.jaren=n<0?"student":String(n);const l=$("#si-jaren-lbl");l.textContent=JAARLABEL(I.jaren);l.classList.remove("bump");void l.offsetWidth;l.classList.add("bump");$("#si-fwrap").hidden=!(n>=3);saveSW();});
     const fi=$("#si-functie");fi.addEventListener("input",()=>{I.functie=fi.value;saveSW();});
     $("#si-terug").onclick=()=>{I.stap=0;I.vraagNiv=!!I.studie;saveSW();renderSwipeIntro();};
-    $("#si-ok").onclick=()=>{pop(100,"ervaring");I.stap=2;saveSW();naar(renderSwipeIntro);};}
+    $("#si-ok").onclick=()=>{I.stap=2;I.branche=[];saveSW();start();};}
   else{
     $("#si-terug").onclick=()=>{I.stap=1;saveSW();renderSwipeIntro();};
     $("#si-start").onclick=start;
