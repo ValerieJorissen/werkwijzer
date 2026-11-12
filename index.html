@@ -472,7 +472,7 @@ footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
       <div class="field q"><label for="f-q">Zoeken</label><input id="f-q" type="search" placeholder="Functie, werkgever of vaardigheid"></div>
       <div class="field"><label for="f-stad">Stad</label><select id="f-stad"></select></div>
       <div class="field"><label for="f-vak">Vakgebied</label><select id="f-vak"></select></div>
-      <div class="field"><label for="f-uren">Uren</label><select id="f-uren"><option value="">Alle</option><option value="16">Tot 16 uur</option><option value="24">Tot 24 uur</option><option value="part">Parttime (tot 32 uur)</option><option value="full">Fulltime</option><option value="zzp">Freelance / zzp</option></select></div>
+      <div class="field"><label for="f-uren">Uren</label><select id="f-uren"><option value="">Alle</option><option value="16">Tot 16 uur</option><option value="24">Tot 24 uur</option><option value="part">Parttime (tot 32 uur)</option><option value="full">Fulltime</option><option value="zzp">Freelance / zzp</option><option value="project">Op projectbasis</option></select></div>
       <div class="field"><label for="f-sector">Werkgever</label><select id="f-sector"></select></div>
       <div class="field"><label for="f-sort">Sorteren</label><select id="f-sort"></select></div>
     </form>
@@ -643,7 +643,7 @@ function kenmerk(j){
   return {
     taken:j.taken||[TAAK[j.vak]].filter(Boolean),
     leiding:j.leiding??((j.eisen||[]).some(e=>e.k==="Leidinggeven"&&e.h)||/co[öo]rdinator|manager|teamleider|leidinggevend|\blead\b|hoofd /i.test(j.titel)),
-    contract:j.contract||(/trainee|leerling|in opleiding|graduate/i.test(j.titel)?"traineeship":/werkstudent|working student/i.test(j.titel)?"werkstudent":/freelance|\bzzp\b|interim/i.test(j.titel)?"freelance":null),
+    contract:j.contract||(/trainee|leerling|in opleiding|graduate/i.test(j.titel)?"traineeship":/werkstudent|working student/i.test(j.titel)?"werkstudent":/projectbasis|op project/i.test(j.titel)?"project":/freelance|\bzzp\b|interim/i.test(j.titel)?"freelance":null),
     diensten:j.diensten??(/onregelmatig|avond|weekend|dienst/i.test(txt)?true:null),
     taal:j.taal||null, reizen:j.reizen??((j.branche==="advies"&&/consultant|adviseur/i.test(j.titel))?true:null), werkplek:j.werkplek||null,
     impact:j.impact??(j.sector==="overheid"||j.sector==="nonprofit"),
@@ -926,8 +926,8 @@ const STEPS_B_ALL=[
  {kicker:"Functie",titel:"Wat is je huidige of laatste functie?",hint:"Typ je functietitel. Dit weegt zwaar mee in je matches.",custom:"functie",ok:()=>true},
  {kicker:"Soort werk",titel:"Hoe ziet je ideale werkdag eruit?",groups:[{key:"fysiek",img:true,opts:[o("fysiek","Actief bezig","sneaker"),o("mix","Een mix","mix"),o("bureau","Achter een bureau","desk")]}],ok:()=>!!A.fysiek},
  {kicker:"Werkplek",titel:"Waar werk je het liefst?",groups:[{key:"vorm",img:true,opts:[o("locatie","Op locatie","office"),o("hybride","Thuis én kantoor","hybride"),o("remote","Vooral thuis","house"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.vorm},
- {kicker:"Uren",titel:"Hoeveel wil je werken?",hint:"Kies parttime om je aantal uren in te stellen.",noAuto:true,groups:[{key:"uren",img:true,opts:[o("part","Parttime","clockhalf"),o("full","Fulltime","clockfull"),o("zzp","Freelance / zzp","laptop"),o("any","Maakt niet uit","infinity")]}],
-   extra:()=>A.uren==="part"?`<div class="sislider urenslider"><div class="sibig" id="uren-lbl">${A.urenPw||24} uur</div><input type="range" id="uren-pw" min="8" max="32" step="4" value="${A.urenPw||24}" aria-label="Uren per week"><div class="siends"><span>8 uur</span><span>32 uur</span></div><p class="qhint" id="uren-dag" style="margin-top:8px">${Math.round((A.urenPw||24)/8)} dagen per week</p></div>`:A.uren==="zzp"?`<p class="qhint" style="margin-top:14px">We zetten freelance-opdrachten bovenaan. Banen in loondienst zie je ook, maar lager.</p>`:"",
+ {kicker:"Uren",titel:"Hoeveel wil je werken?",hint:"Kies parttime om je aantal uren in te stellen.",noAuto:true,groups:[{key:"uren",img:true,opts:[o("part","Parttime","clockhalf"),o("full","Fulltime","clockfull"),o("zzp","Freelance / zzp","laptop"),o("project","Op projectbasis","calendar"),o("any","Maakt niet uit","infinity")]}],
+   extra:()=>A.uren==="part"?`<div class="sislider urenslider"><div class="sibig" id="uren-lbl">${A.urenPw||24} uur</div><input type="range" id="uren-pw" min="8" max="32" step="4" value="${A.urenPw||24}" aria-label="Uren per week"><div class="siends"><span>8 uur</span><span>32 uur</span></div><p class="qhint" id="uren-dag" style="margin-top:8px">${Math.round((A.urenPw||24)/8)} dagen per week</p></div>`:A.uren==="zzp"?`<p class="qhint" style="margin-top:14px">We zetten freelance-opdrachten bovenaan. Banen in loondienst zie je ook, maar lager.</p>`:A.uren==="project"?`<p class="qhint" style="margin-top:14px">We zetten werk voor een afgebakend project bovenaan: projectfuncties, interim-klussen en freelance-opdrachten.</p>`:"",
    bind:()=>{const r=$("#uren-pw");if(!r)return;if(!A.urenPw){A.urenPw=24;save();}r.addEventListener("input",()=>{A.urenPw=+r.value;const l=$("#uren-lbl");l.textContent=A.urenPw+" uur";l.classList.remove("bump");void l.offsetWidth;l.classList.add("bump");$("#uren-dag").textContent=Math.round(A.urenPw/8)+" dagen per week";save();});},
    ok:()=>!!A.uren},
  {kicker:"Werktijden",titel:"Avonden en weekenden werken?",groups:[{key:"diensten",img:true,opts:[o("ja","Geen probleem","moon"),o("soms","Af en toe","sunmoon"),o("nee","Liever overdag","sun")]}],ok:()=>!!A.diensten},
@@ -974,7 +974,7 @@ function kenmerken(v){
   if(v.vorm)add("vorm:"+v.vorm,WERKVORM[v.vorm]);
   if(k.taal==="en")add("taal:en","Engelstalig werk");
   if(v.niveau)add("niv:"+v.niveau,"Niveau "+v.niveau);
-  if(k.contract)add("contract:"+k.contract,({vast:"Vast contract",tijdelijk:"Tijdelijk contract",traineeship:"Traineeships",werkstudent:"Werkstudentbanen",freelance:"Freelance-opdrachten"})[k.contract]);
+  if(k.contract)add("contract:"+k.contract,({vast:"Vast contract",tijdelijk:"Tijdelijk contract",traineeship:"Traineeships",werkstudent:"Werkstudentbanen",freelance:"Freelance-opdrachten",project:"Op projectbasis"})[k.contract]);
   if(k.diensten)add("diensten","Avond- en weekendwerk");
   if(k.impact)add("impact","Maatschappelijke impact");
   if(k.leiding)add("leiding","Leidinggeven");
@@ -1358,13 +1358,15 @@ function score(j,a){
   if(reqJ&&a.jaren!=null){
     if(+a.jaren>=reqJ) r.push({txt:j.ervaring?`Je hebt genoeg werkervaring (gevraagd: ${j.ervaring}+ jaar)`:"Je hebt de ervaring die deze rol vraagt",st:"ok"});
     else{cap=Math.min(cap,reqJ-a.jaren>=3?45:60);miss.push(j.ervaring?`${j.ervaring}+ jaar ervaring`:"ruime werkervaring");r.push({txt:j.ervaring?`Vraagt minimaal ${j.ervaring} jaar werkervaring`:"Vraagt ruime werkervaring (ervaren rol)",st:"no",hard:1});}}
-  if(!j.uren&&a.uren==="zzp") {if(kenmerk(j).contract==="freelance")add(10,"Freelance-opdracht","ok");else{add(2,"Baan in loondienst, geen freelance-opdracht","part");cap=Math.min(cap,60);}}
+  if(!j.uren&&a.uren==="project") {const kc=kenmerk(j).contract;if(kc==="project")add(10,"Werk op projectbasis","ok");else if(kc==="freelance")add(8,"Freelance-opdracht: ook werk per project","ok");else{add(2,"Geen projectfunctie","part");cap=Math.min(cap,60);}}
+  else if(!j.uren&&a.uren==="zzp") {if(kenmerk(j).contract==="freelance")add(10,"Freelance-opdracht","ok");else{add(2,"Baan in loondienst, geen freelance-opdracht","part");cap=Math.min(cap,60);}}
   else if(!j.uren) add(5,"Uren staan niet in de vacature","part");
   else if(a.uren==="any") add(10,`${j.uren[0]}–${j.uren[1]} uur, uren maken je niet uit`,"ok");
   else if(a.uren==="part"){const N=+a.urenPw||24;
     if(j.uren[0]<=N)add(10,`Kan vanaf ${j.uren[0]} uur, jij wilt ${N} uur`,"ok");
     else if(j.uren[0]<=N+4)add(4,`Vraagt minimaal ${j.uren[0]} uur, iets meer dan jouw ${N} uur`,"part");
     else{add(0,`Vraagt minimaal ${j.uren[0]} uur`,"no");cap=Math.min(cap,40);r.push({txt:`Vraagt minimaal ${j.uren[0]} uur per week; jij wilt ongeveer ${N} uur`,st:"no",hard:1});}}
+  else if(a.uren==="project"){const kc=kenmerk(j).contract;if(kc==="project")add(10,"Werk op projectbasis","ok");else if(kc==="freelance")add(8,"Freelance-opdracht: ook werk per project","ok");else{add(2,"Geen projectfunctie","part");cap=Math.min(cap,60);}}
   else if(a.uren==="zzp"){if(kenmerk(j).contract==="freelance")add(10,"Freelance-opdracht","ok");else{add(2,"Baan in loondienst, geen freelance-opdracht","part");cap=Math.min(cap,60);}}
   else j.uren[1]>=32?add(10,`${j.uren[0]===j.uren[1]?j.uren[0]:j.uren[0]+"–"+j.uren[1]} uur per week`,"ok"):j.uren[1]>=28?add(5,`Maximaal ${j.uren[1]} uur`,"part"):add(0,`Maximaal ${j.uren[1]} uur`,"no");
   if(a.steden.includes("any")) add(12,`${j.plaats}, locatie maakt je niet uit`,"ok");
@@ -1579,7 +1581,7 @@ function card(v,m,best){
   const mine=new Set([...A.skills,...(A.talen||[]),"Nederlands"].map(s=>s.toLowerCase()));
   const u=!v.uren?null:v.uren[0]===v.uren[1]?`${v.uren[0]} uur`:`${v.uren[0]}–${v.uren[1]} uur`;
   const sal=v.sal?`<span class="tag sal">${euro(v.sal[0])} – ${euro(v.sal[1])}</span>`:v.salTekst?`<span class="tag sal">${esc(v.salTekst)}</span>`:`<span class="tag unk">Salaris niet vermeld</span>`;
-  const tags=[u?`<span class="tag">${u}</span>`:`<span class="tag unk">Uren niet vermeld</span>`,v.vorm?`<span class="tag">${WERKVORM[v.vorm]}</span>`:"",v.niveau?`<span class="tag">${v.niveau}</span>`:"",sal,v.sector?`<span class="tag">${SECTOR[v.sector]}</span>`:"",(()=>{const k=kenmerk(v);return (k.contract?`<span class="tag">${({vast:"Vast contract",tijdelijk:"Tijdelijk",traineeship:"Traineeship",werkstudent:"Werkstudent",freelance:"Freelance"})[k.contract]}</span>`:"")+(k.taal==="en"?`<span class="tag">Engelstalig</span>`:"")+(k.diensten?`<span class="tag">Avond/weekend</span>`:"")+(k.type==="scaleup"?`<span class="tag">Scale-up</span>`:"")})()].join("");
+  const tags=[u?`<span class="tag">${u}</span>`:`<span class="tag unk">Uren niet vermeld</span>`,v.vorm?`<span class="tag">${WERKVORM[v.vorm]}</span>`:"",v.niveau?`<span class="tag">${v.niveau}</span>`:"",sal,v.sector?`<span class="tag">${SECTOR[v.sector]}</span>`:"",(()=>{const k=kenmerk(v);return (k.contract?`<span class="tag">${({vast:"Vast contract",tijdelijk:"Tijdelijk",traineeship:"Traineeship",werkstudent:"Werkstudent",freelance:"Freelance",project:"Projectbasis"})[k.contract]}</span>`:"")+(k.taal==="en"?`<span class="tag">Engelstalig</span>`:"")+(k.diensten?`<span class="tag">Avond/weekend</span>`:"")+(k.type==="scaleup"?`<span class="tag">Scale-up</span>`:"")})()].join("");
   const E=v.eisen||[];
   const sk=E.length?"":(v.skills||[]).map(s=>`<span class="tag sk${m&&mine.has(s.toLowerCase())?" hit":""}">${esc(s)}</span>`).join("");
   const eis=`<div class="eisen"><span class="glabel">Wat ze vragen${v.ervaring?` · minimaal ${v.ervaring} jaar ervaring`:""}</span>${E.length?`<ul>${E.map(e=>{let st="neu",ic="•";
@@ -1609,7 +1611,7 @@ function rings(root){requestAnimationFrame(()=>requestAnimationFrame(()=>root.qu
 function renderResults(){
   const sec=$("#resultaten");sec.hidden=!klaar;if(!klaar)return;
   const list=VAC.map(v=>({v,m:matchFor(v)})).sort((x,y)=>y.m.pct-x.m.pct);
-  const chips=[...A.vak.map(v=>VAKKEN[v]),A.opl.niveau&&(NIVLABEL[A.opl.niveau]+(A.opl.graad?" "+GRAADLABEL[A.opl.graad].toLowerCase():"")),A.jaren==="student"?"Student":null,A.uren==="part"?(A.urenPw?A.urenPw+" uur per week":"Parttime"):A.uren==="full"?"Fulltime":A.uren==="zzp"?"Freelance / zzp":null,
+  const chips=[...A.vak.map(v=>VAKKEN[v]),A.opl.niveau&&(NIVLABEL[A.opl.niveau]+(A.opl.graad?" "+GRAADLABEL[A.opl.graad].toLowerCase():"")),A.jaren==="student"?"Student":null,A.uren==="part"?(A.urenPw?A.urenPw+" uur per week":"Parttime"):A.uren==="full"?"Fulltime":A.uren==="zzp"?"Freelance / zzp":A.uren==="project"?"Op projectbasis":null,
     ...(A.steden.includes("any")?["Hele Randstad"]:A.steden),...A.sector.filter(s=>s!=="any").map(s=>SECTOR[s]),A.grootte&&A.grootte!=="any"?GROOTTE[A.grootte]:null,...(A.talen||[]),...A.skills.slice(0,6),...(A.fav||[]).map(f=>"♥ "+f)].filter(Boolean);
   let ch=chips;if(MODE==="swipe"){const M=MODEL||swipeModel();ch=Object.entries(M.w).filter(([k,x])=>x>=.5&&M.n[k]>=2).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([k])=>"♥ "+M.lab[k]);}
   $("#sum").innerHTML=ch.map(c=>`<span>${esc(c)}</span>`).join("");
@@ -1621,6 +1623,7 @@ function renderResults(){
     (A.padrol||[]).filter(x=>x!=="any"&&!(P.rol&&x===P.rol.buiten)).forEach(x=>{if(!VAC.some(v=>isPadJob(pp,v)&&jobPadTags(pp,v,"rol").includes(x)))leeg.push(padLabel(pp,"rol",x).toLowerCase());});
     if(P.veld&&(!P.veld.when||P.veld.when()))(A.padveld||[]).filter(x=>x!=="any").forEach(x=>{if(!VAC.some(v=>isPadJob(pp,v)&&jobPadTags(pp,v,"veld").includes(x)))leeg.push(padLabel(pp,"veld",x).toLowerCase());});
     if(leeg.length)medNote=`<div class="mednote"><b>Op dit moment staan er geen open vacatures op Valcature voor: ${esc(leeg.join(", "))}.</b> Hieronder zie je wat er het dichtst bij komt. We vullen de vacatures elke werkdag aan.</div>`;}}
+  if(MODE!=="swipe"&&!medNote&&A.uren==="project"){const n=VAC.filter(v=>["project","freelance"].includes(kenmerk(v).contract)).length;if(n<5)medNote=`<div class="mednote"><b>Er staan nu nog maar ${n} ${n===1?"vacature":"vacatures"} op projectbasis op Valcature.</b> Daarna zie je banen die het best bij je passen, ook al zijn ze niet per project. We zoeken elke werkdag naar nieuwe projectfuncties en freelance-opdrachten.</div>`;}
   $("#reslist").innerHTML=medNote+list.map((x,i)=>card(x.v,x.m,i===0&&x.m.pct>=50)).join("");
   rings($("#reslist"));
 }
@@ -1642,7 +1645,7 @@ function renderVac(){
   const q=F.q.trim().toLowerCase();
   let list=VAC.filter(v=>(!q||[v.titel,v.org,v.plaats,...(v.skills||[])].join(" ").toLowerCase().includes(q))
     &&(!F.stad||v.plaats===F.stad)&&(!F.vak||v.vak===F.vak)&&(!F.sector||v.sector===F.sector)
-    &&(!F.uren||(F.uren==="zzp"?kenmerk(v).contract==="freelance":v.uren&&(F.uren==="part"?v.uren[0]<=32:F.uren==="full"?v.uren[1]>=32:v.uren[0]<=+F.uren)))).map(v=>({v,m:klaar?matchFor(v):null}));
+    &&(!F.uren||(F.uren==="zzp"?kenmerk(v).contract==="freelance":F.uren==="project"?["project","freelance"].includes(kenmerk(v).contract):v.uren&&(F.uren==="part"?v.uren[0]<=32:F.uren==="full"?v.uren[1]>=32:v.uren[0]<=+F.uren)))).map(v=>({v,m:klaar?matchFor(v):null}));
   if(F.sort==="match") list.sort((x,y)=>y.m.pct-x.m.pct);
   else if(F.sort==="az") list.sort((x,y)=>x.v.titel.localeCompare(y.v.titel,"nl"));
   else list.sort((x,y)=>(x.v.sluit||"9999").localeCompare(y.v.sluit||"9999"));
