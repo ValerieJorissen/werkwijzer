@@ -375,7 +375,7 @@ footer p{margin:0;font-size:14px;opacity:.8;max-width:56ch}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes bob{50%{transform:translateY(-3px)}}
 @keyframes morph{0%{border-radius:62% 38% 55% 45%/48% 60% 40% 52%}50%{border-radius:40% 60% 38% 62%/58% 42% 60% 40%}100%{border-radius:55% 45% 65% 35%/40% 55% 45% 60%}}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (prefers-reduced-motion:reduce){*:not(.track),*::before,*::after{animation:none!important;transition:none!important}}
 footer .selectie{margin:14px 0 0;font-size:12px;line-height:1.5;opacity:.65;max-width:760px}
 footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
 </style>
@@ -1672,7 +1672,7 @@ document.documentElement.style.setProperty("--flower",flower(12,41));
 (function squiggle(){
   const m=$("#sqm"),g=$("#sqg"),d=m.getAttribute("d"),L=m.getTotalLength(),seg=L/6;
   const cols=["--pink","--orange","--lime","--green","--blue","--sky"];
-  const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const still=false;
   cols.forEach((c,i)=>{const p=document.createElementNS("http://www.w3.org/2000/svg","path");
     p.setAttribute("d",d);p.setAttribute("fill","none");p.setAttribute("stroke-width","48");p.style.stroke=`var(${c})`;
     p.style.strokeDasharray=`${seg+1} ${L-seg-1}`;p.style.strokeDashoffset=-i*seg;g.appendChild(p);
@@ -1681,7 +1681,8 @@ document.documentElement.style.setProperty("--flower",flower(12,41));
 })();
 const orgs=[...new Set(VAC.map(v=>v.org))];
 const star=`<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0l2.4 7.2L21 3l-4.2 6.6L24 12l-7.2 2.4L21 21l-6.6-4.2L12 24l-2.4-7.2L3 21l4.2-6.6L0 12l7.2-2.4L3 3l6.6 4.2z"/></svg>`;
-const words=[...new Set(VAC.map(v=>VAKKEN[v.vak]))].concat(orgs);
+const orgTel={};VAC.forEach(v=>orgTel[v.org]=(orgTel[v.org]||0)+1);
+const words=[...new Set(VAC.map(v=>VAKKEN[v.vak]))].concat(orgs.slice().sort((a,b)=>orgTel[b]-orgTel[a]).slice(0,36));
 const half=words.map(w=>`<span>${esc(w)}${star}</span>`).join("");
 $("#track").innerHTML=half+half;
 requestAnimationFrame(()=>{const t=$("#track");if(t)t.style.animationDuration=Math.max(90,Math.round(t.scrollWidth/2/32))+"s";});
@@ -1782,7 +1783,7 @@ function maakBrief(){
   if(match.length) p3.push(zin(`${form?"Ik beheers":"Ik kan goed overweg met"} ${lijst(match)}, precies wat ${u} in de vacature ${form?"vraagt":"vragen"}`));
   if(rest.length) p3.push(zin(`${match.length?"Daarnaast breng ik":"Ik breng"} ${lijst(rest)} mee`));
   if((A.sterk||[]).length) p3.push(zin(`${form?"Mensen omschrijven mij als":"Mensen noemen me"} ${lijst(A.sterk)}`));
-  if(P.project.trim()) p3.push((form?"Een project waar ik trots op ben: "+klein(zin(kort?P.project.split(/(?<=[.!?])\s/)[0]:P.project)):"Mijn vetste project tot nu toe? "+zin(kort?P.project.split(/(?<=[.!?])\s/)[0]:P.project)));
+  if(P.project.trim()) p3.push((form?"Een project waar ik trots op ben: "+klein(zin(kort?(P.project.match(/^[^.!?]*[.!?]?/)||[P.project])[0]:P.project)):"Mijn vetste project tot nu toe? "+zin(kort?(P.project.match(/^[^.!?]*[.!?]?/)||[P.project])[0]:P.project)));
   const slot=form?`Ik vertel ${u} graag in een persoonlijk gesprek meer over wat ik voor ${j.org} kan betekenen.`:kies([`Ik vertel jullie graag meer in een gesprek. Hopelijk tot snel!`,`Zin om kennis te maken? Ik hoor graag van jullie!`]);
   let paras=kort?[[...p1].join(" "),[...p2,...p3].join(" "),slot]:[p1.join(" "),p2.join(" "),p3.join(" "),slot];
   paras=paras.filter(x=>x.trim());
