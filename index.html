@@ -607,7 +607,7 @@ function parseOpl(t){
 }
 
 // Antwoorden (per bezoeker bewaard in deze browser)
-const LEEG=()=>({vak:[],opl:{tekst:"",niveau:null,hand:false,richting:[]},skills:[],jaren:null,uren:null,steden:[],vorm:null,sector:[],grootte:null,branche:[],sal:null,omgeving:null,taken:[],sterk:[],talen:[],leiding:null,contract:[],diensten:null,engels:null,reizen:null,fysiek:null,impact:null,type:null,fav:[],deal:[],niv:null,skillsUnknown:false,studie:"",functie:"",medrol:[],medspec:[],medplek:[],advopl:null,advwil:null,rechtgebied:[],vervoer:null,padreg:null,padrol:[],padveld:[],beeldKlaar:false,gevraagd:null});
+const LEEG=()=>({vak:[],opl:{tekst:"",niveau:null,hand:false,richting:[]},skills:[],jaren:null,uren:null,steden:[],vorm:null,sector:[],grootte:null,branche:[],sal:null,omgeving:null,taken:[],sterk:[],talen:[],leiding:null,contract:[],diensten:null,engels:null,reizen:null,fysiek:null,impact:null,type:null,fav:[],deal:[],niv:null,skillsUnknown:false,studie:"",functie:"",medrol:[],medspec:[],medplek:[],advopl:null,advwil:null,rechtgebied:[],vervoer:null,salj:null,padreg:null,padrol:[],padveld:[],beeldKlaar:false,gevraagd:null});
 let A=LEEG(), stap=0, klaar=false;
 try{const s=JSON.parse(localStorage.getItem("valcature-v1")||"null");if(s&&s.A){A=Object.assign(LEEG(),s.A);klaar=!!s.klaar;}}catch(e){}
 const save=()=>{try{localStorage.setItem("valcature-v1",JSON.stringify({A,klaar}))}catch(e){}};
@@ -921,7 +921,7 @@ const stepsB=()=>{const med=isMed()&&A.jaren!=="student";const lawAny=!med&&isLa
     if(law&&s.custom==="studie"){out.push(STEP_ADV);
       if(brancheVoor){const b=STEPS_B_ALL.find(x=>x.kicker==="Branche");if(b)out.push(b);}}}
   return out;};
-const stepsB0=()=>STEPS_B_ALL.filter(s=>!(A.jaren==="student"&&STUDENT_SKIP.has(s.kicker))&&!(s.custom==="functie"&&!(+A.jaren>=3))&&!(s.kicker==="Sfeer"&&A.sector.length&&!A.sector.includes("any")&&!A.sector.includes("commercieel")));
+const stepsB0=()=>STEPS_B_ALL.filter(s=>!(A.jaren==="student"&&STUDENT_SKIP.has(s.kicker))&&!(s.custom==="functie"&&!(+A.jaren>=3))&&!(s.kicker==="Salaris"&&!(+A.jaren>5))&&!(s.kicker==="Sfeer"&&A.sector.length&&!A.sector.includes("any")&&!A.sector.includes("commercieel")));
 const STEPS_B_ALL=[
  {kicker:"Vakgebied",titel:"Waar zie jij jezelf werken?",hint:"Tik op maximaal drie plaatjes.",groups:[{key:"vak",img:true,multi:true,max:3,opts:[o("zorg","Zorg","zorg"),o("ict","ICT & data","laptop"),o("techniek","Techniek","gear"),o("overheid","Beleid","building"),o("klant","Klantcontact","headset"),o("commercieel","Sales & marketing","megaphone"),o("admin","Administratie","folder"),o("logistiek","Logistiek","truck"),o("onderwijs","Onderwijs","board"),o("creatief","Creatief","palette"),o("horeca","Horeca","chef"),o("financieel","Financieel","coins"),o("juridisch","Juridisch","scale"),o("hr","HR","people"),o("veiligheid","Veiligheid","shield")]}],ok:()=>A.vak.length>0},
  {kicker:"Soort taken",titel:"Waar word je blij van?",hint:"Kies er maximaal twee.",groups:[{key:"taken",img:true,multi:true,max:2,any:true,opts:[o("mensen","Met mensen","chat"),o("data","Met cijfers","chart"),o("handen","Met je handen","hammer"),o("creatief","Iets bedenken","bulb"),o("organiseren","Organiseren","check"),o("any","Van alles wat","infinity")]}],ok:()=>A.taken.length>0},
@@ -929,6 +929,7 @@ const STEPS_B_ALL=[
  {kicker:"Studie",titel:"Wat heb je gestudeerd?",hint:"Typ het in je eigen woorden. Mag ook leeg.",custom:"studie",ok:()=>true},
  {kicker:"Werkervaring",titel:"Hoeveel werkervaring heb je?",hint:"Betaald werk in je vak. Bijbanen tellen half.",groups:[{key:"jaren",img:true,opts:[o("student","Ik studeer nog","book"),o("0","Starter","seedling"),o("2","1 – 2 jaar","bag"),o("4","3 – 5 jaar","briefcase"),o("7","6 – 9 jaar","chart"),o("10","10 jaar of meer","crown")]}],ok:()=>A.jaren!==null},
  {kicker:"Functie",titel:"Wat is je huidige of laatste functie?",hint:"Typ je functietitel. Dit weegt zwaar mee in je matches.",custom:"functie",ok:()=>true},
+ {kicker:"Salaris",titel:"Wat wil je minimaal verdienen per jaar?",hint:"Bruto per jaar bij een fulltime baan, inclusief vakantiegeld.",groups:[{key:"salj",big:true,opts:[{v:"40000",l:"€ 40.000"},{v:"50000",l:"€ 50.000"},{v:"60000",l:"€ 60.000"},{v:"75000",l:"€ 75.000"},{v:"90000",l:"€ 90.000"},{v:"110000",l:"€ 110.000 of meer"},{v:"0",l:"Geen voorkeur"}]}],ok:()=>A.salj!=null},
  {kicker:"Soort werk",titel:"Hoe ziet je ideale werkdag eruit?",groups:[{key:"fysiek",img:true,opts:[o("fysiek","Actief bezig","sneaker"),o("mix","Een mix","mix"),o("bureau","Achter een bureau","desk")]}],ok:()=>!!A.fysiek},
  {kicker:"Werkplek",titel:"Waar werk je het liefst?",groups:[{key:"vorm",img:true,opts:[o("locatie","Op locatie","office"),o("hybride","Thuis én kantoor","hybride"),o("remote","Vooral thuis","house"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.vorm},
  {kicker:"Uren",titel:"Hoeveel wil je werken?",hint:"Kies parttime om je aantal uren in te stellen.",noAuto:true,groups:[{key:"uren",img:true,opts:[o("part","Parttime","clockhalf"),o("full","Fulltime","clockfull"),o("zzp","Freelance / zzp","laptop"),o("project","Op projectbasis","calendar"),o("any","Maakt niet uit","infinity")]}],
@@ -1036,6 +1037,7 @@ function logQuiz(){
       top5:top.map(x=>`${x.v.titel} (${x.v.org}) ${x.p}%`).join(" | "),
       scherm:innerWidth<700?"telefoon":"computer"};
     if((a.functie||"").trim())rij.ervaring+=" · "+a.functie.trim();
+    if(MODE!=="swipe"&&+A.jaren>5&&A.salj&&+A.salj)rij.ervaring+=" · min € "+A.salj+"/jaar";
     if(MODE!=="swipe"){const extra=[padSamenvatting(),(A.medrol||[]).join("/"),(A.rechtgebied||[]).join("/"),A.advopl||""].filter(Boolean).join(" · ");if(extra)rij.studie+=" · "+extra;}
     let body=JSON.stringify(rij);
     if(body.length>1700){rij.top5=rij.top5.slice(0,Math.max(0,rij.top5.length-(body.length-1700)));body=JSON.stringify(rij);}
@@ -1397,6 +1399,10 @@ function score(j,a){
   const min=+a.sal;
   if(!min) add(6,"Geen salariswens opgegeven","ok");
   else if(!j.sal) add(3,"Salaris staat niet als maandbedrag in de vacature","part");
+  else if(a.salJaar){const jr=Math.round(j.sal[1]*12.96/1000)*1000;
+    if(jr>=a.salJaar) add(8,`Tot ongeveer ${euro(jr)} per jaar, dat haalt je minimum`,"ok");
+    else if(jr>=a.salJaar*0.9) add(3,`Tot ongeveer ${euro(jr)} per jaar, net onder je minimum`,"part");
+    else{add(0,`Tot ongeveer ${euro(jr)} per jaar, onder je minimum`,"no");cap=Math.min(cap,55);r.push({txt:`Verdient maximaal ongeveer ${euro(jr)} per jaar; jij wilt minimaal ${euro(a.salJaar)}`,st:"no",hard:1});}}
   else if(j.sal[1]>=min) add(6,`Tot ${euro(j.sal[1])}, dat haalt je minimum`,"ok");
   else if(j.sal[1]>=min-400) add(3,`Tot ${euro(j.sal[1])}, net onder je minimum`,"part");
   else add(0,`Tot ${euro(j.sal[1])}, onder je minimum`,"no");
@@ -1470,7 +1476,8 @@ function oplHTML(){
     <div class="group"><span class="glabel">Niveau</span><div class="opts" id="opl-niv">${NIVEAUS.map(n=>`<button type="button" class="opt" data-key="oplniveau" data-v="${n}" aria-pressed="${A.opl.niveau===n}">${NIVLABEL[n]}</button>`).join("")}</div></div>`;
 }
 function beeldA(metCheck){const ps=parseOpl(A.studie||"");
-  const a=Object.assign({},A,{opl:{tekst:A.studie||"",niveau:(NIVMAP[A.niv]||[])[0]||ps.niveau,graad:(NIVMAP[A.niv]||[])[1]||ps.graad,hand:true,richting:ps.richting},grootte:A.grootte||"any",sector:A.sector.length?A.sector:["any"],branche:A.branche.length?A.branche:["any"],contract:A.contract.length?A.contract:["any"],sal:A.sal===null?"0":A.sal});
+  const a=Object.assign({},A,{opl:{tekst:A.studie||"",niveau:(NIVMAP[A.niv]||[])[0]||ps.niveau,graad:(NIVMAP[A.niv]||[])[1]||ps.graad,hand:true,richting:ps.richting},grootte:A.grootte||"any",sector:A.sector.length?A.sector:["any"],branche:A.branche.length?A.branche:["any"],contract:A.contract.length?A.contract:["any"],sal:(+A.jaren>5&&A.salj&&+A.salj)?String(Math.round(+A.salj/12.96)):(A.sal===null?"0":A.sal)});
+  a.salJaar=+A.jaren>5&&A.salj&&+A.salj?+A.salj:0;
   if(metCheck){a.skillsUnknown=!(A.gevraagd&&A.gevraagd.length);}else{a.skillsUnknown=true;a.gevraagd=null;a.skills=[];}
   return a;}
 function checkHTML(){
@@ -1556,7 +1563,7 @@ function pick(key,v,btn){
     else arr=arr.includes(v)?arr.filter(x=>x!==v):(g.max&&arr.length>=g.max?arr:[...arr,v]);
     A[key]=arr;}
   else A[key]=v;
-  if(MODE==="beeld"&&(key==="niv"||key==="medrol"||key==="advopl"||key==="advwil"||key==="padrol"||key==="padreg"||key==="vervoer")){const huidig=STEPS[stap];STEPS=stepsB();stap=Math.max(0,STEPS.indexOf(huidig));}
+  if(MODE==="beeld"&&(key==="niv"||key==="medrol"||key==="advopl"||key==="advwil"||key==="padrol"||key==="padreg"||key==="vervoer"||key==="jaren")){const huidig=STEPS[stap];STEPS=stepsB();stap=Math.max(0,STEPS.indexOf(huidig));}
   if(MODE==="beeld"&&key==="sector"){const huidig=STEPS[stap];STEPS=stepsB();stap=Math.max(0,STEPS.indexOf(huidig));}
   save();renderQuiz(false);
   if(s.noAuto&&key==="uren"&&v!=="part"&&stap<STEPS.length-1)setTimeout(()=>{if(STEPS[stap]===s){stap++;renderQuiz();}},450);
