@@ -607,7 +607,7 @@ function parseOpl(t){
 }
 
 // Antwoorden (per bezoeker bewaard in deze browser)
-const LEEG=()=>({vak:[],opl:{tekst:"",niveau:null,hand:false,richting:[]},skills:[],jaren:null,uren:null,steden:[],vorm:null,sector:[],grootte:null,branche:[],sal:null,omgeving:null,taken:[],sterk:[],talen:[],leiding:null,contract:[],diensten:null,engels:null,reizen:null,fysiek:null,impact:null,type:null,fav:[],deal:[],niv:null,skillsUnknown:false,studie:"",functie:"",medrol:[],medspec:[],medplek:[],advopl:null,advwil:null,rechtgebied:[],padreg:null,padrol:[],padveld:[],beeldKlaar:false,gevraagd:null});
+const LEEG=()=>({vak:[],opl:{tekst:"",niveau:null,hand:false,richting:[]},skills:[],jaren:null,uren:null,steden:[],vorm:null,sector:[],grootte:null,branche:[],sal:null,omgeving:null,taken:[],sterk:[],talen:[],leiding:null,contract:[],diensten:null,engels:null,reizen:null,fysiek:null,impact:null,type:null,fav:[],deal:[],niv:null,skillsUnknown:false,studie:"",functie:"",medrol:[],medspec:[],medplek:[],advopl:null,advwil:null,rechtgebied:[],vervoer:null,padreg:null,padrol:[],padveld:[],beeldKlaar:false,gevraagd:null});
 let A=LEEG(), stap=0, klaar=false;
 try{const s=JSON.parse(localStorage.getItem("valcature-v1")||"null");if(s&&s.A){A=Object.assign(LEEG(),s.A);klaar=!!s.klaar;}}catch(e){}
 const save=()=>{try{localStorage.setItem("valcature-v1",JSON.stringify({A,klaar}))}catch(e){}};
@@ -717,6 +717,8 @@ IC.moon=`<path ${IK} ${IF} d="M58 20a28 28 0 1 0 22 42 24 24 0 0 1-22-42z"/><pat
 IC.sun=`<circle ${IK} fill="#D2D63E" cx="50" cy="50" r="15"/><path ${IK} ${IN} d="M50 20v8M50 72v8M20 50h8M72 50h8M29 29l6 6M65 65l6 6M71 29l-6 6M29 71l6-6"/>`;
 IC.sunmoon=sc(IC.sun,0,10)+sc(IC.moon,44,30);
 IC.pin=`<path ${IK} ${IF} d="M50 16c-11 0-19 8-19 19 0 14 19 31 19 31s19-17 19-31c0-11-8-19-19-19z"/><circle ${IK} fill="#FF6A2B" cx="50" cy="35" r="6"/><path ${IK} ${IN} d="M22 82l8-10h40l8 10"/>`;
+IC.car=`<path ${IK} ${IF} d="M18 60V48l8-14h48l8 14v12z"/><path ${IK} ${IN} d="M26 46h48"/><circle ${IK} ${IF} cx="32" cy="64" r="7"/><circle ${IK} ${IF} cx="68" cy="64" r="7"/>`;
+IC.train=`<rect ${IK} ${IF} x="28" y="18" width="44" height="50" rx="10"/><path ${IK} ${IN} d="M28 44h44M40 68l-8 12M60 68l8 12"/><circle ${IK} ${IF} cx="40" cy="56" r="4"/><circle ${IK} ${IF} cx="60" cy="56" r="4"/>`;
 IC.bike=`<circle ${IK} ${IF} cx="29" cy="62" r="13"/><circle ${IK} ${IF} cx="71" cy="62" r="13"/><path ${IK} ${IN} d="M29 62l13-22h18l11 22M42 40l8 22H29M55 30h11"/>`;
 IC.globe=`<circle ${IK} fill="#BDDFEF" cx="50" cy="50" r="28"/><path ${IK} ${IN} d="M22 50h56M50 22c-11 10-11 46 0 56M50 22c11 10 11 46 0 56M27 36h46M27 64h46"/>`;
 IC.nl=`<path d="M20 28h60v14H20z" fill="#C8102E"/><path d="M20 42h60v14H20z" fill="#FFFDF8"/><path d="M20 56h60v14H20z" fill="#21468B"/><rect ${IK} ${IN} x="20" y="28" width="60" height="42" rx="3"/>`;
@@ -765,6 +767,7 @@ const isLawMaster=()=>/rechten|rechtsgeleerd|\blaw\b|\bllm\b|notari|fiscaal rech
 const STEP_ADV={kicker:"Advocatuur",titel:"Heb je de beroepsopleiding advocatuur afgerond?",groups:[{key:"advopl",img:true,opts:[o("ja","Ja, afgerond","scale"),o("bezig","Ik zit erin (advocaat-stagiaire)","book"),o("wil","Nog niet, maar ik wil hem wel doen","seedling"),o("anders","Nee, ik wil een andere kant op","map")]}],ok:()=>!!A.advopl};
 const COORD={"Amsterdam":[52.37,4.90],"Rotterdam":[51.92,4.48],"Den Haag":[52.08,4.31],"Utrecht":[52.09,5.12],"Leiden":[52.16,4.49],"Groningen":[53.22,6.57],"Eindhoven":[51.44,5.48],"Nijmegen":[51.84,5.86],"Maastricht":[50.85,5.69],"Breda":[51.59,4.78],"Tilburg":[51.56,5.09],"Almere":[52.37,5.21],"Alphen aan den Rijn":[52.13,4.66],"Amersfoort":[52.16,5.39],"Amstelveen":[52.30,4.86],"Andelst":[51.91,5.73],"Badhoevedorp":[52.34,4.78],"Cruquius":[52.34,4.63],"Darp":[52.79,6.18],"Den Helder":[52.96,4.76],"Diemen":[52.34,4.96],"Doorn":[52.03,5.34],"Dronten":[52.52,5.72],"Haarlem":[52.39,4.64],"Heemskerk":[52.51,4.67],"Heerenveen":[52.96,5.92],"Hilversum":[52.22,5.18],"Hoogerheide":[51.42,4.33],"Hoogeveen":[52.72,6.48],"Naarden":[52.30,5.16],"Stroe":[52.18,5.70],"Vredepeel":[51.54,5.85],"Woerden":[52.09,4.88],"Zaandam":[52.44,4.83],"Zoutkamp":[53.34,6.30],"'t Harde":[52.41,5.89],"Delft":[52.01,4.36],"Dordrecht":[51.81,4.67],"Gouda":[52.01,4.71],"Zoetermeer":[52.06,4.49],"Schiedam":[51.92,4.40],"Hoofddorp":[52.30,4.69],"Purmerend":[52.50,4.95],"Alkmaar":[52.63,4.75],"Hoorn":[52.64,5.06],"Lelystad":[52.52,5.47],"Zeist":[52.09,5.23],"Nieuwegein":[52.03,5.08],"Arnhem":[51.98,5.91],"Ede":[52.04,5.67],"Apeldoorn":[52.21,5.97],"Zwolle":[52.52,6.09],"Enschede":[52.22,6.89],"Deventer":[52.25,6.16],"Den Bosch":[51.70,5.30],"'s-Hertogenbosch":[51.70,5.30],"Helmond":[51.48,5.66],"Roosendaal":[51.53,4.46],"Bergen op Zoom":[51.49,4.29],"Venlo":[51.37,6.17],"Heerlen":[50.89,5.98],"Sittard":[51.00,5.87],"Leeuwarden":[53.20,5.80],"Assen":[52.99,6.56],"Emmen":[52.78,6.90],"Middelburg":[51.50,3.61],"Vlissingen":[51.44,3.57],"Goes":[51.50,3.89],"Zaanstad":[52.44,4.83],"Hengelo":[52.27,6.79],"Almelo":[52.36,6.66],"Gorinchem":[51.83,4.97],"Spijkenisse":[51.85,4.33],"Capelle aan den IJssel":[51.93,4.58],"Blaricum":[52.27,5.24],"Huizen":[52.30,5.24],"Bussum":[52.27,5.16],"Laren":[52.26,5.23],"Weesp":[52.31,5.04],"Beverwijk":[52.49,4.66],"Velsen":[52.46,4.63],"Heiloo":[52.60,4.70],"Den Dolder":[52.14,5.24]};
 const afstand=(a,b)=>{const A1=COORD[a],B1=COORD[b];if(!A1||!B1)return null;const r=Math.PI/180,x=(B1[1]-A1[1])*r*Math.cos((A1[0]+B1[0])/2*r),y=(B1[0]-A1[0])*r;return Math.round(Math.sqrt(x*x+y*y)*6371);};
+const STEP_AUTOLOC={kicker:"Locatie",titel:"In welke regio wil je werken?",hint:"Met de auto zie je ook werk tot 30 km van de stad die je kiest. Kies er zoveel je wilt.",groups:[{key:"steden",img:true,multi:true,any:true,opts:[o("Amsterdam","Regio Amsterdam","canal"),o("Rotterdam","Regio Rotterdam","crane"),o("Den Haag","Regio Den Haag","building"),o("Utrecht","Regio Utrecht","tower"),o("Leiden","Regio Leiden","pin"),o("Haarlem","Regio Haarlem","pin"),o("Amersfoort","Regio Amersfoort","pin"),o("Breda","Regio Breda","pin"),o("Eindhoven","Regio Eindhoven","pin"),o("Groningen","Regio Groningen","pin"),o("any","Maakt niet uit","map")]}],ok:()=>A.steden.length>0};
 const STEP_MEDLOC={kicker:"Locatie",titel:"In welke omgeving wil je werken?",hint:"Je ziet ook plekken tot 30 km eromheen. Kies er zoveel je wilt.",groups:[{key:"steden",img:true,multi:true,any:true,opts:[o("Amsterdam","Omgeving Amsterdam","canal"),o("Rotterdam","Omgeving Rotterdam","crane"),o("Den Haag","Omgeving Den Haag","building"),o("Utrecht","Omgeving Utrecht","tower"),o("Leiden","Omgeving Leiden","pin"),o("Groningen","Omgeving Groningen","pin"),o("Eindhoven","Omgeving Eindhoven","pin"),o("Nijmegen","Omgeving Nijmegen","pin"),o("Maastricht","Omgeving Maastricht","pin"),o("Breda","Omgeving Breda","pin"),o("any","Maakt niet uit","map")]}],ok:()=>A.steden.length>0};
 /* ---------- Beroepspaden: eigen vragen per studie ---------- */
 const PAD_ORDE=["verpleeg","para","farm","psych","leraar","social","acc","arch","bio"];
@@ -906,7 +909,9 @@ const stepsB=()=>{const med=isMed()&&A.jaren!=="student";const lawAny=!med&&isLa
     if(med&&MED_SKIP.has(s.kicker))continue;
     if(pad&&padSkip.has(s.kicker))continue;
     if(med&&(s.kicker==="Werkervaring"||s.custom==="functie")&&A.medrol.length&&A.medrol.every(x=>["anios","aios","onderzoek"].includes(x)))continue; // opleidingsplekken: ervaring niet nodig
+    if(med&&s.kicker==="Vervoer")continue;
     if(med&&s.kicker==="Locatie"){out.push(STEP_MEDLOC);continue;}
+    if(s.kicker==="Locatie"&&A.vervoer==="auto"){out.push(STEP_AUTOLOC);continue;}
     if(med&&s.kicker==="Werkgever"){out.push(STEP_MEDPLEK);continue;}
     if(med&&s.kicker==="Branche"){out.push(STEP_MEDSPEC);continue;}
     out.push(s);
@@ -931,9 +936,9 @@ const STEPS_B_ALL=[
    bind:()=>{const r=$("#uren-pw");if(!r)return;if(!A.urenPw){A.urenPw=24;save();}r.addEventListener("input",()=>{A.urenPw=+r.value;const l=$("#uren-lbl");l.textContent=A.urenPw+" uur";l.classList.remove("bump");void l.offsetWidth;l.classList.add("bump");$("#uren-dag").textContent=Math.round(A.urenPw/8)+" dagen per week";save();});},
    ok:()=>!!A.uren},
  {kicker:"Werktijden",titel:"Avonden en weekenden werken?",groups:[{key:"diensten",img:true,opts:[o("ja","Geen probleem","moon"),o("soms","Af en toe","sunmoon"),o("nee","Liever overdag","sun")]}],ok:()=>!!A.diensten},
+ {kicker:"Vervoer",titel:"Hoe ga je het liefst naar je werk?",groups:[{key:"vervoer",img:true,opts:[o("fiets","Op de fiets","bike"),o("trein","Met de trein of OV","train"),o("auto","Met de auto","car")]}],ok:()=>!!A.vervoer},
  {kicker:"Locatie",titel:"In welke stad?",hint:"Kies er zoveel je wilt.",groups:[{key:"steden",img:true,multi:true,any:true,opts:[o("Amsterdam","Amsterdam","canal"),o("Rotterdam","Rotterdam","crane"),o("Den Haag","Den Haag","building"),o("Utrecht","Utrecht","tower"),o("Breda","Breda","pin"),o("any","Maakt niet uit","map")]}],ok:()=>A.steden.length>0},
  {kicker:"Onderweg",titel:"Ben je graag op pad?",groups:[{key:"reizen",img:true,opts:[o("graag","Graag op pad","pin"),o("soms","Af en toe","bike"),o("nee","Liever op één plek","house")]}],ok:()=>!!A.reizen},
- {kicker:"Werkstijl",titel:"Samen of alleen?",groups:[{key:"omgeving",img:true,opts:[o("team","In een team","team"),o("zelfstandig","Zelfstandig","person"),o("any","Allebei prima","people")]}],ok:()=>!!A.omgeving},
  {kicker:"Leidinggeven",titel:"Wil je de leiding hebben?",groups:[{key:"leiding",img:true,opts:[o("ja","Ja, graag","crown"),o("later","Misschien later","seedling"),o("nee","Liever niet","person")]}],ok:()=>!!A.leiding},
  {kicker:"Werkgever",titel:"Bij wat voor werkgever?",hint:"Kies er zoveel je wilt.",groups:[{key:"sector",img:true,multi:true,any:true,opts:[o("overheid","Overheid","building"),o("commercieel","Bedrijf","shop"),o("nonprofit","Zorg & non-profit","heart"),o("any","Maakt niet uit","infinity")]}],ok:()=>A.sector.length>0},
  {kicker:"Sfeer",titel:"Jong en snel, of stabiel?",groups:[{key:"type",img:true,opts:[o("scaleup","Startup","rocket"),o("gevestigd","Gevestigd","tower"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.type},
@@ -1026,7 +1031,7 @@ function logQuiz(){
       ervaring:MODE==="swipe"?(I.jaren!=null?I.jaren+" jaar":""):(A.jaren==null?"":A.jaren==="student"?"student":A.jaren+" jaar"),
       uren:A.uren==="part"?(A.urenPw||24)+" uur":A.uren||"",
       vakgebieden:(A.vak||[]).join(", "),branches:(MODE==="swipe"?(I.branche||[]):(A.branche||[]).filter(x=>x!=="any")).join(", "),
-      steden:(A.steden||[]).join(", "),werkplek:A.fysiek||"",vaardigheden:(A.skills||[]).join(", "),
+      steden:(A.steden||[]).join(", ")+(A.vervoer?" ("+A.vervoer+")":""),werkplek:A.fysiek||"",vaardigheden:(A.skills||[]).join(", "),
       swipes:(SW.log||[]).length||"",likes:MODE==="swipe"?likes:"",
       top5:top.map(x=>`${x.v.titel} (${x.v.org}) ${x.p}%`).join(" | "),
       scherm:innerWidth<700?"telefoon":"computer"};
@@ -1373,9 +1378,9 @@ function score(j,a){
   else if(j.vorm==="remote") add(12,"Thuiswerk, dus plaats maakt niet uit","ok");
   else if(j.plaats==="Heel Nederland") add(7,"Standplaats door heel Nederland, in overleg","part");
   else if(a.steden.includes(j.plaats)) add(12,`${j.plaats} staat in je lijst`,"ok");
-  else if(isMedTekst(a.opl&&a.opl.tekst||a.studie)&&(()=>{const d=a.steden.map(s=>[s,afstand(s,j.plaats)]).filter(x=>x[1]!=null).sort((x,y)=>x[1]-y[1])[0];if(d&&d[1]<=30){add(12,`${j.plaats} ligt ${d[1]} km van ${d[0]}`,"ok");return true;}if(d){add(0,`${j.plaats} ligt ${d[1]} km van ${d[0]}`,"no");cap=Math.min(cap,40);r.push({txt:`${j.plaats} ligt meer dan 30 km van de omgeving die je koos`,st:"no",hard:1});return true;}return false;})());
-  else if(a.steden.some(s=>PROV[s]===j.regio)) add(6,`${j.plaats} ligt in de buurt (${j.regio})`,"part");
-  else add(0,`${j.plaats} ligt buiten je gebied`,"no");
+  else if((isMedTekst(a.opl&&a.opl.tekst||a.studie)||a.vervoer==="auto")&&(()=>{const d=a.steden.map(s=>[s,afstand(s,j.plaats)]).filter(x=>x[1]!=null).sort((x,y)=>x[1]-y[1])[0];if(d&&d[1]<=30){add(12,`${j.plaats} ligt ${d[1]} km van ${d[0]}`,"ok");return true;}if(d){add(0,`${j.plaats} ligt ${d[1]} km van ${d[0]}`,"no");cap=Math.min(cap,40);r.push({txt:`${j.plaats} ligt meer dan 30 km van de omgeving die je koos`,st:"no",hard:1});return true;}return false;})());
+  else if(a.steden.some(s=>PROV[s]===j.regio)){add(6,`${j.plaats} ligt in de buurt (${j.regio})`,"part");if(a.vervoer==="fiets"||a.vervoer==="trein"){cap=Math.min(cap,65);r.push({txt:`${j.plaats} is niet de stad die je koos`,st:"no",hard:1});}}
+  else{add(0,`${j.plaats} ligt buiten je gebied`,"no");if(a.vervoer==="fiets"||a.vervoer==="trein"){cap=Math.min(cap,45);r.push({txt:`${j.plaats} is niet de stad die je koos`,st:"no",hard:1});}}
   if(!j.vorm) add(3,"Thuiswerken staat niet in de vacature","part");
   else if(a.vorm==="any"||a.vorm===j.vorm) add(6,`Werkvorm: ${WERKVORM[j.vorm].toLowerCase()}`,"ok");
   else if(a.vorm==="hybride"||j.vorm==="hybride") add(3,`Werkvorm is ${WERKVORM[j.vorm].toLowerCase()}`,"part");
@@ -1551,7 +1556,7 @@ function pick(key,v,btn){
     else arr=arr.includes(v)?arr.filter(x=>x!==v):(g.max&&arr.length>=g.max?arr:[...arr,v]);
     A[key]=arr;}
   else A[key]=v;
-  if(MODE==="beeld"&&(key==="niv"||key==="medrol"||key==="advopl"||key==="advwil"||key==="padrol"||key==="padreg")){const huidig=STEPS[stap];STEPS=stepsB();stap=Math.max(0,STEPS.indexOf(huidig));}
+  if(MODE==="beeld"&&(key==="niv"||key==="medrol"||key==="advopl"||key==="advwil"||key==="padrol"||key==="padreg"||key==="vervoer")){const huidig=STEPS[stap];STEPS=stepsB();stap=Math.max(0,STEPS.indexOf(huidig));}
   if(MODE==="beeld"&&key==="sector"){const huidig=STEPS[stap];STEPS=stepsB();stap=Math.max(0,STEPS.indexOf(huidig));}
   save();renderQuiz(false);
   if(s.noAuto&&key==="uren"&&v!=="part"&&stap<STEPS.length-1)setTimeout(()=>{if(STEPS[stap]===s){stap++;renderQuiz();}},450);
