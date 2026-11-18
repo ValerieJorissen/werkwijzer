@@ -609,7 +609,7 @@ function parseOpl(t){
 }
 
 // Antwoorden (per bezoeker bewaard in deze browser)
-const LEEG=()=>({vak:[],opl:{tekst:"",niveau:null,hand:false,richting:[]},skills:[],jaren:null,uren:null,steden:[],vorm:null,sector:[],grootte:null,branche:[],sal:null,omgeving:null,taken:[],sterk:[],talen:[],leiding:null,contract:[],diensten:null,engels:null,reizen:null,fysiek:null,impact:null,type:null,fav:[],deal:[],niv:null,skillsUnknown:false,studie:"",functie:"",medrol:[],medspec:[],medplek:[],advopl:null,advwil:null,rechtgebied:[],vervoer:null,salj:null,padreg:null,padrol:[],padveld:[],beeldKlaar:false,gevraagd:null});
+const LEEG=()=>({vak:[],opl:{tekst:"",niveau:null,hand:false,richting:[]},skills:[],jaren:null,uren:null,steden:[],vorm:null,sector:[],grootte:null,branche:[],brkeuze:null,sal:null,omgeving:null,taken:[],sterk:[],talen:[],leiding:null,contract:[],diensten:null,engels:null,reizen:null,fysiek:null,impact:null,type:null,fav:[],deal:[],niv:null,skillsUnknown:false,studie:"",functie:"",medrol:[],medspec:[],medplek:[],advopl:null,advwil:null,rechtgebied:[],vervoer:null,salj:null,padreg:null,padrol:[],padveld:[],beeldKlaar:false,gevraagd:null});
 let A=LEEG(), stap=0, klaar=false;
 try{const s=JSON.parse(localStorage.getItem("valcature-v1")||"null");if(s&&s.A){A=Object.assign(LEEG(),s.A);klaar=!!s.klaar;}}catch(e){}
 const save=()=>{try{localStorage.setItem("valcature-v1",JSON.stringify({A,klaar}))}catch(e){}};
@@ -902,7 +902,7 @@ function padScore(j,a,add,r){const up=userPad(a);let cap=100;
   return cap;}
 const padSamenvatting=()=>{const p=padVan(A.studie||"");if(!p)return"";const P=PADEN[p];
   return [A.padreg&&P.reg?padLabel(p,"reg",A.padreg):null,...(A.padrol||[]).map(x=>padLabel(p,"rol",x)),...(A.padveld||[]).filter(x=>x!=="any").map(x=>padLabel(p,"veld",x))].filter(Boolean).join(", ");};
-const stepsB=()=>{const med=isMed()&&A.jaren!=="student";const lawAny=!med&&isLawTekst(A.studie);const pad=!isMed()&&!lawAny?padVan(A.studie):null;const padSkip=pad?new Set(PADEN[pad].skip()):null;const law=lawAny&&A.jaren!=="student"&&isLawMaster();const out=[];
+const stepsBRaw=()=>{const med=isMed()&&A.jaren!=="student";const lawAny=!med&&isLawTekst(A.studie);const pad=!isMed()&&!lawAny?padVan(A.studie):null;const padSkip=pad?new Set(PADEN[pad].skip()):null;const law=lawAny&&A.jaren!=="student"&&isLawMaster();const out=[];
   const adv0=law?A.advopl:null,adv=(adv0==="wil"||adv0==="anders")?"nee":adv0,brancheVoor=law&&adv==="nee";let branche=null;
   for(const s of stepsB0()){
     if(law&&(adv==="bezig"||adv==="nee")&&(s.kicker==="Werkervaring"||s.custom==="functie"))continue; // advocaat-stagiaire of nog niet begonnen: ervaring niet nodig
@@ -924,6 +924,10 @@ const stepsB=()=>{const med=isMed()&&A.jaren!=="student";const lawAny=!med&&isLa
       if(brancheVoor){const b=STEPS_B_ALL.find(x=>x.kicker==="Branche");if(b)out.push(b);}}}
   return out;};
 const stepsB0=()=>STEPS_B_ALL.filter(s=>!(A.jaren==="student"&&STUDENT_SKIP.has(s.kicker))&&!(s.custom==="functie"&&!(+A.jaren>=3))&&!(s.kicker==="Salaris"&&!(+A.jaren>5))&&!(s.kicker==="Sfeer"&&A.sector.length&&!A.sector.includes("any")&&!A.sector.includes("commercieel")));
+// Eerst vragen of de branche uitmaakt; alleen bij "ja" volgt de branchevraag
+const stepsB=()=>{const raw=stepsBRaw(),K=STEPS_B_ALL.find(x=>x.kicker==="Branchekeuze"),out=raw.filter(x=>x!==K);
+  const bi=out.findIndex(x=>x.kicker==="Branche");if(bi<0)return out;
+  if(A.brkeuze==="nee")out.splice(bi,1,K);else out.splice(bi,0,K);return out;};
 /* Branchevraag sluit aan op het gekozen vakgebied (vraag 1): "Alles is goed" eerst, daarna de best passende branches */
 const VAKBRANCHE={zorg:["zorg","publiek","onderwijs"],ict:["tech","finance","media","zorg","publiek"],techniek:["bouw","energie","transport","tech"],overheid:["publiek","zorg","onderwijs","energie"],advies:["advies","finance","publiek","tech","energie"],klant:["retail","tech","finance","transport"],commercieel:["retail","tech","media","food","mode","finance"],admin:["publiek","zorg","advies","finance"],logistiek:["transport","retail","food"],onderwijs:["onderwijs","publiek","cultuur"],creatief:["media","mode","ontwerp","cultuur","retail"],horeca:["food","retail","cultuur"],financieel:["finance","advies","publiek","retail"],juridisch:["advies","publiek","finance"],hr:["advies","publiek","zorg","tech"],veiligheid:["publiek","transport","energie"]};
 function brancheTop(){const vak=(A.vak||[]).filter(v=>VAKBRANCHE[v]),out=[];for(let i=0;i<6;i++)vak.forEach(v=>{const b=VAKBRANCHE[v][i];if(b&&!out.includes(b))out.push(b);});return out;}
@@ -955,6 +959,7 @@ const STEPS_B_ALL=[
  {kicker:"Sfeer",titel:"Jong en snel, of stabiel?",groups:[{key:"type",img:true,opts:[o("scaleup","Startup","rocket"),o("gevestigd","Gevestigd","tower"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.type},
  {kicker:"Impact",titel:"Moet je werk de wereld beter maken?",groups:[{key:"impact",img:true,opts:[o("belangrijk","Heel belangrijk","seedling"),o("leuk","Mooi meegenomen","heart"),o("any","Maakt niet uit","infinity")]}],ok:()=>!!A.impact},
  {kicker:"Taal",titel:"In welke taal werk je het liefst?",groups:[{key:"engels",img:true,opts:[o("graag","Engels, graag","globe"),o("prima","Allebei prima","chat"),o("nee","Nederlands","nl")]}],ok:()=>!!A.engels},
+ {kicker:"Branchekeuze",titel:"Maakt het uit in welke branche je werkt?",hint:"Bijvoorbeeld zorg, tech, mode of de overheid.",groups:[{key:"brkeuze",img:true,opts:[o("ja","Ja, dat maakt uit","check"),o("nee","Nee, maakt niet uit","infinity")]}],ok:()=>!!A.brkeuze},
  {kicker:"Branche",get titel(){return brancheTitel();},get hint(){return brancheHint("");},get groups(){return [{key:"branche",img:true,multi:true,any:true,opts:brancheVolgorde(BRANCHE_B_OPTS)}];},ok:()=>A.branche.length>0},
  {kicker:"Check",titel:"Wat kun je al?",hint:"Tik alles aan wat je al kunt of hebt.",custom:"check",ok:()=>true}
 ];
@@ -1580,7 +1585,8 @@ function pick(key,v,btn){
     else arr=arr.includes(v)?arr.filter(x=>x!==v):(g.max&&arr.length>=g.max?arr:[...arr,v]);
     A[key]=arr;}
   else A[key]=v;
-  if(MODE==="beeld"&&(key==="niv"||key==="medrol"||key==="advopl"||key==="advwil"||key==="padrol"||key==="padreg"||key==="vervoer"||key==="jaren")){const huidig=STEPS[stap];STEPS=stepsB();stap=Math.max(0,STEPS.indexOf(huidig));}
+  if(key==="brkeuze"&&v==="nee")A.branche=[];
+  if(MODE==="beeld"&&(key==="brkeuze"||key==="niv"||key==="medrol"||key==="advopl"||key==="advwil"||key==="padrol"||key==="padreg"||key==="vervoer"||key==="jaren")){const huidig=STEPS[stap];STEPS=stepsB();stap=Math.max(0,STEPS.indexOf(huidig));}
   if(MODE==="beeld"&&key==="sector"){const huidig=STEPS[stap];STEPS=stepsB();stap=Math.max(0,STEPS.indexOf(huidig));}
   save();renderQuiz(false);
   if(s.noAuto&&key==="uren"&&v!=="part"&&stap<STEPS.length-1)setTimeout(()=>{if(STEPS[stap]===s){stap++;renderQuiz();}},450);
