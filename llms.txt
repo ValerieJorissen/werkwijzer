@@ -1,0 +1,18 @@
+# Valcature
+
+> Valcature (https://valcature.nl) is een gratis Nederlandse vacaturesite die vacatures sorteert op hoe goed ze bij jou passen. Je beantwoordt korte vragen of doet een plaatjesquiz, en ziet daarna vacatures op volgorde van match, met per vacature uitleg waarom hij wel of niet past.
+
+## Wat Valcature doet
+- Matcht vacatures op studie en opleidingsniveau, werkervaring, vakgebied, uren (fulltime, parttime, freelance/zzp of projectbasis), reisafstand en vervoer (fiets, trein of auto), salariswens en werkomgeving.
+- Eigen vragenroutes voor onder meer geneeskunde (ANIOS/AIOS, specialismen), rechten (advocatuur, rechtsgebieden), verpleegkunde, psychologie, farmacie, paramedische beroepen, onderwijs, social work, accountancy, architectuur en life sciences.
+- Ook een swipe-modus en een overzicht van alle vacatures met filters.
+- Een generator voor motivatiebrieven.
+
+## Vacatures
+- Vooral in Amsterdam en de Randstad, plus landelijke functies bij o.a. overheid, Defensie, zorg en universiteiten.
+- Vacatures komen van de websites van werkgevers zelf, hun officiële sollicitatiesystemen, Werken voor Nederland en Vacature Via. Geen uitzendbureaus of andere vacaturebanken.
+- Stages staan er niet op.
+- De vacatures worden elke dag bijgewerkt; verlopen vacatures worden verwijderd.
+
+## Links
+- Website: https://valcature.nl/
