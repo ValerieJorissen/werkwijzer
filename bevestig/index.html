@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Valcature</title>
+<style>body{margin:0;background:#F6F1E7;color:#17221D;font:18px/1.5 system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;text-align:center;padding:20px}a{color:#0C5B44}</style>
+</head>
+<body>
+<div><p><b>Even geduld…</b></p><p id="m">Je wordt doorgestuurd.</p></div>
+<script>
+(function(){
+  var t=new URLSearchParams(location.search).get("t")||"";
+  if(!/^[0-9a-f-]{20,40}$/i.test(t)){document.getElementById("m").innerHTML='Deze link is niet compleet. <a href="/">Naar Valcature</a>';return;}
+  location.replace("https://script.google.com/macros/s/AKfycbw_YO1TtNV6uGLl4w83Df-NC9G_FriutLsQn1MxcOtP7vOaWT_7As5d8SpGcbglfssb/exec?bevestig="+encodeURIComponent(t));
+})();
+</script>
+</body>
+</html>
