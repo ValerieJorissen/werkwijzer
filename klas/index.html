@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Swipe je toekomst – Valcature voor de klas</title>
-<meta name="description" content="Een korte swipe-test voor leerlingen: ontdek welke beroepen en mbo-opleidingen bij je passen.">
+<meta name="description" content="Een korte swipe-test voor leerlingen: swipe vragen en ontdek welke beroepen en mbo-opleidingen bij je passen, met echte vacatures.">
 <link rel="canonical" href="https://valcature.nl/klas/">
 <meta property="og:title" content="Swipe je toekomst"><meta property="og:description" content="Swipe door beroepen en ontdek welke mbo-opleiding bij je past."><meta property="og:image" content="https://valcature.nl/og2.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -65,89 +65,112 @@ h1{font-size:clamp(36px,10vw,54px);margin:26px 0 10px}h2{font-size:28px;margin:2
 .acties{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 40px}
 footer{border-top:2px solid var(--ink);padding:18px 0 34px;font-size:14px;color:var(--muted)}footer a{color:var(--green)}
 [hidden]{display:none!important}
+.vq{display:flex;flex-direction:column;justify-content:center;text-align:center;background:var(--green);color:var(--cream)}
+.vq .emo{font-size:72px}.vq h3{font-size:32px;color:var(--cream)}.vq .waar{color:#CFE3D9}
+.vq .tags span{background:transparent;color:var(--cream);border-color:var(--cream)}
+.stap{display:inline-block;font-size:13px;font-weight:700;background:var(--lime);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.echt{margin-top:12px;border-top:1.5px dashed var(--line);padding-top:10px}
+.r.top1 .echt{border-color:rgba(255,255,255,.35)}
+.echt .kop{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.echt a{display:block;background:var(--cream);color:var(--ink);border:1.5px solid var(--ink);border-radius:14px;padding:9px 12px;margin-top:6px;text-decoration:none;font-size:15px;line-height:1.35}
+.echt a b{display:block}.echt a span{color:var(--muted);font-size:14px}
+.echt .geen{font-size:14px;opacity:.85}
+.r .btn{margin-top:12px;font-size:13px;padding:9px 14px}
+.r.top1 .btn.licht{border-color:var(--cream)}
+.niveau{background:var(--paper);border:2px solid var(--ink);border-radius:18px;padding:14px 16px;margin:14px 0}
+.niveau b{font-family:"Archivo",Impact,sans-serif;font-size:20px;display:block;margin-bottom:4px}
 </style>
 </head>
 <body>
 <header><div class="in"><a class="logo" href="/klas/">VAL<i></i>CATURE</a><span class="badge">Voor de klas</span></div></header>
 
 <main class="in">
-  <!-- Start -->
   <section id="s-start">
     <h1>Swipe je toekomst</h1>
-    <p class="lead">Welk werk past bij jou? Swipe door beroepen. Naar rechts als het je leuk lijkt, naar links als het niks voor je is. Het duurt maar een paar minuten.</p>
+    <p class="lead">Welk werk of welke opleiding past bij jou? Eerst swipe je een paar vragen over wat je leuk vindt. Daarna krijg je beroepen of opleidingen die bij jou passen. Het duurt een paar minuten.</p>
     <div class="keus">
-      <button type="button" class="groen" data-start="beroepen"><b>🔎 Ontdek beroepen</b><span>Swipe door 16 beroepen en zie welke mbo-opleidingen bij je passen.</span></button>
-      <button type="button" data-start="studie"><b>🎓 Ik heb al een studie in gedachten</b><span>Kies een mbo-opleiding en swipe door werkplekken. Zie waar jij later zou willen werken.</span></button>
+      <button type="button" class="groen" data-start="beroepen"><b>🔎 Ontdek beroepen</b><span>10 vragen, daarna 8 beroepen swipen. Je ziet ook echte vacatures van nu.</span></button>
+      <button type="button" data-start="studies"><b>🎓 Ontdek studies</b><span>12 vragen, daarna zie je welke mbo-opleidingen bij jou passen.</span></button>
     </div>
     <p class="tip">We slaan je antwoorden niet op. Je uitslag staat alleen op jouw scherm. Maak een screenshot als je hem wilt bewaren.</p>
   </section>
 
-  <!-- Studie kiezen -->
-  <section id="s-studie" hidden>
-    <div class="top"><button class="terug" type="button" data-naar="start">← Terug</button><span></span></div>
-    <h2>Welke opleiding?</h2>
-    <p class="lead" style="font-size:17px">Kies de mbo-opleiding die je wilt onderzoeken. Daarna swipe je door 8 werkplekken.</p>
-    <div class="studies" id="studielijst"></div>
-  </section>
-
-  <!-- Swipen -->
   <section id="s-swipe" hidden>
     <div class="top"><button class="terug" type="button" data-naar="start">← Stoppen</button><span id="teller"></span></div>
     <div class="balk"><i id="balk"></i></div>
+    <span class="stap" id="stap"></span>
     <div class="stapel" id="stapel"></div>
     <div class="knoppen">
-      <button type="button" class="nee" data-keuze="nee" aria-label="Niks voor mij">✕</button>
-      <button type="button" class="ster" data-keuze="ster" aria-label="Super leuk">★</button>
-      <button type="button" class="ja" data-keuze="ja" aria-label="Lijkt me leuk">♥</button>
+      <button type="button" class="nee" data-keuze="nee" aria-label="Nee">✕</button>
+      <button type="button" class="ster" data-keuze="ster" aria-label="Helemaal">★</button>
+      <button type="button" class="ja" data-keuze="ja" aria-label="Ja">♥</button>
     </div>
-    <p class="uitleg">✕ niks voor mij · ♥ lijkt me leuk · ★ super leuk</p>
+    <p class="uitleg" id="legenda"></p>
   </section>
 
-  <!-- Uitslag -->
   <section id="s-uitslag" hidden>
     <h1 id="u-titel">Jouw uitslag</h1>
     <p class="lead" id="u-intro"></p>
     <div id="u-richting"></div>
+    <div id="u-niveau"></div>
     <div class="res" id="u-lijst"></div>
     <div class="tip" id="u-tip"></div>
     <div class="acties">
       <button class="btn" type="button" id="opnieuw">Nog een keer</button>
-      <button class="btn licht" type="button" data-naar="start">Andere test</button>
+      <button class="btn licht" type="button" data-naar="start">Terug naar begin</button>
     </div>
   </section>
 </main>
 
 <footer><div class="in">
   <p>Meer weten over een opleiding? Kijk op <a href="https://www.kiesmbo.nl" target="_blank" rel="noopener">kiesmbo.nl</a> of vraag het aan je mentor of decaan. Opleidingsnamen en niveaus kunnen per school iets verschillen.</p>
-  <p>Gemaakt door <a href="/">Valcature</a>. We slaan geen antwoorden op.</p>
+  <p>De vacatures komen van <a href="/">Valcature</a>, rechtstreeks van de websites van werkgevers. Ze zijn voor mensen die hun diploma al hebben, maar laten zien hoe het werk er echt uitziet. We slaan geen antwoorden op.</p>
 </div></footer>
 
 <script>
 const $=s=>document.querySelector(s);
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const euro=n=>"€ "+Number(n).toLocaleString("nl-NL");
 
-/* ---------- Beroepen (nadruk op zorg & welzijn) ---------- */
 const RICHTING={zorg:"Zorg & welzijn",kind:"Kinderen & onderwijs",sport:"Sport & bewegen",horeca:"Eten & gastvrijheid",tech:"Techniek & ICT",creatief:"Creatief",veilig:"Veiligheid",winkel:"Handel & winkel",uiterlijk:"Uiterlijk & verzorging"};
-const BEROEPEN=[
- {emo:"🏥",t:"Verpleegkundige",doe:"Je zorgt voor zieke mensen: je geeft medicijnen, verzorgt wonden en let op hoe het met iemand gaat.",waar:"Ziekenhuis, thuiszorg, verpleeghuis",r:"zorg",tags:["Mensen helpen","Diensten (ook 's nachts)"],opl:"Verpleegkundige",niv:"mbo 4",later:"Daarna kun je doorleren voor hbo-verpleegkunde."},
- {emo:"🤝",t:"Verzorgende",doe:"Je helpt mensen die niet meer alles zelf kunnen: bij het wassen, aankleden en eten, en je maakt een praatje.",waar:"Thuiszorg, verpleeghuis",r:"zorg",tags:["Mensen helpen","Ouderen"],opl:"Verzorgende IG",niv:"mbo 3",later:"Daarna kun je doorleren voor verpleegkundige (mbo 4)."},
- {emo:"🧸",t:"Pedagogisch medewerker",doe:"Je speelt, knutselt en zorgt voor kinderen terwijl hun ouders werken.",waar:"Kinderdagverblijf, BSO",r:"kind",tags:["Kinderen","Spelen & begeleiden"],opl:"Pedagogisch medewerker kinderopvang",niv:"mbo 3",later:"Op mbo 4 kun je gespecialiseerd pedagogisch medewerker worden."},
- {emo:"💛",t:"Begeleider gehandicaptenzorg",doe:"Je helpt mensen met een beperking om hun leven zo zelfstandig mogelijk te leiden.",waar:"Woongroep, dagbesteding",r:"zorg",tags:["Mensen helpen","Samen dingen doen"],opl:"Begeleider gehandicaptenzorg",niv:"mbo 3 (of mbo 4: persoonlijk begeleider)",later:""},
- {emo:"🩺",t:"Doktersassistent",doe:"Je maakt afspraken, meet bloeddruk, doet kleine behandelingen en helpt patiënten aan de telefoon.",waar:"Huisartsenpraktijk, ziekenhuis",r:"zorg",tags:["Mensen helpen","Afwisselend"],opl:"Doktersassistent",niv:"mbo 4",later:""},
- {emo:"💊",t:"Apothekersassistent",doe:"Je maakt medicijnen klaar, legt uit hoe je ze gebruikt en let op of medicijnen goed samengaan.",waar:"Apotheek, ziekenhuisapotheek",r:"zorg",tags:["Precies werken","Klanten helpen"],opl:"Apothekersassistent",niv:"mbo 4",later:""},
- {emo:"🍎",t:"Onderwijsassistent",doe:"Je helpt de juf of meester in de klas en begeleidt kinderen die extra hulp nodig hebben.",waar:"Basisschool, speciaal onderwijs",r:"kind",tags:["Kinderen","Uitleggen"],opl:"Onderwijsassistent",niv:"mbo 4",later:"Daarna kun je doorleren voor de pabo (leraar basisonderwijs)."},
- {emo:"🗣️",t:"Sociaal werker",doe:"Je helpt jongeren en gezinnen met problemen, organiseert activiteiten in de buurt en bent er als iemand wil praten.",waar:"Buurthuis, jongerenwerk, wijkteam",r:"zorg",tags:["Mensen helpen","Praten & luisteren"],opl:"Sociaal werker",niv:"mbo 4",later:"Daarna kun je doorleren voor hbo social work."},
- {emo:"🏃",t:"Sportinstructeur",doe:"Je geeft sportlessen en trainingen en motiveert mensen om fit te worden.",waar:"Sportschool, sportvereniging, school",r:"sport",tags:["Actief","Groepen"],opl:"Sport en bewegen",niv:"mbo 3 of 4",later:""},
- {emo:"👩‍🍳",t:"Kok",doe:"Je bedenkt en maakt gerechten in een drukke keuken, samen met je team.",waar:"Restaurant, hotel, catering",r:"horeca",tags:["Met je handen","Snel werken"],opl:"Kok",niv:"mbo 2 (of mbo 3: zelfstandig werkend kok)",later:""},
- {emo:"✂️",t:"Kapper",doe:"Je knipt, kleurt en stylet haar en zorgt dat klanten zich goed voelen.",waar:"Kapsalon",r:"uiterlijk",tags:["Creatief","Klanten"],opl:"Kapper",niv:"mbo 2 of 3",later:""},
- {emo:"🚓",t:"Politieagent",doe:"Je surveilleert op straat, helpt mensen in nood en zorgt voor veiligheid.",waar:"Op straat, politiebureau",r:"veilig",tags:["Actief","Spannend"],opl:"Politie (Politieacademie)",niv:"mbo 4",later:""},
- {emo:"💻",t:"Software developer",doe:"Je bouwt apps en websites en lost puzzels op met code.",waar:"Kantoor of thuis",r:"tech",tags:["Computers","Puzzelen"],opl:"Software developer",niv:"mbo 4",later:""},
- {emo:"🛍️",t:"Verkoper",doe:"Je helpt klanten in de winkel, geeft advies en zorgt dat de winkel er goed uitziet.",waar:"Winkel",r:"winkel",tags:["Klanten","Gezellig"],opl:"Verkoper",niv:"mbo 2",later:"Op mbo 3 en 4 kun je doorgroeien naar eerste verkoper of ondernemer retail."},
- {emo:"🎨",t:"Mediavormgever",doe:"Je maakt posters, filmpjes, websites en social media-posts.",waar:"Reclamebureau, studio",r:"creatief",tags:["Creatief","Computers"],opl:"Mediavormgever",niv:"mbo 4",later:""},
- {emo:"⚡",t:"Elektricien",doe:"Je legt stroom, lampen en zonnepanelen aan in huizen en gebouwen.",waar:"Bij klanten, bouwplaats",r:"tech",tags:["Met je handen","Techniek"],opl:"Elektrotechniek",niv:"mbo 2, 3 of 4",later:""}
+
+/* Vragen: elke vraag geeft punten aan beroepen */
+const VRAGEN=[
+ {emo:"🤝",t:"Ik help graag andere mensen",w:{vig:2,verpleeg:2,bgz:2,sw:2,da:1,aa:1,oa:1,pm:1,pol:1}},
+ {emo:"🧒",t:"Ik vind het leuk om met kinderen bezig te zijn",w:{pm:3,oa:3,sport:1,sw:1}},
+ {emo:"🫀",t:"Ik vind het lichaam en gezondheid interessant",w:{verpleeg:3,da:3,aa:2,vig:2,sport:1}},
+ {emo:"👂",t:"Ik luister graag naar de verhalen en problemen van anderen",w:{sw:3,bgz:2,vig:1,verpleeg:1}},
+ {emo:"🛠️",t:"Ik werk graag met mijn handen",w:{elek:3,kok:2,kap:2,vig:1}},
+ {emo:"🏃",t:"Ik ben graag actief en in beweging",w:{sport:3,pol:2,elek:1,kok:1}},
+ {emo:"💻",t:"Ik zit graag achter de computer",w:{dev:3,media:2,aa:1,da:1}},
+ {emo:"🎨",t:"Ik ben creatief en bedenk graag nieuwe dingen",w:{media:3,kap:2,kok:2,pm:1}},
+ {emo:"🛍️",t:"Ik praat graag met klanten en help ze kiezen",w:{verk:3,kap:2,aa:1,da:1}},
+ {emo:"🚨",t:"Ik blijf rustig als er iets spannends gebeurt",w:{pol:3,verpleeg:2,da:1}}
+];
+const NIVEAUVRAGEN=[
+ {emo:"📚",t:"Ik vind leren op school best makkelijk",niv:1},
+ {emo:"🎓",t:"Ik wil later misschien doorleren op het hbo",niv:1}
 ];
 
-/* ---------- Studies met werkplekken ---------- */
+const BEROEPEN=[
+ {id:"verpleeg",emo:"🏥",t:"Verpleegkundige",doe:"Je zorgt voor zieke mensen: je geeft medicijnen, verzorgt wonden en let op hoe het met iemand gaat.",waar:"Ziekenhuis, thuiszorg, verpleeghuis",r:"zorg",tags:["Mensen helpen","Diensten (ook 's nachts)"],opl:"Verpleegkundige",niv:"mbo 4",later:"Daarna kun je doorleren voor hbo-verpleegkunde.",zoek:/verpleegkundig/i},
+ {id:"vig",emo:"🤝",t:"Verzorgende",doe:"Je helpt mensen die niet meer alles zelf kunnen: bij het wassen, aankleden en eten, en je maakt een praatje.",waar:"Thuiszorg, verpleeghuis",r:"zorg",tags:["Mensen helpen","Ouderen"],opl:"Verzorgende IG",niv:"mbo 3 (of eerst Helpende Zorg en Welzijn, mbo 2)",later:"Daarna kun je doorleren voor verpleegkundige (mbo 4).",zoek:/verzorgende|helpende/i},
+ {id:"pm",emo:"🧸",t:"Pedagogisch medewerker",doe:"Je speelt, knutselt en zorgt voor kinderen terwijl hun ouders werken.",waar:"Kinderdagverblijf, BSO",r:"kind",tags:["Kinderen","Spelen & begeleiden"],opl:"Pedagogisch medewerker kinderopvang",niv:"mbo 3",later:"Op mbo 4 kun je gespecialiseerd pedagogisch medewerker worden.",zoek:/pedagogisch/i},
+ {id:"bgz",emo:"💛",t:"Begeleider gehandicaptenzorg",doe:"Je helpt mensen met een beperking om hun leven zo zelfstandig mogelijk te leiden.",waar:"Woongroep, dagbesteding",r:"zorg",tags:["Mensen helpen","Samen dingen doen"],opl:"Begeleider gehandicaptenzorg",niv:"mbo 3 (of mbo 4: persoonlijk begeleider)",later:"",zoek:/begeleider/i},
+ {id:"da",emo:"🩺",t:"Doktersassistent",doe:"Je maakt afspraken, meet bloeddruk, doet kleine behandelingen en helpt patiënten aan de telefoon.",waar:"Huisartsenpraktijk, ziekenhuis",r:"zorg",tags:["Mensen helpen","Afwisselend"],opl:"Doktersassistent",niv:"mbo 4",later:"",zoek:/doktersassist|praktijkassist/i},
+ {id:"aa",emo:"💊",t:"Apothekersassistent",doe:"Je maakt medicijnen klaar, legt uit hoe je ze gebruikt en let op of medicijnen goed samengaan.",waar:"Apotheek, ziekenhuisapotheek",r:"zorg",tags:["Precies werken","Klanten helpen"],opl:"Apothekersassistent",niv:"mbo 4",later:"",zoek:/apothekersassist/i},
+ {id:"oa",emo:"🍎",t:"Onderwijsassistent",doe:"Je helpt de juf of meester in de klas en begeleidt kinderen die extra hulp nodig hebben.",waar:"Basisschool, speciaal onderwijs",r:"kind",tags:["Kinderen","Uitleggen"],opl:"Onderwijsassistent",niv:"mbo 4",later:"Daarna kun je doorleren voor de pabo (leraar basisonderwijs).",zoek:/onderwijsassist/i},
+ {id:"sw",emo:"🗣️",t:"Sociaal werker",doe:"Je helpt jongeren en gezinnen met problemen, organiseert activiteiten in de buurt en bent er als iemand wil praten.",waar:"Buurthuis, jongerenwerk, wijkteam",r:"zorg",tags:["Mensen helpen","Praten & luisteren"],opl:"Sociaal werker",niv:"mbo 4",later:"Daarna kun je doorleren voor hbo social work.",zoek:/sociaal werk|jongerenwerk|maatschappelijk werk/i},
+ {id:"sport",emo:"🏃",t:"Sportinstructeur",doe:"Je geeft sportlessen en trainingen en motiveert mensen om fit te worden.",waar:"Sportschool, sportvereniging, school",r:"sport",tags:["Actief","Groepen"],opl:"Sport en bewegen",niv:"mbo 3 of 4",later:"",zoek:/sportinstruct|sportleider|trainer|fitness|bewegings/i},
+ {id:"kok",emo:"👩‍🍳",t:"Kok",doe:"Je bedenkt en maakt gerechten in een drukke keuken, samen met je team.",waar:"Restaurant, hotel, catering",r:"horeca",tags:["Met je handen","Snel werken"],opl:"Kok",niv:"mbo 2 (of mbo 3: zelfstandig werkend kok)",later:"",zoek:/\bkok\b|chef|keuken/i},
+ {id:"kap",emo:"✂️",t:"Kapper",doe:"Je knipt, kleurt en stylet haar en zorgt dat klanten zich goed voelen.",waar:"Kapsalon",r:"uiterlijk",tags:["Creatief","Klanten"],opl:"Kapper",niv:"mbo 2 of 3",later:"",zoek:/kapper/i},
+ {id:"pol",emo:"🚓",t:"Politie of handhaving",doe:"Je surveilleert op straat, helpt mensen in nood en zorgt voor veiligheid.",waar:"Op straat, politiebureau",r:"veilig",tags:["Actief","Spannend"],opl:"Politie (Politieacademie) of Beveiliging",niv:"mbo 4 (politie) of mbo 2–3 (beveiliging)",later:"",zoek:/politie|handhav|beveilig|\bboa\b/i},
+ {id:"dev",emo:"💻",t:"Software developer",doe:"Je bouwt apps en websites en lost puzzels op met code.",waar:"Kantoor of thuis",r:"tech",tags:["Computers","Puzzelen"],opl:"Software developer",niv:"mbo 4",later:"Daarna kun je doorleren voor hbo-ICT.",zoek:/developer|ontwikkelaar|programmeur/i},
+ {id:"verk",emo:"🛍️",t:"Verkoper",doe:"Je helpt klanten in de winkel, geeft advies en zorgt dat de winkel er goed uitziet.",waar:"Winkel",r:"winkel",tags:["Klanten","Gezellig"],opl:"Verkoper",niv:"mbo 2",later:"Op mbo 3 en 4 kun je doorgroeien naar eerste verkoper of ondernemer retail.",zoek:/verkoper|winkelmedewerker/i},
+ {id:"media",emo:"🎨",t:"Mediavormgever",doe:"Je maakt posters, filmpjes, websites en social media-posts.",waar:"Reclamebureau, studio",r:"creatief",tags:["Creatief","Computers"],opl:"Mediavormgever",niv:"mbo 4",later:"",zoek:/vormgever|content creator|dtp|video/i},
+ {id:"elek",emo:"⚡",t:"Elektricien",doe:"Je legt stroom, lampen en zonnepanelen aan in huizen en gebouwen.",waar:"Bij klanten, bouwplaats",r:"tech",tags:["Met je handen","Techniek"],opl:"Elektrotechniek",niv:"mbo 2, 3 of 4",later:"",zoek:/elektr|monteur/i}
+];
+
 const STUDIES=[
  {id:"verpleeg",emo:"🏥",t:"Verpleegkundige",niv:"mbo 4",later:"Na je diploma kun je doorleren voor hbo-verpleegkunde, of je specialiseren (bijvoorbeeld kinderen of spoedhulp).",
   plek:[["🏥","Ziekenhuis","Je werkt op een afdeling met veel collega's en patiënten die komen en gaan."],["🚑","Spoedeisende hulp","Het gaat snel en je weet nooit wat er binnenkomt. Hiervoor heb je later een extra opleiding nodig."],["🏠","Wijkverpleging","Je fietst of rijdt langs mensen thuis en werkt veel alleen."],["👶","Kinderafdeling","Je zorgt voor zieke kinderen en praat veel met hun ouders."],["🧠","GGZ (psychische zorg)","Je helpt mensen met psychische problemen, zoals angst of depressie."],["👵","Verpleeghuis","Je zorgt voor ouderen die er wonen en leert ze goed kennen."],["💛","Gehandicaptenzorg","Je verpleegt mensen met een beperking die extra zorg nodig hebben."],["🌙","Nachtdienst","Je werkt 's nachts, als het rustig is maar je wel alert moet zijn."]]},
@@ -169,29 +192,68 @@ const STUDIES=[
   plek:[["🏋️","Sportschool","Je geeft groepslessen en helpt mensen met hun trainingsschema."],["⚽","Sportvereniging","Je traint teams en organiseert toernooien."],["🏫","Sport op school","Je helpt bij gymlessen en naschoolse sport."],["🧓","Bewegen voor ouderen","Je laat ouderen fit blijven met aangepaste oefeningen."],["🏕️","Recreatie","Je doet sport en spel met gasten op een camping of vakantiepark."],["♿","Aangepast sporten","Je helpt mensen met een beperking sporten."],["🏘️","Buurtsport","Je organiseert sport in de wijk voor kinderen en jongeren."],["🧘","Gezondheid","Je helpt mensen gezonder te leven met beweging en voeding."]]}
 ];
 
+/* ---------- Echte vacatures van Valcature ---------- */
+let VAC=null;
+const vacKlaar=fetch("/",{cache:"no-store"}).then(r=>r.text()).then(t=>{
+  const m=t.match(/<script type="application\/json" id="vacaturedata">([\s\S]*?)<\/script>/);
+  VAC=m?JSON.parse(m[1].replace(/<\\\//g,"</")).vacatures:[];
+}).catch(()=>{VAC=[];});
+function echteVac(b,n){
+  if(!VAC)return null;
+  const vandaag=new Date().toISOString().slice(0,10);
+  const L=VAC.filter(v=>b.zoek.test(v.titel)&&(!v.sluit||v.sluit>=vandaag)&&!/senior|lead|manager|head|director|coördinator|teamleider|ccu|pacu|\bic\b|intensive|recovery|anesthes|operatie|cardiac/i.test(v.titel));
+  const mbo=L.filter(v=>v.niveau==="MBO"||v.niveau==="MO");
+  const rest=L.filter(v=>!v.niveau);
+  return mbo.concat(rest).slice(0,n);
+}
+function vacHTML(b,n){
+  const L=echteVac(b,n);
+  if(L===null)return `<div class="echt"><div class="geen">Echte vacatures laden…</div></div>`;
+  if(!L.length)return `<div class="echt"><div class="geen">Op dit moment staan er geen vacatures voor dit beroep op Valcature.</div></div>`;
+  return `<div class="echt"><div class="kop">Echte vacatures van nu</div>${L.map(v=>{
+    const u=v.uren?(v.uren[0]===v.uren[1]?v.uren[0]+" uur":v.uren[0]+"–"+v.uren[1]+" uur"):"";
+    const s=v.sal?euro(v.sal[0])+" – "+euro(v.sal[1])+" per maand":"";
+    return `<a href="${esc(v.url)}" target="_blank" rel="noopener"><b>${esc(v.titel)}</b><span>${esc(v.org)} · ${esc(v.plaats)}${u?" · "+u:""}${s?" · "+s:""}</span></a>`;}).join("")}</div>`;
+}
+
 /* ---------- Staat ---------- */
-let modus="beroepen",studie=null,kaarten=[],idx=0,antw=[];
-function toon(id){["start","studie","swipe","uitslag"].forEach(s=>$("#s-"+s).hidden=s!==id);window.scrollTo({top:0});}
+let route="beroepen",fase="vragen",kaarten=[],idx=0,antw=[],vraagScore={},niveauPunten=0,studie=null;
+function toon(id){["start","swipe","uitslag"].forEach(s=>$("#s-"+s).hidden=s!==id);window.scrollTo({top:0});}
 function schud(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const punt=k=>k==="ster"?2:k==="ja"?1:0;
 
-function startBeroepen(){modus="beroepen";studie=null;kaarten=schud(BEROEPEN).map(b=>({emo:b.emo,t:b.t,doe:b.doe,waar:b.waar,tags:b.tags,data:b}));begin();}
-function startStudie(s){modus="studie";studie=s;kaarten=s.plek.map(([emo,t,doe])=>({emo,t,doe,waar:"",tags:[s.t],data:{t,emo,doe}}));begin();}
-function begin(){idx=0;antw=[];toon("swipe");teken();}
+function start(r){
+  route=r;fase="vragen";vraagScore={};niveauPunten=0;antw=[];idx=0;
+  const v=VRAGEN.map(q=>({type:"vraag",emo:q.emo,t:q.t,q}));
+  const n=r==="studies"?NIVEAUVRAGEN.map(q=>({type:"niveau",emo:q.emo,t:q.t,q})):[];
+  kaarten=v.concat(n);toon("swipe");teken();
+}
+function startWerkplekken(s){route="werkplek";fase="werkplek";studie=s;antw=[];idx=0;
+  kaarten=s.plek.map(([emo,t,doe])=>({type:"plek",emo,t,doe,tags:[s.t]}));toon("swipe");teken();}
 
-function kaartHTML(k,onder){return `<div class="kaart${onder?" onder":""}"><span class="stempel ja">LEUK</span><span class="stempel nee">NIKS</span><div class="emo">${k.emo}</div><h3>${esc(k.t)}</h3><p>${esc(k.doe)}</p>${k.waar?`<p class="waar">📍 ${esc(k.waar)}</p>`:""}<div class="tags">${k.tags.map(x=>`<span>${esc(x)}</span>`).join("")}</div></div>`;}
+function kaartHTML(k,onder){
+  const vraag=k.type==="vraag"||k.type==="niveau";
+  const ja=vraag?"KLOPT":"LEUK",nee=vraag?"NEE":"NIKS";
+  return `<div class="kaart${vraag?" vq":""}${onder?" onder":""}"><span class="stempel ja">${ja}</span><span class="stempel nee">${nee}</span><div class="emo">${k.emo}</div><h3>${esc(k.t)}</h3>${k.doe?`<p>${esc(k.doe)}</p>`:""}${k.waar?`<p class="waar">📍 ${esc(k.waar)}</p>`:""}${k.tags?`<div class="tags">${k.tags.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}</div>`;
+}
 function teken(){
-  if(idx>=kaarten.length)return uitslag();
+  if(idx>=kaarten.length)return volgende();
+  const k=kaarten[idx],vraag=k.type==="vraag"||k.type==="niveau";
   $("#teller").textContent=`${idx+1} van ${kaarten.length}`;
   $("#balk").style.width=(idx/kaarten.length*100)+"%";
-  const st=$("#stapel");st.innerHTML=(kaarten[idx+1]?kaartHTML(kaarten[idx+1],true):"")+kaartHTML(kaarten[idx],false);
+  $("#stap").textContent=vraag?"Stap 1 · Wat past bij jou?":k.type==="beroep"?"Stap 2 · Welke beroepen lijken je leuk?":"Waar zou jij willen werken?";
+  $("#legenda").textContent=vraag?"✕ klopt niet · ♥ klopt · ★ helemaal waar":"✕ niks voor mij · ♥ lijkt me leuk · ★ super leuk";
+  const st=$("#stapel");st.innerHTML=(kaarten[idx+1]?kaartHTML(kaarten[idx+1],true):"")+kaartHTML(k,false);
   sleep(st.lastElementChild);
 }
-function kies(k,el){
-  antw.push({k:kaarten[idx],keuze:k});
+function kies(keuze,el){
+  const k=kaarten[idx];antw.push({k,keuze});
+  if(k.type==="vraag")Object.entries(k.q.w).forEach(([id,w])=>{vraagScore[id]=(vraagScore[id]||0)+w*punt(keuze);});
+  if(k.type==="niveau")niveauPunten+=punt(keuze)>0?1:0;
   el=el||$("#stapel").lastElementChild;
-  const dx=k==="nee"?-1:1;
+  const dx=keuze==="nee"?-1:1;
   el.style.transition="transform .3s ease, opacity .3s";
-  el.style.transform=k==="ster"?"translateY(-120%) scale(.9)":`translateX(${dx*130}%) rotate(${dx*18}deg)`;
+  el.style.transform=keuze==="ster"?"translateY(-120%) scale(.9)":`translateX(${dx*130}%) rotate(${dx*18}deg)`;
   el.style.opacity="0";
   setTimeout(()=>{idx++;teken();},230);
 }
@@ -205,41 +267,64 @@ function sleep(el){
     else{el.style.transition="transform .25s";el.style.transform="";ja.style.opacity=0;nee.style.opacity=0;}dx=dy=0;};
   el.addEventListener("pointerup",los);el.addEventListener("pointercancel",los);
 }
-
+function gerangschikt(){return BEROEPEN.map(b=>({b,s:vraagScore[b.id]||0})).sort((a,b)=>b.s-a.s||Math.random()-.5);}
+function volgende(){
+  if(route==="beroepen"&&fase==="vragen"){
+    // 6 beroepen die het best passen + 2 andere, zodat je ook iets nieuws ziet
+    const r=gerangschikt(),top=r.slice(0,6).map(x=>x.b),rest=schud(r.slice(6).map(x=>x.b)).slice(0,2);
+    fase="beroepen";kaarten=schud(top.concat(rest)).map(b=>({type:"beroep",emo:b.emo,t:b.t,doe:b.doe,waar:b.waar,tags:b.tags,b}));idx=0;
+    return teken();
+  }
+  vacKlaar.then(()=>{if(!$("#s-uitslag").hidden)uitslag();});
+  uitslag();
+}
+function richtingHTML(){
+  const per={};BEROEPEN.forEach(b=>{per[b.r]=(per[b.r]||0)+(vraagScore[b.id]||0);});
+  const L=Object.entries(per).filter(([,p])=>p>0).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  return L.length?`<div class="richting">${L.map(([r],i)=>`<span class="${i===0?"hoog":""}">${esc(RICHTING[r])}</span>`).join("")}</div>`:"";
+}
 function uitslag(){
-  $("#balk").style.width="100%";
-  const punt=a=>a.keuze==="ster"?2:a.keuze==="ja"?1:0;
-  const leuk=antw.filter(a=>a.keuze!=="nee").sort((a,b)=>punt(b)-punt(a));
-  if(modus==="beroepen"){
+  $("#balk").style.width="100%";$("#u-niveau").innerHTML="";
+  if(route==="beroepen"){
+    const swipe={};antw.filter(a=>a.k.type==="beroep").forEach(a=>{swipe[a.k.b.id]=punt(a.keuze);});
+    const L=BEROEPEN.filter(b=>b.id in swipe).map(b=>({b,s:(vraagScore[b.id]||0)+swipe[b.id]*4,ster:swipe[b.id]===2,leuk:swipe[b.id]>0})).sort((a,b)=>b.s-a.s);
+    const leuk=L.filter(x=>x.leuk),toonL=(leuk.length?leuk:L).slice(0,3);
     $("#u-titel").textContent="Jouw uitslag";
-    const per={};antw.forEach(a=>{const r=a.k.data.r;per[r]=(per[r]||0)+punt(a);});
-    const richt=Object.entries(per).filter(([,p])=>p>0).sort((a,b)=>b[1]-a[1]);
-    $("#u-intro").textContent=leuk.length?`Je vond ${leuk.length} van de ${antw.length} beroepen leuk. Dit past het best bij jou:`:"Je vond geen enkel beroep leuk. Geeft niks! Probeer het nog eens, of kies een opleiding om te onderzoeken.";
-    $("#u-richting").innerHTML=richt.length?`<div class="richting">${richt.slice(0,4).map(([r],i)=>`<span class="${i===0?"hoog":""}">${esc(RICHTING[r])}</span>`).join("")}</div>`:"";
-    $("#u-lijst").innerHTML=leuk.slice(0,5).map((a,i)=>{const b=a.k.data;return `<div class="r${i===0?" top1":""}"><h3>${b.emo} ${esc(b.t)}${a.keuze==="ster"?" ★":""}</h3><div class="klein">📍 ${esc(b.waar)}</div><div class="opl"><b>Opleiding: ${esc(b.opl)}</b><small>${esc(b.niv)}${b.later?" · "+esc(b.later):""}</small></div></div>`;}).join("");
-    const zorg=(per.zorg||0)+(per.kind||0);
-    $("#u-tip").innerHTML=zorg>=3?"<b>Zorg en welzijn lijkt echt iets voor jou.</b> Wil je weten waar je met een zorgopleiding kunt werken? Doe dan de test <b>Ik heb al een studie in gedachten</b>.":"<b>Tip:</b> praat over je uitslag met je mentor of decaan, en kijk op <a href=\"https://www.kiesmbo.nl\" target=\"_blank\" rel=\"noopener\">kiesmbo.nl</a> welke scholen deze opleidingen hebben. Of doe de test <b>Ik heb al een studie in gedachten</b>.";
+    $("#u-intro").textContent=leuk.length?`Op basis van je antwoorden en je swipes passen deze beroepen het best bij jou:`:"Je vond geen beroep echt leuk. Geeft niks! Op basis van je antwoorden passen deze het best. Probeer ook eens Ontdek studies.";
+    $("#u-richting").innerHTML=richtingHTML();
+    $("#u-lijst").innerHTML=toonL.map((x,i)=>{const b=x.b;return `<div class="r${i===0?" top1":""}"><h3>${b.emo} ${esc(b.t)}${x.ster?" ★":""}</h3><div class="klein">${esc(b.doe)}</div><div class="opl"><b>Opleiding: ${esc(b.opl)}</b><small>${esc(b.niv)}${b.later?" · "+esc(b.later):""}</small></div>${vacHTML(b,2)}</div>`;}).join("");
+    $("#u-tip").innerHTML="<b>Tip:</b> klik op een vacature om te zien wat werkgevers echt vragen en wat je verdient. Praat over je uitslag met je mentor of decaan, en kijk op <a href=\"https://www.kiesmbo.nl\" target=\"_blank\" rel=\"noopener\">kiesmbo.nl</a> welke scholen deze opleidingen hebben.";
+  }else if(route==="studies"){
+    const r=gerangschikt().filter(x=>x.s>0),gezien=new Set(),opl=[];
+    r.forEach(x=>{if(!gezien.has(x.b.opl)){gezien.add(x.b.opl);opl.push(x);}});
+    const toonL=(opl.length?opl:gerangschikt()).slice(0,4);
+    $("#u-titel").textContent="Opleidingen voor jou";
+    $("#u-intro").textContent="Op basis van je antwoorden passen deze mbo-opleidingen het best bij jou:";
+    $("#u-richting").innerHTML=richtingHTML();
+    const adv=niveauPunten>=2?["Kijk vooral naar mbo 4","Je vindt leren makkelijk en wilt misschien doorleren. Met een mbo 4-diploma kun je later naar het hbo."]:niveauPunten===1?["Mbo 3 of 4","Kies wat bij je past. Begin je op mbo 3, dan kun je daarna vaak nog mbo 4 doen."]:["Mbo 2 of 3 is een prima start","Je leert veel in de praktijk. Je kunt altijd later nog een niveau hoger doorleren."];
+    $("#u-niveau").innerHTML=`<div class="niveau"><b>🎯 ${adv[0]}</b>${adv[1]} Je mentor of decaan kan je precies vertellen welk niveau bij je past.</div>`;
+    $("#u-lijst").innerHTML=toonL.map((x,i)=>{const b=x.b,s=STUDIES.find(s=>s.id===b.id);return `<div class="r${i===0?" top1":""}"><h3>${b.emo} ${esc(b.opl)}</h3><div class="klein">${esc(b.niv)} · je wordt bijvoorbeeld ${esc(b.t.toLowerCase())}</div><div class="opl"><small>📍 Je werkt in: ${esc(b.waar)}${b.later?" · "+esc(b.later):""}</small></div>${s?`<button class="btn${i===0?" licht":""}" type="button" data-plek="${s.id}">Swipe door de werkplekken</button>`:""}${vacHTML(b,1)}</div>`;}).join("");
+    $("#u-tip").innerHTML="Kijk op <a href=\"https://www.kiesmbo.nl\" target=\"_blank\" rel=\"noopener\">kiesmbo.nl</a> welke mbo-scholen deze opleidingen hebben, en ga eens naar een open dag.";
   }else{
-    const s=studie,pct=Math.round(antw.filter(a=>a.keuze!=="nee").length/antw.length*100);
+    const s=studie,leuk=antw.filter(a=>a.keuze!=="nee").sort((a,b)=>punt(b.keuze)-punt(a.keuze)),pct=Math.round(leuk.length/antw.length*100);
     $("#u-titel").textContent=`${s.emo} ${s.t}`;
-    $("#u-intro").textContent=pct>=60?`Je vond ${pct}% van de werkplekken leuk. Deze opleiding past goed bij jou!`:pct>=30?`Je vond ${pct}% van de werkplekken leuk. Er zitten leuke dingen tussen. Kijk hieronder waar jij het liefst zou werken.`:`Je vond ${pct}% van de werkplekken leuk. Misschien past een andere opleiding beter. Probeer er nog een!`;
+    $("#u-intro").textContent=pct>=60?`Je vond ${pct}% van de werkplekken leuk. Deze opleiding past goed bij jou!`:pct>=30?`Je vond ${pct}% van de werkplekken leuk. Er zitten leuke dingen tussen.`:`Je vond ${pct}% van de werkplekken leuk. Misschien past een andere opleiding beter.`;
     $("#u-richting").innerHTML=`<div class="richting"><span class="hoog">${esc(s.niv)}</span></div>`;
-    $("#u-lijst").innerHTML=leuk.length?`<h2 style="margin-top:6px">Hier zou jij graag werken</h2>`+leuk.map((a,i)=>`<div class="r${i===0?" top1":""}"><h3>${a.k.emo} ${esc(a.k.t)}${a.keuze==="ster"?" ★":""}</h3><div class="klein">${esc(a.k.doe)}</div></div>`).join(""):"";
-    $("#u-tip").innerHTML=(s.later?`<b>Verder leren:</b> ${esc(s.later)}<br><br>`:"")+"Kijk op <a href=\"https://www.kiesmbo.nl\" target=\"_blank\" rel=\"noopener\">kiesmbo.nl</a> welke mbo-scholen deze opleiding hebben, en ga eens naar een open dag.";
+    const b=BEROEPEN.find(x=>x.id===s.id);
+    $("#u-lijst").innerHTML=(leuk.length?`<h2 style="margin-top:6px">Hier zou jij graag werken</h2>`+leuk.map((a,i)=>`<div class="r${i===0?" top1":""}"><h3>${a.k.emo} ${esc(a.k.t)}${a.keuze==="ster"?" ★":""}</h3><div class="klein">${esc(a.k.doe)}</div></div>`).join(""):"")+(b?`<div class="r">${vacHTML(b,3)}</div>`:"");
+    $("#u-tip").innerHTML=(s.later?`<b>Verder leren:</b> ${esc(s.later)}<br><br>`:"")+"Kijk op <a href=\"https://www.kiesmbo.nl\" target=\"_blank\" rel=\"noopener\">kiesmbo.nl</a> welke mbo-scholen deze opleiding hebben.";
   }
   toon("uitslag");
 }
 
 /* ---------- Knoppen ---------- */
-$("#studielijst").innerHTML=STUDIES.map(s=>`<button type="button" data-studie="${s.id}"><span class="e">${s.emo}</span>${esc(s.t)}<small>${esc(s.niv)}</small></button>`).join("");
 document.addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
-  if(b.dataset.start==="beroepen")startBeroepen();
-  else if(b.dataset.start==="studie")toon("studie");
-  else if(b.dataset.studie)startStudie(STUDIES.find(s=>s.id===b.dataset.studie));
+  if(b.dataset.start)start(b.dataset.start);
+  else if(b.dataset.plek)startWerkplekken(STUDIES.find(s=>s.id===b.dataset.plek));
   else if(b.dataset.naar)toon(b.dataset.naar);
   else if(b.dataset.keuze&&!$("#s-swipe").hidden&&idx<kaarten.length)kies(b.dataset.keuze);
-  else if(b.id==="opnieuw")modus==="studie"?startStudie(studie):startBeroepen();
+  else if(b.id==="opnieuw")route==="werkplek"?startWerkplekken(studie):start(route);
 });
 document.addEventListener("keydown",e=>{if($("#s-swipe").hidden||idx>=kaarten.length)return;
   if(e.key==="ArrowLeft")kies("nee");else if(e.key==="ArrowRight")kies("ja");else if(e.key==="ArrowUp")kies("ster");});
