@@ -308,7 +308,7 @@ schrijf("/tips/", pagina("/tips/", "Tips voor solliciteren en je loopbaan", "Pra
         [("Valcature", "/"), ("Tips", "/tips/")]))
 
 # ---------- Sitemap ----------
-urls = ["/"] + sorted(geschreven)
+urls = ["/", "/klas/"] + sorted(geschreven)
 sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
 for u in urls:
     sm.append(f"  <url><loc>{SITE}{u}</loc><lastmod>{BIJGEWERKT}</lastmod><changefreq>daily</changefreq></url>")
