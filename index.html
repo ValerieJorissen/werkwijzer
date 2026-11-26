@@ -389,10 +389,6 @@ footer .selectie{margin:14px 0 0;font-size:12px;line-height:1.5;opacity:.65;max-
 footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
 
 /* ---------- Nieuwe functies ---------- */
-html.groot body{zoom:1.18}
-.aabtn{font:inherit;font-weight:700;font-size:14px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer;white-space:nowrap}
-.aabtn[aria-pressed="true"]{background:var(--ink);color:var(--cream)}
-.aabtn b{font-family:var(--f-display);font-size:17px;margin-right:4px}
 @media (max-width:700px){.tabs{flex-wrap:wrap;border-radius:24px}.tab{flex:1 1 auto}}
 .vmini{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
 .vmini button{font:inherit;font-size:14px;font-weight:600;border:1.5px solid var(--line);background:var(--cream);color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer}
@@ -448,7 +444,6 @@ html.groot body{zoom:1.18}
       <button class="tab" role="tab" id="tab-favorieten" data-view="favorieten" aria-selected="false">♥ Favorieten <span class="n" id="fav-n">0</span></button>
       <button class="tab" role="tab" id="tab-over" data-view="over" aria-selected="false" hidden>Over mij</button>
     </nav>
-    <button type="button" class="aabtn" id="aaBtn" aria-pressed="false" title="Maak alle tekst groter"><b>Aa</b>Grotere letters</button>
     <span class="upd" id="upd"></span>
   </div>
 </header>
@@ -657,7 +652,7 @@ html.groot body{zoom:1.18}
     <h2>Meldingen en aanmeldingen</h2>
     <p>Meld je een fout in een vacature, of meld je als werkgever een vacature aan, dan bewaren we wat je invult. Een e-mailadres gebruiken we alleen om je vraag te beantwoorden. We bewaren dit maximaal een jaar.</p>
     <h2>Op je eigen apparaat</h2>
-    <p>Je antwoorden, favorieten, vergelijk-lijst en de keuze voor grotere letters worden opgeslagen in je eigen browser (localStorage). Die gegevens gaan niet naar ons. Je wist ze door je browsergegevens te verwijderen of met de knop <i>Quiz opnieuw doen</i>.</p>
+    <p>Je antwoorden, favorieten, en vergelijk-lijst worden opgeslagen in je eigen browser (localStorage). Die gegevens gaan niet naar ons. Je wist ze door je browsergegevens te verwijderen of met de knop <i>Quiz opnieuw doen</i>.</p>
     <h2>Cookies en andere diensten</h2>
     <p>Valcature gebruikt geen tracking- of advertentiecookies. De website wordt gehost door GitHub Pages en de lettertypen komen van Google Fonts; zoals bij elke website zien die diensten technische gegevens zoals je IP-adres. Klik je op een vacature, dan ga je naar de website van de werkgever en geldt hun privacybeleid.</p>
     <h2>Je rechten</h2>
@@ -1990,7 +1985,6 @@ function toonAlertStatus(){let s=null;try{s=JSON.parse(localStorage.getItem("val
   if(s&&s.email){$("#alertform").hidden=true;$("#al-klaar").hidden=false;
     $("#al-klaar").innerHTML=`Je alert staat aan voor <b>${esc(s.email)}</b> (${({dagelijks:"elke dag",wekelijks:"elke week",maandelijks:"elke maand"})[s.frequentie]}). Check je mail om je aanmelding te bevestigen. <button type="button" class="btn ghost" id="al-wijzig" style="margin-top:10px">Aanpassen</button>`;
     $("#al-wijzig").onclick=()=>{$("#alertform").hidden=false;$("#al-klaar").hidden=true;$("#al-mail").value=s.email;};}}
-function zetGroot(on){document.documentElement.classList.toggle("groot",on);$("#aaBtn").setAttribute("aria-pressed",String(on));$("#aaBtn").lastChild.textContent=on?"Normale letters":"Grotere letters";try{localStorage.setItem("valcature-groot",on?"1":"")}catch(e){}}
 function initNieuw(){
 document.addEventListener("click",e=>{
   const f=e.target.closest("[data-fav]");if(f){const id=f.dataset.fav;FAV.has(id)?FAV.delete(id):FAV.add(id);bewaarFav();zetKnoppen();if(!$("#view-favorieten").hidden)renderFav();return;}
@@ -2014,8 +2008,7 @@ $("#alertform").addEventListener("submit",()=>{
   try{localStorage.setItem("valcature-alert",JSON.stringify({email,frequentie:freq}))}catch(e){}
   toonAlertStatus();});
 toonAlertStatus();
-$("#aaBtn").onclick=()=>zetGroot(!document.documentElement.classList.contains("groot"));
-try{if(localStorage.getItem("valcature-groot"))zetGroot(true);}catch(e){}
+try{localStorage.removeItem("valcature-groot");}catch(e){}
 zetKnoppen();
 }
 try{initNieuw();}catch(e){meldFout(e,"initNieuw");}
