@@ -1658,9 +1658,20 @@ function score(j,a){
 
 /* ---------- Quiz ---------- */
 const qcard=$("#qcard");
+// Studies waarbij werken "op projectbasis" niet voorkomt (zorg, onderwijs, welzijn)
+function geenProjectwerk(){
+  const t=[A.studie,A.opl&&A.opl.tekst].filter(Boolean).join(" ");
+  if(isMedTekst(t))return true;
+  const pad=padVan(A.studie||"")||padVan((A.opl&&A.opl.tekst)||"");
+  return ["verpleeg","farm","para","leraar","psych","social"].includes(pad);
+}
+function zichtbareOpts(g){
+  if(g.key==="uren"&&geenProjectwerk()){if(A.uren==="project")A.uren=null;return g.opts.filter(o=>o.v!=="project");}
+  return g.opts;
+}
 function groupHTML(g){
   const val=A[g.key];icN=0;
-  return `<div class="group">${g.label?`<span class="glabel">${g.label}</span>`:""}<div class="opts${g.big?" big":""}${g.img?" img":""}">${g.opts.map(o=>{
+  return `<div class="group">${g.label?`<span class="glabel">${g.label}</span>`:""}<div class="opts${g.big?" big":""}${g.img?" img":""}">${zichtbareOpts(g).map(o=>{
     const on=g.multi?val.includes(o.v):val===o.v;
     if(g.img) return `<button type="button" class="opt pic" data-key="${g.key}" data-v="${esc(o.v)}" aria-pressed="${on}">${pic(o.ic)}<span>${esc(o.l)}</span></button>`;
     return `<button type="button" class="opt" data-key="${g.key}" data-v="${esc(o.v)}" aria-pressed="${on}">${esc(o.l)}${o.s?`<small>${esc(o.s)}</small>`:""}</button>`}).join("")}</div></div>`;
