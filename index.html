@@ -405,6 +405,14 @@ footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
 .cmptab tbody th{color:var(--muted);font-weight:600;width:110px}
 .cmptab ul{margin:0;padding-left:18px}
 .cmpscroll{overflow-x:auto}
+.kieslijst{display:grid;gap:8px;max-height:min(55vh,460px);overflow:auto;padding:2px}
+.kieslijst label{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;border:2px solid var(--ink);border-radius:16px;padding:10px 12px;background:var(--cream);cursor:pointer}
+.kieslijst label:has(input:checked){background:#E3F2D9}
+.kieslijst label:has(input:disabled){opacity:.5}
+.kieslijst input{width:22px;height:22px;accent-color:var(--green)}
+.kieslijst b{display:block;line-height:1.25}.kieslijst small{color:var(--muted)}
+.kieslijst .pct{font-weight:800;font-family:var(--f-display);font-size:18px}
+.kiesn{color:var(--muted);font-size:15px}
 .dlgkop{display:flex;justify-content:space-between;align-items:start;gap:12px}
 .dlgkop h2{margin:0}
 .dlgx{font:inherit;font-size:22px;line-height:1;border:2px solid var(--ink);background:var(--paper);border-radius:999px;width:40px;height:40px;cursor:pointer;flex:0 0 auto}
@@ -416,9 +424,10 @@ footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
 .frm .ok{display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:15px}
 .frm .ok input{margin-top:4px}
 .bedankt{background:#E3F2D9;border:2px solid var(--ink);border-radius:16px;padding:14px 16px}
-.alertbox{background:var(--paper);border:2px solid var(--ink);border-radius:24px;padding:20px;margin:0 0 22px;box-shadow:6px 6px 0 var(--lime)}
-.alertbox h3{margin:0 0 4px;font-family:var(--f-display);font-size:24px}
-.alertbox p{margin:0 0 12px}
+.alertbox{background:var(--paper);border:2px dashed var(--ink);border-radius:20px;padding:12px 16px;margin:4px 0}
+.alertrij{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:16px}.alertrij small{color:var(--muted)}.alertrij .btn{padding:8px 14px;font-size:13px}
+.alertbox .frm{margin-top:12px}
+@media (max-width:560px){.alertrij small{display:none}.alertrij{flex-wrap:nowrap}}
 .pagina{padding:44px 0 60px}
 .pagina h1{margin:6px 0 14px}
 .pagina h2{font-family:var(--f-display);font-size:24px;margin:30px 0 8px}
@@ -498,9 +507,8 @@ footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
         <div class="cta"><button class="btn" id="edit">Antwoorden aanpassen</button><button class="btn danger" data-reset>Quiz opnieuw doen</button></div>
       </div>
       <div class="alertbox" id="alertbox">
-        <h3>📬 Mail me nieuwe matches</h3>
-        <p>Krijg een mail als er nieuwe vacatures bijkomen die bij jouw antwoorden passen. We onthouden wat je hebt ingevuld.</p>
-        <form class="frm" id="alertform" onsubmit="return false">
+        <div class="alertrij"><span>📬 <b>Mail me nieuwe matches</b> <small>als er vacatures bijkomen die bij je passen</small></span><button type="button" class="btn ghost" id="al-open">Zet aan</button></div>
+        <form class="frm" id="alertform" onsubmit="return false" hidden>
           <label>Je e-mailadres<input type="email" id="al-mail" autocomplete="email" required placeholder="naam@voorbeeld.nl"></label>
           <div><span class="glabel">Hoe vaak wil je een mail?</span>
             <div class="rij"><label><input type="radio" name="al-freq" value="dagelijks"> Elke dag</label><label><input type="radio" name="al-freq" value="wekelijks" checked> Elke week</label><label><input type="radio" name="al-freq" value="maandelijks"> Elke maand</label></div></div>
@@ -661,6 +669,12 @@ footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
 </main>
 
 <dialog class="brief" id="cmpdlg" aria-label="Vacatures vergelijken"><div class="bwrap" id="cmpwrap"></div></dialog>
+<dialog class="brief" id="kiesdlg" aria-label="Kies vacatures om te vergelijken"><div class="bwrap">
+  <div class="dlgkop"><h2 class="disp">Vergelijk vacatures</h2><button type="button" class="dlgx" data-sluit aria-label="Sluiten">×</button></div>
+  <p style="margin:0" id="kies-uitleg">Kies 2 of 3 vacatures uit je topmatches.</p>
+  <div class="kieslijst" id="kieslijst"></div>
+  <div class="qnav"><span class="kiesn" id="kiesn"></span><button type="button" class="btn or" id="kies-go" disabled>Vergelijk</button></div>
+</div></dialog>
 <dialog class="brief" id="melddlg" aria-label="Klopt er iets niet?"><div class="bwrap">
   <div class="dlgkop"><h2 class="disp">Klopt er iets niet?</h2><button type="button" class="dlgx" data-sluit aria-label="Sluiten">×</button></div>
   <p id="meld-wat" style="margin:0"></p>
@@ -916,6 +930,21 @@ IC.frame=`<rect ${IK} ${IF} x="20" y="20" width="60" height="60" rx="2"/><rect $
 IC.canal=`<path ${IK} ${IF} d="M16 78V40l8-10 8 10v38zM34 78V32l8-12 8 12v46zM52 78V40l8-10 8 10v38zM70 78V34l7-10 7 10v44z"/><path ${IK} ${IN} d="M12 78h76M22 50h4M40 44h4M58 50h4M75 46h4"/><path d="M12 84h76" stroke="#2A8EE2" stroke-width="5" stroke-linecap="round"/>`;
 IC.tower=`<path ${IK} ${IF} d="M38 80V30l12-12 12 12v50z"/><path ${IK} ${IN} d="M24 80h52M46 40h8M46 54h8M46 68h8"/>`;
 IC.map=`<path ${IK} ${IF} d="M16 28l22-8 24 8 22-8v54l-22 8-24-8-22 8z"/><path ${IK} ${IN} d="M38 20v54M62 28v54"/><circle cx="50" cy="48" r="5" fill="#FF6A2B"/>`;
+// Herkenbare plaatjes per stad (zelfde stijl als de andere quizplaatjes)
+IC.erasmus=`<path ${IK} ${IN} d="M14 70h72"/><path ${IK} ${IF} d="M46 70L58 18l6 2-8 50z"/><path ${IK} ${IN} d="M59 24L22 66M60 32L32 68M58 42L42 69M62 26l18 40M62 36l12 32"/><path d="M14 80h72" stroke="#2A8EE2" stroke-width="5" stroke-linecap="round"/>`;
+IC.denhaag=`<path ${IK} ${IF} d="M28 78V40l22-18 22 18v38z"/><path ${IK} ${IF} d="M18 78V44h10v34zM72 78V44h10v34z"/><path ${IK} ${IN} d="M18 44l5-8 5 8M72 44l5-8 5 8M12 78h76"/><circle ${IK} fill="#FF6A2B" cx="50" cy="44" r="6"/><path ${IK} ${IN} d="M44 78V62h12v16"/>`;
+IC.dom=`<path ${IK} ${IF} d="M38 82V44h24v38z"/><path ${IK} ${IF} d="M41 44V28h18v16z"/><path ${IK} ${IF} d="M44 28l6-14 6 14z"/><path ${IK} ${IN} d="M26 82h48M46 54v10M54 54v10M47 34v4M53 34v4"/>`;
+IC.molen=`<path ${IK} ${IF} d="M38 82l5-34h14l5 34z"/><path ${IK} ${IN} d="M50 44L30 22M50 44l20-22M50 44L28 64M50 44l22 20M26 82h48"/><circle ${IK} fill="#FF6A2B" cx="50" cy="44" r="5"/><path ${IK} ${IN} d="M46 82v-10h8v10"/>`;
+IC.kerk=`<path ${IK} ${IF} d="M20 82V52l16-12 16 12v30z"/><path ${IK} ${IF} d="M52 82V46h16v36z"/><path ${IK} ${IF} d="M54 46l6-28 6 28z"/><path ${IK} ${IN} d="M14 82h72M32 60h8M32 70h8M60 56v8"/>`;
+IC.vliegtuig=`<path ${IK} ${IF} d="M18 54l58-22c6-2 10 4 4 8L62 52l-8 22-6 2-1-18-17 6-4 8-5 1 1-10-8-6z"/><path ${IK} ${IN} d="M16 84h68"/>`;
+IC.poort=`<path ${IK} ${IF} d="M20 72V38l8-10 8 10v34zM64 72V38l8-10 8 10v34z"/><path ${IK} ${IF} d="M36 72V46h28v26z"/><path ${IK} ${IN} d="M42 72V60a8 8 0 0 1 16 0v12M14 72h72"/><path d="M14 82h72" stroke="#2A8EE2" stroke-width="5" stroke-linecap="round"/>`;
+IC.kasteel=`<path ${IK} ${IF} d="M18 80V40h14v40zM68 80V40h14v40z"/><path ${IK} ${IF} d="M32 80V52h36v28z"/><path ${IK} ${IN} d="M18 40v-8h4v4h6v-4h4v8M68 40v-8h4v4h6v-4h4v8M44 80V68a6 6 0 0 1 12 0v12M12 80h76"/><path d="M12 86h76" stroke="#2A8EE2" stroke-width="5" stroke-linecap="round"/>`;
+IC.lamp=`<path ${IK} fill="#D2D63E" d="M50 16a20 20 0 0 0-12 36c3 3 4 6 4 10h16c0-4 1-7 4-10a20 20 0 0 0-12-36z"/><path ${IK} ${IN} d="M42 70h16M44 78h12M46 52l4-10 4 10"/><path ${IK} ${IN} d="M20 34l-6-3M80 34l6-3M24 16l-4-5M76 16l4-5"/>`;
+IC.martini=`<path ${IK} ${IF} d="M38 84V50h24v34z"/><path ${IK} ${IF} d="M41 50V36h18v14z"/><path ${IK} ${IF} d="M44 36V26h12v10z"/><path ${IK} ${IN} d="M50 26V12M46 16h8M26 84h48M47 60v10M53 60v10"/>`;
+IC.brug=`<path ${IK} ${IN} d="M12 66h76M16 66c10-36 58-36 68 0M28 66V50M40 66V43M50 66V41M60 66V43M72 66V50"/><path d="M12 78h76" stroke="#2A8EE2" stroke-width="5" stroke-linecap="round"/>`;
+IC.bogen=`<path ${IK} ${IF} d="M10 52h80v12H10z"/><path ${IK} ${IN} d="M14 64v12a10 10 0 0 1 20 0V64M40 64v12a10 10 0 0 1 20 0V64M66 64v12a10 10 0 0 1 20 0V64"/><path ${IK} ${IN} d="M30 52V44M50 52V44M70 52V44"/><path d="M10 86h80" stroke="#2A8EE2" stroke-width="5" stroke-linecap="round"/>`;
+IC.bos=`<path ${IK} fill="#9FD3B5" d="M34 18l16 26H40l14 20H14l14-20H18z"/><path ${IK} fill="#9FD3B5" d="M66 30l14 22h-8l10 14H50l10-14h-8z"/><path ${IK} ${IN} d="M34 64v14M66 66v12M12 80h76"/>`;
+IC.almere=`<path ${IK} ${IF} d="M18 70V40h14v30zM36 70V24h14v46zM54 70V34l14-8v44z"/><path ${IK} ${IN} d="M12 70h76M24 50h2M42 34h2M42 48h2M60 42h2M60 54h2"/><path d="M12 80h76" stroke="#2A8EE2" stroke-width="5" stroke-linecap="round"/><circle ${IK} fill="#FF6A2B" cx="80" cy="24" r="6"/>`;
 const BLOB=["M50 6C74 6 94 22 94 47S76 94 50 94 6 76 6 51 26 6 50 6Z","M48 7C72 4 95 24 93 50S74 95 47 93 5 72 7 47 25 9 48 7Z","M52 5C77 8 95 28 92 54S70 96 45 92 4 70 8 44 28 3 52 5Z"];
 const BLOBKLEUR=["#F5C8E5","#E6E98F","#BDDFEF","#FFD0B3","#CDE7D9"];
 let icN=0;
@@ -925,7 +954,7 @@ const STUDENT_SKIP=new Set(["Soort werk","Werktijden","Onderweg","Werkstijl","Le
 // Geneeskunde: eigen vragen
 const isMedTekst=t=>/geneeskunde|medicine|basisarts|\bmd\b|\barts\b|\bartsen\b/i.test(t||"")&&!/dierge|tandarts|tandheelkunde|veterinar|liberal arts|fine arts|of arts|arts (and|&)/i.test(t||"");
 const isMed=()=>isMedTekst(A.studie);
-const MED_SKIP=new Set(["Taal","Leidinggeven","Onderweg","Werkplek","Sfeer"]);
+const MED_SKIP=new Set(["Taal","Leidinggeven","Onderweg","Werkplek","Sfeer","Impact"]);
 const MEDSPEC={interne:"Interne geneeskunde",chirurgie:"Chirurgie & orthopedie",kinder:"Kindergeneeskunde",psych:"Psychiatrie",huisarts:"Huisartsgeneeskunde",seh:"Spoedeisende hulp",gyn:"Gynaecologie & verloskunde",neuro:"Neurologie",cardio:"Cardiologie",anes:"Anesthesiologie & IC",radio:"Radiologie",ouderen:"Ouderengeneeskunde",sociaal:"Sociale geneeskunde (GGD, jeugdarts, bedrijfsarts)",onco:"Oncologie"};
 const MEDROL={anios:"ANIOS",aios:"AIOS",arts:"Arts",onderzoek:"Arts-onderzoeker / PhD"};
 const MEDPLEK={umc:"Academisch ziekenhuis (UMC)",ziekenhuis:"Algemeen ziekenhuis",ggz:"GGZ",huisarts:"Huisartsenpraktijk",vvt:"Verpleeghuis / ouderenzorg",ggd:"GGD / publieke gezondheid",bedrijf:"Bedrijf (farma, verzekeraar, medtech)"};
@@ -943,8 +972,8 @@ const isLawMaster=()=>/rechten|rechtsgeleerd|\blaw\b|\bllm\b|notari|fiscaal rech
 const STEP_ADV={kicker:"Advocatuur",titel:"Heb je de beroepsopleiding advocatuur afgerond?",groups:[{key:"advopl",img:true,opts:[o("ja","Ja, afgerond","scale"),o("bezig","Ik zit erin (advocaat-stagiaire)","book"),o("wil","Nog niet, maar ik wil hem wel doen","seedling"),o("anders","Nee, ik wil een andere kant op","map")]}],ok:()=>!!A.advopl};
 const COORD={"Amsterdam":[52.37,4.90],"Rotterdam":[51.92,4.48],"Den Haag":[52.08,4.31],"Utrecht":[52.09,5.12],"Leiden":[52.16,4.49],"Groningen":[53.22,6.57],"Eindhoven":[51.44,5.48],"Nijmegen":[51.84,5.86],"Maastricht":[50.85,5.69],"Breda":[51.59,4.78],"Tilburg":[51.56,5.09],"Almere":[52.37,5.21],"Alphen aan den Rijn":[52.13,4.66],"Amersfoort":[52.16,5.39],"Amstelveen":[52.30,4.86],"Andelst":[51.91,5.73],"Badhoevedorp":[52.34,4.78],"Cruquius":[52.34,4.63],"Darp":[52.79,6.18],"Den Helder":[52.96,4.76],"Diemen":[52.34,4.96],"Doorn":[52.03,5.34],"Dronten":[52.52,5.72],"Haarlem":[52.39,4.64],"Heemskerk":[52.51,4.67],"Heerenveen":[52.96,5.92],"Hilversum":[52.22,5.18],"Hoogerheide":[51.42,4.33],"Hoogeveen":[52.72,6.48],"Naarden":[52.30,5.16],"Stroe":[52.18,5.70],"Vredepeel":[51.54,5.85],"Woerden":[52.09,4.88],"Zaandam":[52.44,4.83],"Zoutkamp":[53.34,6.30],"'t Harde":[52.41,5.89],"Delft":[52.01,4.36],"Dordrecht":[51.81,4.67],"Gouda":[52.01,4.71],"Zoetermeer":[52.06,4.49],"Schiedam":[51.92,4.40],"Hoofddorp":[52.30,4.69],"Leiderdorp":[52.16,4.53],"Nieuw-Vennep":[52.26,4.63],"Badhoevedorp":[52.34,4.78],"Purmerend":[52.50,4.95],"Alkmaar":[52.63,4.75],"Hoorn":[52.64,5.06],"Lelystad":[52.52,5.47],"Zeist":[52.09,5.23],"Nieuwegein":[52.03,5.08],"Arnhem":[51.98,5.91],"Ede":[52.04,5.67],"Apeldoorn":[52.21,5.97],"Zwolle":[52.52,6.09],"Enschede":[52.22,6.89],"Deventer":[52.25,6.16],"Den Bosch":[51.70,5.30],"'s-Hertogenbosch":[51.70,5.30],"Helmond":[51.48,5.66],"Roosendaal":[51.53,4.46],"Bergen op Zoom":[51.49,4.29],"Venlo":[51.37,6.17],"Heerlen":[50.89,5.98],"Sittard":[51.00,5.87],"Leeuwarden":[53.20,5.80],"Assen":[52.99,6.56],"Emmen":[52.78,6.90],"Middelburg":[51.50,3.61],"Vlissingen":[51.44,3.57],"Goes":[51.50,3.89],"Zaanstad":[52.44,4.83],"Hengelo":[52.27,6.79],"Almelo":[52.36,6.66],"Gorinchem":[51.83,4.97],"Spijkenisse":[51.85,4.33],"Capelle aan den IJssel":[51.93,4.58],"Blaricum":[52.27,5.24],"Huizen":[52.30,5.24],"Bussum":[52.27,5.16],"Laren":[52.26,5.23],"Weesp":[52.31,5.04],"Beverwijk":[52.49,4.66],"Velsen":[52.46,4.63],"Heiloo":[52.60,4.70],"Den Dolder":[52.14,5.24]};
 const afstand=(a,b)=>{const A1=COORD[a],B1=COORD[b];if(!A1||!B1)return null;const r=Math.PI/180,x=(B1[1]-A1[1])*r*Math.cos((A1[0]+B1[0])/2*r),y=(B1[0]-A1[0])*r;return Math.round(Math.sqrt(x*x+y*y)*6371);};
-const STEP_AUTOLOC={kicker:"Locatie",titel:"In welke regio wil je werken?",hint:"Met de auto zie je ook werk tot 30 km van de stad die je kiest. Kies er zoveel je wilt.",groups:[{key:"steden",img:true,multi:true,any:true,opts:[o("Amsterdam","Regio Amsterdam","canal"),o("Rotterdam","Regio Rotterdam","crane"),o("Den Haag","Regio Den Haag","building"),o("Utrecht","Regio Utrecht","tower"),o("Leiden","Regio Leiden","pin"),o("Haarlem","Regio Haarlem","pin"),o("Hoofddorp","Regio Hoofddorp","pin"),o("Amersfoort","Regio Amersfoort","pin"),o("Breda","Regio Breda","pin"),o("Eindhoven","Regio Eindhoven","pin"),o("Groningen","Regio Groningen","pin"),o("any","Maakt niet uit","map")]}],ok:()=>A.steden.length>0};
-const STEP_MEDLOC={kicker:"Locatie",titel:"In welke omgeving wil je werken?",hint:"Je ziet ook plekken tot 30 km eromheen. Kies er zoveel je wilt.",groups:[{key:"steden",img:true,multi:true,any:true,opts:[o("Amsterdam","Omgeving Amsterdam","canal"),o("Rotterdam","Omgeving Rotterdam","crane"),o("Den Haag","Omgeving Den Haag","building"),o("Utrecht","Omgeving Utrecht","tower"),o("Leiden","Omgeving Leiden","pin"),o("Groningen","Omgeving Groningen","pin"),o("Eindhoven","Omgeving Eindhoven","pin"),o("Nijmegen","Omgeving Nijmegen","pin"),o("Maastricht","Omgeving Maastricht","pin"),o("Breda","Omgeving Breda","pin"),o("any","Maakt niet uit","map")]}],ok:()=>A.steden.length>0};
+const STEP_AUTOLOC={kicker:"Locatie",titel:"In welke regio wil je werken?",hint:"Met de auto zie je ook werk tot 30 km van de stad die je kiest. Kies er zoveel je wilt.",groups:[{key:"steden",img:true,multi:true,any:true,opts:[o("Amsterdam","Regio Amsterdam","canal"),o("Rotterdam","Regio Rotterdam","erasmus"),o("Den Haag","Regio Den Haag","denhaag"),o("Utrecht","Regio Utrecht","dom"),o("Leiden","Regio Leiden","molen"),o("Haarlem","Regio Haarlem","kerk"),o("Hoofddorp","Regio Hoofddorp","vliegtuig"),o("Amersfoort","Regio Amersfoort","poort"),o("Breda","Regio Breda","kasteel"),o("Eindhoven","Regio Eindhoven","lamp"),o("Groningen","Regio Groningen","martini"),o("any","Maakt niet uit","map")]}],ok:()=>A.steden.length>0};
+const STEP_MEDLOC={kicker:"Locatie",titel:"In welke omgeving wil je werken?",hint:"Je ziet ook plekken tot 30 km eromheen. Kies er zoveel je wilt.",groups:[{key:"steden",img:true,multi:true,any:true,opts:[o("Amsterdam","Omgeving Amsterdam","canal"),o("Rotterdam","Omgeving Rotterdam","erasmus"),o("Den Haag","Omgeving Den Haag","denhaag"),o("Utrecht","Omgeving Utrecht","dom"),o("Leiden","Omgeving Leiden","molen"),o("Groningen","Omgeving Groningen","martini"),o("Eindhoven","Omgeving Eindhoven","lamp"),o("Nijmegen","Omgeving Nijmegen","brug"),o("Maastricht","Omgeving Maastricht","bogen"),o("Breda","Omgeving Breda","kasteel"),o("any","Maakt niet uit","map")]}],ok:()=>A.steden.length>0};
 /* ---------- Beroepspaden: eigen vragen per studie ---------- */
 const PAD_ORDE=["verpleeg","para","farm","psych","leraar","social","acc","arch","bio"];
 const PADEN={
@@ -1126,7 +1155,7 @@ const STEPS_B_ALL=[
    ok:()=>!!A.uren},
  {kicker:"Werktijden",titel:"Avonden en weekenden werken?",groups:[{key:"diensten",img:true,opts:[o("ja","Geen probleem","moon"),o("soms","Af en toe","sunmoon"),o("nee","Liever overdag","sun")]}],ok:()=>!!A.diensten},
  {kicker:"Vervoer",titel:"Hoe ga je het liefst naar je werk?",groups:[{key:"vervoer",img:true,opts:[o("fiets","Op de fiets","bike"),o("trein","Met de trein of OV","train"),o("auto","Met de auto","car")]}],ok:()=>!!A.vervoer},
- {kicker:"Locatie",titel:"In welke stad?",hint:"Kies er zoveel je wilt.",groups:[{key:"steden",img:true,multi:true,any:true,opts:[o("Amsterdam","Amsterdam","canal"),o("Rotterdam","Rotterdam","crane"),o("Den Haag","Den Haag","building"),o("Utrecht","Utrecht","tower"),o("Haarlem","Haarlem","pin"),o("Hoofddorp","Hoofddorp","pin"),o("Amstelveen","Amstelveen","pin"),o("Leiden","Leiden","pin"),o("Almere","Almere","pin"),o("Breda","Breda","pin"),o("any","Maakt niet uit","map")]}],ok:()=>A.steden.length>0},
+ {kicker:"Locatie",titel:"In welke stad?",hint:"Kies er zoveel je wilt.",groups:[{key:"steden",img:true,multi:true,any:true,opts:[o("Amsterdam","Amsterdam","canal"),o("Rotterdam","Rotterdam","erasmus"),o("Den Haag","Den Haag","denhaag"),o("Utrecht","Utrecht","dom"),o("Haarlem","Haarlem","kerk"),o("Hoofddorp","Hoofddorp","vliegtuig"),o("Amstelveen","Amstelveen","bos"),o("Leiden","Leiden","molen"),o("Almere","Almere","almere"),o("Breda","Breda","kasteel"),o("any","Maakt niet uit","map")]}],ok:()=>A.steden.length>0},
  {kicker:"Onderweg",titel:"Ben je graag op pad?",groups:[{key:"reizen",img:true,opts:[o("graag","Graag op pad","pin"),o("soms","Af en toe","bike"),o("nee","Liever op één plek","house")]}],ok:()=>!!A.reizen},
  {kicker:"Leidinggeven",titel:"Wil je de leiding hebben?",groups:[{key:"leiding",img:true,opts:[o("ja","Ja, graag","crown"),o("later","Misschien later","seedling"),o("nee","Liever niet","person")]}],ok:()=>!!A.leiding},
  {kicker:"Werkgever",titel:"Bij wat voor werkgever?",hint:"Kies er zoveel je wilt.",groups:[{key:"sector",img:true,multi:true,any:true,opts:[o("overheid","Overheid","building"),o("commercieel","Bedrijf","shop"),o("nonprofit","Zorg & non-profit","heart"),o("any","Maakt niet uit","infinity")]}],ok:()=>A.sector.length>0},
@@ -1832,7 +1861,9 @@ function card(v,m,best){
 }
 function rings(root){requestAnimationFrame(()=>requestAnimationFrame(()=>root.querySelectorAll(".ring").forEach(r=>{r.querySelector(".val").style.strokeDashoffset=(119.4*(1-r.dataset.p/100)).toFixed(1);})));}
 
-function renderResults(){
+function renderResults(){renderResults0();try{plaatsAlert();}catch(e){}}
+function plaatsAlert(){const box=$("#alertbox"),lijst=$("#reslist");if(!box||!lijst)return;const kaarten=lijst.querySelectorAll(":scope > article");if(kaarten.length>3)kaarten[2].after(box);else lijst.after(box);}
+function renderResults0(){
   const sec=$("#resultaten");sec.hidden=!klaar;if(!klaar)return;
   const list=VAC.map(v=>({v,m:matchFor(v)})).sort((x,y)=>(y.m.pct-x.m.pct)||((y.m.raw||0)-(x.m.raw||0)));
   const chips=[...A.vak.map(v=>VAKKEN[v]),A.opl.niveau&&(NIVLABEL[A.opl.niveau]+(A.opl.graad?" "+GRAADLABEL[A.opl.graad].toLowerCase():"")),A.jaren==="student"?"Student":null,A.uren==="part"?(A.urenPw?A.urenPw+" uur per week":"Parttime"):A.uren==="full"?"Fulltime":A.uren==="zzp"?"Freelance / zzp":A.uren==="project"?"Op projectbasis":null,
@@ -1934,7 +1965,7 @@ function telFav(){const ids=new Set(VAC.map(v=>v.id));$("#fav-n").textContent=[.
 function zetKnoppen(){
   document.querySelectorAll("[data-fav]").forEach(b=>{const on=FAV.has(b.dataset.fav);b.setAttribute("aria-pressed",String(on));b.textContent=on?"♥ Bewaard":"♡ Bewaar";});
   document.querySelectorAll("[data-cmp]").forEach(b=>b.setAttribute("aria-pressed",String(CMP.includes(b.dataset.cmp))));
-  const n=CMP.length;$("#cmpbar").hidden=n===0;$("#cmptxt").textContent=n===1?"1 vacature gekozen, kies er nog één":`${n} vacatures gekozen`;$("#cmpopen").disabled=n<2;
+  const n=CMP.length;$("#cmpbar").hidden=true;$("#cmptxt").textContent=n===1?"1 vacature gekozen, kies er nog één":`${n} vacatures gekozen`;$("#cmpopen").disabled=n<2;
   telFav();
 }
 function renderFav(){
@@ -1981,6 +2012,24 @@ function openVergelijk(){
   </tbody></table></div>`;
   $("#cmpdlg").showModal();
 }
+function kandidaten(id){
+  let lijst;
+  if(klaar)lijst=VAC.map(v=>({v,p:matchFor(v).pct})).sort((a,b)=>b.p-a.p).slice(0,12);
+  else{const ids=[...document.querySelectorAll("#grid [data-cmp]")].map(b=>b.dataset.cmp);lijst=ids.slice(0,12).map(i=>({v:VAC.find(x=>x.id===i),p:null})).filter(x=>x.v);}
+  VAC.filter(v=>FAV.has(v.id)&&!lijst.some(x=>x.v.id===v.id)).forEach(v=>lijst.push({v,p:klaar?matchFor(v).pct:null,fav:true}));
+  if(id&&!lijst.some(x=>x.v.id===id)){const v=VAC.find(x=>x.id===id);if(v)lijst.unshift({v,p:klaar?matchFor(v).pct:null});}
+  return lijst;
+}
+function openKies(id){
+  const lijst=kandidaten(id);
+  $("#kies-uitleg").textContent=klaar?"Kies 2 of 3 vacatures uit je topmatches en je favorieten.":"Kies 2 of 3 vacatures. Doe de quiz om je topmatches hier te zien.";
+  $("#kieslijst").innerHTML=lijst.map(x=>`<label><input type="checkbox" value="${esc(x.v.id)}" ${x.v.id===id?"checked":""}><span><b>${esc(x.v.titel)}</b><small>${esc(x.v.org)} · ${esc(x.v.plaats)}${x.fav?" · ♥ favoriet":""}</small></span>${x.p!=null?`<span class="pct">${x.p}%</span>`:"<span></span>"}</label>`).join("");
+  kiesUpdate();$("#kiesdlg").showModal();
+}
+function kiesUpdate(){const boxes=[...document.querySelectorAll("#kieslijst input")],n=boxes.filter(b=>b.checked).length;
+  boxes.forEach(b=>{b.disabled=!b.checked&&n>=3;});
+  $("#kiesn").textContent=n===0?"Nog niets gekozen":n===1?"1 gekozen, kies er nog één":`${n} gekozen`+(n>=3?" (maximaal)":"");
+  $("#kies-go").disabled=n<2;$("#kies-go").textContent=n>=2?`Vergelijk ${n}`:"Vergelijk";}
 let meldId="";
 function openMelding(id){
   meldId=id||"";const v=VAC.find(x=>x.id===meldId);
@@ -1993,18 +2042,21 @@ function alertProfiel(){const a=huidigA(),L=x=>Array.isArray(x)?x.filter(y=>y&&y
   return {modus:MODE==="swipe"?"swipen":"quiz",vak:L(A.vak),steden:L(A.steden),uren:A.uren||"",urenPw:A.urenPw||"",niveau:(a.opl&&a.opl.niveau)||"",
     studie:((a.opl&&a.opl.tekst)||A.studie||"").slice(0,80),sector:L(A.sector),branche:L(A.branche),medrol:L(A.medrol),pad:padVan(A.studie||"")||"",top};}
 function toonAlertStatus(){let s=null;try{s=JSON.parse(localStorage.getItem("valcature-alert")||"null")}catch(e){}
-  if(s&&s.email){$("#alertform").hidden=true;$("#al-klaar").hidden=false;
+  if(s&&s.email){$("#alertform").hidden=true;$(".alertrij").hidden=true;$("#al-klaar").hidden=false;
     $("#al-klaar").innerHTML=`Je alert staat aan voor <b>${esc(s.email)}</b> (${({dagelijks:"elke dag",wekelijks:"elke week",maandelijks:"elke maand"})[s.frequentie]}). Check je mail om je aanmelding te bevestigen. <button type="button" class="btn ghost" id="al-wijzig" style="margin-top:10px">Aanpassen</button>`;
     $("#al-wijzig").onclick=()=>{$("#alertform").hidden=false;$("#al-klaar").hidden=true;$("#al-mail").value=s.email;};}}
+function openAlert(){$("#alertform").hidden=!$("#alertform").hidden;$("#al-open").textContent=$("#alertform").hidden?"Zet aan":"Sluiten";if(!$("#alertform").hidden)$("#al-mail").focus();}
 function initNieuw(){
 document.addEventListener("click",e=>{
   const f=e.target.closest("[data-fav]");if(f){const id=f.dataset.fav;FAV.has(id)?FAV.delete(id):FAV.add(id);bewaarFav();zetKnoppen();if(!$("#view-favorieten").hidden)renderFav();return;}
-  const c=e.target.closest("[data-cmp]");if(c){const id=c.dataset.cmp,i=CMP.indexOf(id);if(i>=0)CMP.splice(i,1);else{if(CMP.length>=3)CMP.shift();CMP.push(id);}bewaarCmp();zetKnoppen();return;}
+  const c=e.target.closest("[data-cmp]");if(c){openKies(c.dataset.cmp);return;}
   const mb=e.target.closest("[data-meld]");if(mb){openMelding(mb.dataset.meld);return;}
   const sl=e.target.closest("[data-sluit]");if(sl){sl.closest("dialog").close();return;}
 });
-["#cmpdlg","#melddlg"].forEach(s=>$(s).addEventListener("click",e=>{if(e.target===e.currentTarget)e.currentTarget.close();}));
+["#cmpdlg","#melddlg","#kiesdlg"].forEach(s=>$(s).addEventListener("click",e=>{if(e.target===e.currentTarget)e.currentTarget.close();}));
 $("#cmpopen").onclick=openVergelijk;
+$("#kieslijst").addEventListener("change",kiesUpdate);
+$("#kies-go").onclick=()=>{CMP=[...document.querySelectorAll("#kieslijst input:checked")].map(b=>b.value).slice(0,3);bewaarCmp();$("#kiesdlg").close();openVergelijk();};
 $("#cmpwis").onclick=()=>{CMP=[];bewaarCmp();zetKnoppen();};
 $("#meldform").addEventListener("submit",()=>{const v=VAC.find(x=>x.id===meldId)||{};
   stuurNaarSheet({modus:"melding",vacature:v.id||"",titel:v.titel||"",org:v.org||"",url:v.url||"",reden:$("#meld-reden").value,toelichting:$("#meld-tekst").value.slice(0,800),email:$("#meld-mail").value.trim()});
@@ -2019,6 +2071,7 @@ $("#alertform").addEventListener("submit",()=>{
   try{localStorage.setItem("valcature-alert",JSON.stringify({email,frequentie:freq}))}catch(e){}
   toonAlertStatus();});
 toonAlertStatus();
+$("#al-open").onclick=openAlert;
 try{localStorage.removeItem("valcature-groot");}catch(e){}
 zetKnoppen();
 }
