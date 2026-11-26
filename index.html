@@ -785,12 +785,12 @@ footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
     <p id="foot"></p>
     <p class="footlinks"><a href="/vacatures/">Vacatures per stad en vakgebied</a><a href="/tips/">Tips</a><a href="#uitgelicht">Uitgelicht</a><a href="#werkgevers">Voor werkgevers</a><a href="#privacy">Privacyverklaring</a></p>
     <p class="appknop"><button type="button" class="btn or" id="installApp">📱 Zet Valcature op je telefoon</button></p>
-    <p class="apphulp" id="appHulp" hidden></p>
+    <div class="apphulp" id="appHulp" hidden><b>Zo zet je Valcature op je iPhone:</b><ol><li>Open valcature.nl in Safari.</li><li>Tik onderaan op het deel-icoon (vierkantje met pijl omhoog).</li><li>Scroll omlaag en kies <b>"Zet op beginscherm"</b>.</li><li>Tik rechtsboven op <b>"Voeg toe"</b>.</li></ol></div>
     <p class="maker">Gemaakt door V Jorissen</p>
     <p class="selectie"><b>Hoe ik vacatures kies:</b> ik verzamel vacatures van de eigen websites en sollicitatiepagina's van werkgevers, aangevuld met Vacature Via. Ik kijk vooral naar fulltime banen in Amsterdam en de Randstad, plus Breda, werkstudentbanen, startups en duurzame organisaties. Uitzendbureaus, stages en verlopen vacatures sla ik over. Je match is gebaseerd op je antwoorden: je studie en diploma tellen het zwaarst, daarna werkervaring, vaardigheden, uren, stad en je voorkeuren. Ik neem alleen kerngegevens over; controleer de actuele vacature altijd bij de werkgever.</p>
   </div>
 </footer>
-<style>.appknop{margin:14px 0 6px}.apphulp{font-size:.95em;max-width:520px}</style>
+<style>.appknop{margin:14px 0 6px}.apphulp{font-size:.95em;max-width:520px;opacity:.9;line-height:1.5}.apphulp ol{margin:6px 0 0;padding-left:20px}.apphulp li{margin:2px 0}</style>
 <script>
 (function(){
   var knop=document.getElementById('installApp'), hulp=document.getElementById('appHulp'), uitgesteld=null;
@@ -799,10 +799,6 @@ footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
   addEventListener('beforeinstallprompt',function(e){e.preventDefault();uitgesteld=e;});
   knop.addEventListener('click',function(){
     if(uitgesteld){uitgesteld.prompt();uitgesteld.userChoice.finally(function(){uitgesteld=null;});return;}
-    var ua=navigator.userAgent, ios=/iPhone|iPad|iPod/.test(ua)||(ua.includes('Mac')&&'ontouchend' in document);
-    hulp.textContent= ios
-      ? 'Op iPhone: open valcature.nl in Safari, tik onderaan op het deel-icoon (vierkantje met pijl omhoog) en kies "Zet op beginscherm".'
-      : 'Op Android: open valcature.nl in Chrome, tik rechtsboven op de drie puntjes en kies "App installeren" of "Toevoegen aan startscherm".';
     hulp.hidden=false;
   });
 })();
