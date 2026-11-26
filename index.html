@@ -157,7 +157,7 @@ button,input,select,textarea{font:inherit}
 .gtype{display:flex;gap:8px;margin-top:16px}.gstudyin{text-align:center}.gstudyin .gtype{margin-top:12px;flex-direction:column}.gstudyin .gtype .btn{width:100%}.gstudyin .text{font-size:18px}
 .gtype .text{flex:1;min-width:0}
 .gniv{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:14px 0}
-.gbtn{font:inherit;font-weight:800;font-size:16px;padding:16px 10px;border:2px solid var(--ink);border-radius:16px;background:var(--paper);box-shadow:0 5px 0 var(--ink);cursor:pointer;transition:transform .1s,box-shadow .1s;animation:gin .4s calc(var(--i)*60ms) both}
+.gbtn{color:var(--ink);font:inherit;font-weight:800;font-size:16px;padding:16px 10px;border:2px solid var(--ink);border-radius:16px;background:var(--paper);box-shadow:0 5px 0 var(--ink);cursor:pointer;transition:transform .1s,box-shadow .1s;animation:gin .4s calc(var(--i)*60ms) both}
 .gbtn:hover{transform:translateY(-2px)}
 .gbtn:active,.gbtn[aria-pressed="true"]{transform:translateY(4px);box-shadow:0 1px 0 var(--ink);background:var(--lime)}
 @keyframes gin{from{opacity:0;transform:translateY(16px) scale(.9)}to{opacity:1;transform:none}}
@@ -505,6 +505,7 @@ footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
   .ressec,.how{padding-block:40px}
   .vac{border-radius:24px}
 }
+@media (max-width:700px){.gtitle{overflow-wrap:anywhere;hyphens:auto}.qtitle.gtitle{font-size:clamp(18px,6.4vw,26px)}.gniv{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.gbtn{font-size:14px;padding:13px 6px;border-width:1.5px;box-shadow:0 3px 0 var(--ink);min-width:0}.qtitle.gtitle.glang{font-size:clamp(15px,4.6vw,20px);hyphens:manual}.qcard .qnav{gap:8px}.qcard .qnav .btn{flex:1 1 0;min-width:0;white-space:normal;padding:12px 8px;font-size:13px;text-align:center;justify-content:center}}
 </style>
 
 <header class="top">
@@ -527,7 +528,7 @@ footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
     <div class="in">
       <div class="copy">
       <div class="mhome">
-        <div class="mhi"><span class="eyebrow">Hoi! De chillste vacaturesite</span><h2 class="disp">Wat wil je vandaag doen?</h2></div>
+        <div class="mhi"><span class="eyebrow">De chillste vacaturesite</span><h2 class="disp">Wat wil je vandaag doen?</h2></div>
         <div class="mgrid">
           <button type="button" class="mtile t-pink" data-m="start"><span class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.3 5.2 5.7.5-4.3 3.8 1.3 5.5L12 15.2 7 18l1.3-5.5L4 8.7l5.7-.5z"/></svg></span><span class="tl">3 min</span><b>Doe de quiz</b><small>Tik plaatjes aan en zie wat bij je past</small><span class="mgo">Start <span>→</span></span></button>
           <button type="button" class="mtile t-lime" data-m="start-swipe"><span class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="16" rx="3"/><path d="M3 8v8M21 8v8"/></svg></span><b>Swipe vacatures</b><small>Naar rechts als je hem leuk vindt</small><span class="mgo">Swipen <span>→</span></span></button>
@@ -1381,7 +1382,7 @@ function renderSwipeIntro0(){
       <datalist id="si-lijst">${POPSTUDIES.map(x=>`<option value="${esc(x)}">`).join("")}</datalist></div>
       <div class="qnav"><span></span><button type="button" class="btn ghost" id="si-skip">Overslaan →</button></div>`;}
   else if(I.stap===0){
-    html=`<h3 class="qtitle gtitle">${esc(I.studie)}</h3><p class="qhint">Op welk niveau? Tik er één aan.</p>
+    html=`<h3 class="qtitle gtitle${(I.studie||"").length>14?" glang":""}">${esc(I.studie)}</h3><p class="qhint">Op welk niveau? Tik er één aan.</p>
       <div class="gniv">${[["MBO","Mbo"],["AD","Associate degree"],["HBO-B","Hbo-bachelor"],["HBO-M","Hbo-master"],["WO-B","Wo-bachelor"],["WO-M","Wo-master"]].map(([v,l],i)=>`<button type="button" class="gbtn" style="--i:${i}" data-si-niv="${v}" aria-pressed="${I.niv===v}">${l}</button>`).join("")}</div>
       <div class="qnav"><button type="button" class="btn ghost" id="si-terug">← Andere studie</button><button type="button" class="btn ghost" id="si-nivskip">Weet ik niet →</button></div>`;}
   else if(I.stap===1){const v=I.jaren==null?"0":I.jaren;const n=v==="student"?-1:+v;
