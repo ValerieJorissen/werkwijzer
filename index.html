@@ -411,6 +411,7 @@ footer .maker{margin:8px 0 0;font-size:14px;opacity:.75}
 .kieslijst label:has(input:disabled){opacity:.5}
 .kieslijst input{width:22px;height:22px;accent-color:var(--green)}
 .kieslijst b{display:block;line-height:1.25}.kieslijst small{color:var(--muted)}
+.ookint{margin:28px 0 8px;font-family:var(--f-display);font-size:20px}.ookint small{display:block;font:400 14px/1.4 var(--f-body,inherit);opacity:.7;margin-top:2px}
 .kieslijst .pct{font-weight:800;font-family:var(--f-display);font-size:18px}
 .kiesn{color:var(--muted);font-size:15px}
 .dlgkop{display:flex;justify-content:space-between;align-items:start;gap:12px}
@@ -1601,13 +1602,14 @@ function score(j,a){
   else if(a.uren==="project"){const kc=kenmerk(j).contract;if(kc==="project")add(10,"Werk op projectbasis","ok");else if(kc==="freelance")add(8,"Freelance-opdracht: ook werk per project","ok");else{add(2,"Geen projectfunctie","part");cap=Math.min(cap,60);}}
   else if(a.uren==="zzp"){if(kenmerk(j).contract==="freelance")add(10,"Freelance-opdracht","ok");else{add(2,"Baan in loondienst, geen freelance-opdracht","part");cap=Math.min(cap,60);}}
   else j.uren[1]>=32?add(10,`${j.uren[0]===j.uren[1]?j.uren[0]:j.uren[0]+"–"+j.uren[1]} uur per week`,"ok"):j.uren[1]>=28?add(5,`Maximaal ${j.uren[1]} uur`,"part"):add(0,`Maximaal ${j.uren[1]} uur`,"no");
+  let stadCap=100;
   if(a.steden.includes("any")) add(12,`${j.plaats}, locatie maakt je niet uit`,"ok");
   else if(j.vorm==="remote") add(12,"Thuiswerk, dus plaats maakt niet uit","ok");
   else if(j.plaats==="Heel Nederland") add(7,"Standplaats door heel Nederland, in overleg","part");
   else if(a.steden.includes(j.plaats)) add(12,`${j.plaats} staat in je lijst`,"ok");
-  else if((isMedTekst(a.opl&&a.opl.tekst||a.studie)||a.vervoer==="auto")&&(()=>{const d=a.steden.map(s=>[s,afstand(s,j.plaats)]).filter(x=>x[1]!=null).sort((x,y)=>x[1]-y[1])[0];if(d&&d[1]<=30){add(12,`${j.plaats} ligt ${d[1]} km van ${d[0]}`,"ok");return true;}if(d){add(0,`${j.plaats} ligt ${d[1]} km van ${d[0]}`,"no");cap=Math.min(cap,40);r.push({txt:`${j.plaats} ligt meer dan 30 km van de omgeving die je koos`,st:"no",hard:1});return true;}return false;})());
-  else if(a.steden.some(s=>PROV[s]===j.regio)){add(6,`${j.plaats} ligt in de buurt (${j.regio})`,"part");if(a.vervoer==="fiets"||a.vervoer==="trein"){cap=Math.min(cap,65);r.push({txt:`${j.plaats} is niet de stad die je koos`,st:"no",hard:1});}}
-  else{add(0,`${j.plaats} ligt buiten je gebied`,"no");if(a.vervoer==="fiets"||a.vervoer==="trein"){cap=Math.min(cap,45);r.push({txt:`${j.plaats} is niet de stad die je koos`,st:"no",hard:1});}}
+  else if((isMedTekst(a.opl&&a.opl.tekst||a.studie)||a.vervoer==="auto")&&(()=>{const d=a.steden.map(s=>[s,afstand(s,j.plaats)]).filter(x=>x[1]!=null).sort((x,y)=>x[1]-y[1])[0];if(d&&d[1]<=30){add(12,`${j.plaats} ligt ${d[1]} km van ${d[0]}`,"ok");return true;}if(d){add(0,`${j.plaats} ligt ${d[1]} km van ${d[0]}`,"no");stadCap=Math.min(stadCap,40);r.push({txt:`${j.plaats} ligt meer dan 30 km van de omgeving die je koos`,st:"no",hard:1});return true;}return false;})());
+  else if(a.steden.some(s=>PROV[s]===j.regio)){add(6,`${j.plaats} ligt in de buurt (${j.regio})`,"part");if(a.vervoer==="fiets"||a.vervoer==="trein"){stadCap=Math.min(stadCap,65);r.push({txt:`${j.plaats} is niet de stad die je koos`,st:"no",hard:1});}}
+  else{add(0,`${j.plaats} ligt buiten je gebied`,"no");stadCap=Math.min(stadCap,(a.vervoer==="fiets"||a.vervoer==="trein")?45:55);r.push({txt:`${j.plaats} is niet de stad die je koos`,st:"no",hard:1});}
   if(!j.vorm) add(3,"Thuiswerken staat niet in de vacature","part");
   else if(a.vorm==="any"||a.vorm===j.vorm) add(6,`Werkvorm: ${WERKVORM[j.vorm].toLowerCase()}`,"ok");
   else if(a.vorm==="hybride"||j.vorm==="hybride") add(3,`Werkvorm is ${WERKVORM[j.vorm].toLowerCase()}`,"part");
@@ -1681,8 +1683,21 @@ function score(j,a){
   if(sMis&&ervTelt){r.push({txt:`Je studie past niet direct, maar je werkervaring als ${a.functie.trim()} wel`,st:"part"});}
   else if(sMis&&!padOk){cap=Math.min(cap,25);miss.push("passende studie");r.push({txt:`Hier hoort een studie in ${sMis.toLowerCase()} bij, en dat past niet bij wat jij hebt gestudeerd`,st:"no",hard:1});}
   if(X.deal.length){cap=Math.min(cap,30);X.deal.forEach(d=>{miss.push("deal-breaker: "+d);r.push({txt:`Deal-breaker: ${d}`,st:"no",hard:1});});}
+  // Vakgebied eerst: andere vakgebieden alleen als je studie of huidige functie er precies op aansluit
+  const vakVrij=!(a.vak||[]).length||a.vak.includes("any"),vakHit=vakVrij||a.vak.includes(j.vak);
+  const studieHit=((a.opl&&a.opl.richting)||[]).includes(j.vak)||!!(sA&&sA.ok);
+  const medHit=isMedTekst(a.opl&&a.opl.tekst||a.studie)&&isMedJob(j);
+  const kern=!!((fm&&fm.p)||studieHit||(padOk&&userPad(a))||medHit);
+  const vakOk=vakHit||!!((fm&&fm.p)||medHit); // alleen je huidige functie of artsenwerk mag buiten je vakgebieden bovenaan
+  if(!vakOk){cap=Math.min(cap,45);r.push({txt:`Ander vakgebied (${VAKKEN[j.vak]||j.vak}) dan je koos`,st:"no",hard:1});}
+  // Stad telt zwaar, maar een functie die precies past mag toch hoog blijven
+  const sterk=vakHit&&kern;
+  const tk=t<=75?t:75+(t-75)*0.5;
+  if(stadCap<100){if(sterk&&Math.min(cap,tk)>=85&&stadCap<82){cap=Math.min(cap,82);r.push({txt:"Andere plaats dan je koos, maar de functie past zo goed dat we hem toch hoog laten zien",st:"part"});}else cap=Math.min(cap,stadCap);}
+  // 100% is zeldzaam: boven 75 punten telt elk punt half, en zonder aansluiting op studie of functie maximaal 88%
+  if(!sterk)cap=Math.min(cap,88);
   const ord={ok:1,part:2,no:3};r.sort((x,y)=>(x.hard?0:ord[x.st])-(y.hard?0:ord[y.st]));
-  return {pct:Math.max(0,Math.min(cap,100,Math.round(t))),raw:t,r,miss,capped:cap<100&&Math.round(t)>cap};
+  return {pct:Math.max(0,Math.min(cap,100,Math.round(tk))),raw:t,r,miss,capped:cap<100&&Math.round(tk)>cap,vakOk};
 }
 
 /* ---------- Quiz ---------- */
@@ -1865,7 +1880,8 @@ function renderResults(){renderResults0();try{plaatsAlert();}catch(e){}}
 function plaatsAlert(){const box=$("#alertbox"),lijst=$("#reslist");if(!box||!lijst)return;const kaarten=lijst.querySelectorAll(":scope > article");if(kaarten.length>3)kaarten[2].after(box);else lijst.after(box);}
 function renderResults0(){
   const sec=$("#resultaten");sec.hidden=!klaar;if(!klaar)return;
-  const list=VAC.map(v=>({v,m:matchFor(v)})).sort((x,y)=>(y.m.pct-x.m.pct)||((y.m.raw||0)-(x.m.raw||0)));
+  const groep=x=>MODE!=="swipe"&&x.m.vakOk===false?1:0;
+  const list=VAC.map(v=>({v,m:matchFor(v)})).sort((x,y)=>(groep(x)-groep(y))||(y.m.pct-x.m.pct)||((y.m.raw||0)-(x.m.raw||0)));
   const chips=[...A.vak.map(v=>VAKKEN[v]),A.opl.niveau&&(NIVLABEL[A.opl.niveau]+(A.opl.graad?" "+GRAADLABEL[A.opl.graad].toLowerCase():"")),A.jaren==="student"?"Student":null,A.uren==="part"?(A.urenPw?A.urenPw+" uur per week":"Parttime"):A.uren==="full"?"Fulltime":A.uren==="zzp"?"Freelance / zzp":A.uren==="project"?"Op projectbasis":null,
     ...(A.steden.includes("any")?["Hele Randstad"]:A.steden),...A.sector.filter(s=>s!=="any").map(s=>SECTOR[s]),A.grootte&&A.grootte!=="any"?GROOTTE[A.grootte]:null,...(A.talen||[]),...A.skills.slice(0,6),...(A.fav||[]).map(f=>"♥ "+f)].filter(Boolean);
   let ch=chips;if(MODE==="swipe"){const M=MODEL||swipeModel();ch=Object.entries(M.w).filter(([k,x])=>x>=.5&&M.n[k]>=2).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([k])=>"♥ "+M.lab[k]);}
@@ -1879,7 +1895,8 @@ function renderResults0(){
     if(P.veld&&(!P.veld.when||P.veld.when()))(A.padveld||[]).filter(x=>x!=="any").forEach(x=>{if(!VAC.some(v=>isPadJob(pp,v)&&jobPadTags(pp,v,"veld").includes(x)))leeg.push(padLabel(pp,"veld",x).toLowerCase());});
     if(leeg.length)medNote=`<div class="mednote"><b>Op dit moment staan er geen open vacatures op Valcature voor: ${esc(leeg.join(", "))}.</b> Hieronder zie je wat er het dichtst bij komt. We vullen de vacatures elke dag aan.</div>`;}}
   if(MODE!=="swipe"&&!medNote&&A.uren==="project"){const n=VAC.filter(v=>["project","freelance"].includes(kenmerk(v).contract)).length;if(n<5)medNote=`<div class="mednote"><b>Er staan nu nog maar ${n} ${n===1?"vacature":"vacatures"} op projectbasis op Valcature.</b> Daarna zie je banen die het best bij je passen, ook al zijn ze niet per project. We zoeken elke dag naar nieuwe projectfuncties en freelance-opdrachten.</div>`;}
-  $("#reslist").innerHTML=medNote+list.map((x,i)=>card(x.v,x.m,i===0&&x.m.pct>=50)).join("");
+  const ookI=list.findIndex(x=>groep(x)===1);
+  $("#reslist").innerHTML=medNote+list.map((x,i)=>(i===ookI&&i>0?`<h3 class="ookint">Misschien ook interessant<small>Buiten de vakgebieden die je koos</small></h3>`:"")+card(x.v,x.m,i===0&&x.m.pct>=50)).join("");
   rings($("#reslist"));
 }
 
